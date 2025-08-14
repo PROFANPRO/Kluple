@@ -43,66 +43,25 @@ body {
     position: relative;
     z-index: 1;
 }
-    /* ===== Баланс =====*/
-        .balance-card {
-            background-color: #3a3a3a;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            max-width: 300px;
-        }
 
-        .balance-text {
-            margin: 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
+/* ===== Баланс ===== */
+.balance-card {
+    background-color: #2563eb;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    animation: fadeIn 0.8s ease-in-out forwards;
+}
 
-        .balance-value {
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
+.balance-text {
+    font-size: 14px;
+    opacity: 0.9;
+}
 
-        svg {
-            flex-shrink: 0;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Баланс -->
-    <div class="balance-card">
-        <!-- SVG TON -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
-            <!-- Внешний треугольник -->
-            <path d="M10 20 L50 90 L90 20 Z"
-                  stroke="#38bdf8"
-                  stroke-width="8"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <!-- Левая внутренняя линия -->
-            <path d="M50 90 L50 20 L30 20"
-                  stroke="#38bdf8"
-                  stroke-width="8"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <!-- Правая внутренняя линия -->
-            <path d="M50 20 L70 20"
-                  stroke="#38bdf8"
-                  stroke-width="8"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-        </svg>
-        <div>
-            <p class="balance-text">БАЛАНС</p>
-            <p class="balance-value">1 250 ₽</p>
-        </div>
+.balance-value {
+    font-size: 28px;
+    font-weight: bold;
+}
 
 /* ===== Карточки ===== */
 .row {
@@ -119,12 +78,6 @@ body {
     font-size: 18px;
     font-weight: bold;
     animation: fadeIn 0.8s ease-in-out forwards;
-    cursor: pointer;
-    transition: transform 0.1s ease-in-out;
-}
-
-.card:active {
-    transform: scale(1.05);
 }
 
 .green { background-color: #22c55e; }
@@ -137,14 +90,14 @@ body {
 .icon-circle {
     background-color: white;
     color: black;
-    width: 60px; /* чуть больше, чтобы все стрелки и эмодзи влезали одинаково */
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px auto; /* одинаковый отступ сверху и снизу */
-    font-size: 28px;
+    margin: auto;
+    font-size: 24px;
     animation: bounce 1.5s infinite ease-in-out;
 }
 
@@ -198,14 +151,10 @@ body {
     </div>
 
     <!-- Две карточки -->
-<div class="row">
-    <div class="card" style="background-color: #374151;">
-        <div class="icon-circle" style="background-color: rgba(255,255,255,0.15); color: #22c55e; font-size: 28px; font-weight: 900;">⬇</div>
+    <div class="row">
+        <div class="card green"><div class="icon-circle">💼</div></div>
+        <div class="card red"><div class="icon-circle">💼</div></div>
     </div>
-    <div class="card" style="background-color: #374151;">
-        <div class="icon-circle" style="background-color: rgba(255,255,255,0.15); color: #ef4444; font-size: 28px; font-weight: 900;">⬆</div>
-    </div>
-</div>
 
     <!-- Магазин коинов -->
     <div class="card purple">
