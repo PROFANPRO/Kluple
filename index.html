@@ -43,7 +43,7 @@ body {
 
 /* ===== Баланс ===== */
 .balance-card {
-    background-color: #6b7280; /* серый */
+    background-color: #4b5563; /* Серый */
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
@@ -64,9 +64,9 @@ body {
     gap: 8px;
 }
 
-.ton-icon {
-    width: 24px;
-    height: 24px;
+.balance-icon {
+    width: 28px;
+    height: 28px;
 }
 
 /* ===== Карточки ===== */
@@ -95,6 +95,7 @@ body {
 /* ===== Иконка в круге ===== */
 .icon-circle {
     background-color: white;
+    color: black;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -103,15 +104,8 @@ body {
     justify-content: center;
     margin: 10px auto;
     font-size: 28px;
+    animation: bounce 1.5s infinite ease-in-out;
 }
-
-.arrow-icon {
-    width: 28px;
-    height: 28px;
-}
-
-.green-arrow path { stroke: #22c55e; }
-.red-arrow path { stroke: #ef4444; }
 
 /* ===== Нижнее меню ===== */
 .bottom-nav {
@@ -142,6 +136,11 @@ body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
 </style>
 </head>
 <body>
@@ -154,32 +153,19 @@ body {
     <!-- Баланс -->
     <div class="balance-card">
         <p class="balance-text">БАЛАНС</p>
-        <p class="balance-value">0 
-            <svg class="ton-icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2 L20 20 L4 20 Z" />
-                <path d="M12 2 L12 14" />
+        <p class="balance-value">
+            0
+            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
             </svg>
         </p>
     </div>
 
     <!-- Две карточки -->
     <div class="row">
-        <div class="card green">
-            <div class="icon-circle">
-                <svg class="arrow-icon green-arrow" viewBox="0 0 24 24" fill="none" stroke-width="3" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5 L12 19" stroke-linecap="round"/>
-                    <path d="M5 12 L12 19 L19 12" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
-        <div class="card red">
-            <div class="icon-circle">
-                <svg class="arrow-icon red-arrow" viewBox="0 0 24 24" fill="none" stroke-width="3" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5 L12 19" stroke-linecap="round"/>
-                    <path d="M5 12 L12 5 L19 12" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
+        <div class="card green"><div class="icon-circle">⬇️</div></div>
+        <div class="card red"><div class="icon-circle">⬆️</div></div>
     </div>
 
     <!-- Магазин коинов -->
