@@ -43,38 +43,70 @@ body {
     position: relative;
     z-index: 1;
 }
+    /* ===== Баланс =====*/
+        .balance-card {
+            background-color: #3a3a3a;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 300px;
+        }
 
-/* ===== Баланс ===== */
-<div class="balance-card" style="background-color: #3a3a3a; padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
-    <!-- SVG TON -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
-        <!-- Внешний треугольник -->
-        <path d="M10 20 L50 90 L90 20 Z"
-              stroke="#38bdf8"
-              stroke-width="8"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
-        <!-- Левая внутренняя линия -->
-        <path d="M50 90 L50 20 L30 20"
-              stroke="#38bdf8"
-              stroke-width="8"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
-        <!-- Правая внутренняя линия -->
-        <path d="M50 20 L70 20"
-              stroke="#38bdf8"
-              stroke-width="8"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
-    </svg>
-    <div>
-        <p class="balance-text" style="margin:0; font-size:14px; opacity:0.9;">БАЛАНС</p>
-        <p class="balance-value" style="margin:0; font-size:28px; font-weight:bold;">1 250 ₽</p>
+        .balance-text {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .balance-value {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        svg {
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Баланс -->
+    <div class="balance-card">
+        <!-- SVG TON -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
+            <!-- Внешний треугольник -->
+            <path d="M10 20 L50 90 L90 20 Z"
+                  stroke="#38bdf8"
+                  stroke-width="8"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+            <!-- Левая внутренняя линия -->
+            <path d="M50 90 L50 20 L30 20"
+                  stroke="#38bdf8"
+                  stroke-width="8"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+            <!-- Правая внутренняя линия -->
+            <path d="M50 20 L70 20"
+                  stroke="#38bdf8"
+                  stroke-width="8"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+        </svg>
+        <div>
+            <p class="balance-text">БАЛАНС</p>
+            <p class="balance-value">1 250 ₽</p>
+        </div>
     </div>
-</div>
+
+</body>
+</html>
 
 /* ===== Карточки ===== */
 .row {
