@@ -1,137 +1,127 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kluple</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0b0f19; /* тёмный фон */
-            color: white;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kluple</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: black;
+    overflow-x: hidden;
+    color: white;
+  }
 
-        .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 15px;
-        }
+  /* Фон со звёздами */
+  .stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: -1;
+  }
+  .stars::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(white, rgba(255,255,255,0) 70%) 0 0,
+                radial-gradient(white, rgba(255,255,255,0) 70%) 50px 50px;
+    background-size: 100px 100px;
+    animation: moveStars 60s linear infinite;
+  }
+  @keyframes moveStars {
+    from { transform: translate(0,0); }
+    to { transform: translate(-50px,-50px); }
+  }
 
-        /* Карточки */
-        .card {
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-            color: white;
-        }
+  /* Контейнер */
+  .container {
+    padding: 15px;
+    max-width: 500px;
+    margin: auto;
+  }
 
-        .balance-card {
-            background-color: #2563eb; /* синий */
-        }
+  /* Карточки */
+  .card {
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+  }
+  .card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+  .balance {
+    background: #1e5fff;
+  }
+  .green {
+    background: #27ae60;
+  }
+  .red {
+    background: #e74c3c;
+  }
+  .purple {
+    background: #9b59b6;
+  }
+  .blue {
+    background: #3498db;
+  }
+  .orange {
+    background: #e67e22;
+  }
 
-        .green { background-color: #22c55e; }
-        .red { background-color: #ef4444; }
-        .purple { background-color: #8b5cf6; }
-        .blue { background-color: #3b82f6; }
-        .orange { background-color: #f97316; }
-
-        .card img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .balance {
-            font-size: 26px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .small-text {
-            font-size: 14px;
-            margin-top: 5px;
-            opacity: 0.9;
-        }
-
-        /* Нижнее меню */
-        .bottom-menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #111827;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #1f2937;
-        }
-
-        .bottom-menu div {
-            text-align: center;
-            font-size: 12px;
-            color: #ccc;
-        }
-    </style>
+  .balance img {
+    height: 25px;
+    vertical-align: middle;
+  }
+  .balance-value {
+    font-size: 26px;
+    margin: 5px 0;
+  }
+</style>
 </head>
 <body>
+<div class="stars"></div>
 
-    <div class="container">
-        <!-- Баланс -->
-        <div class="card balance-card">
-            <div>БАЛАНС</div>
-            <div class="balance">
-                0 <img src="https://em-content.zobj.net/thumbs/160/apple/354/coin_1fa99.png" alt="coin">
-            </div>
-            <div class="small-text">Пополнить / Вывести</div>
-        </div>
+<div class="container">
+  <!-- Баланс -->
+  <div class="card balance">
+    БАЛАНС
+    <div class="balance-value">0 <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/US_Quarter_Reverse.png"></div>
+  </div>
 
-        <!-- Две кнопки -->
-        <div class="grid">
-            <div class="card green">
-                <img src="https://em-content.zobj.net/thumbs/160/apple/354/briefcase_1f4bc.png" alt="icon">
-            </div>
-            <div class="card red">
-                <img src="https://em-content.zobj.net/thumbs/160/apple/354/briefcase_1f4bc.png" alt="icon">
-            </div>
-        </div>
+  <!-- Пополнить -->
+  <div class="card green">
+    💼 Пополнить
+  </div>
 
-        <!-- Магазин коинов -->
-        <div class="card purple">
-            <img src="https://em-content.zobj.net/thumbs/160/apple/354/calendar_1f4c5.png" alt="icon">
-            <div style="margin-top:10px; font-weight: bold;">Магазин коинов</div>
-        </div>
+  <!-- Вывести -->
+  <div class="card red">
+    💼 Вывести
+  </div>
 
-        <!-- Активация промокода -->
-        <div class="card blue">
-            <img src="https://em-content.zobj.net/thumbs/160/apple/354/wrapped-gift_1f381.png" alt="icon">
-            <div style="margin-top:10px; font-weight: bold;">Активация промокода</div>
-        </div>
+  <!-- Магазин коинов -->
+  <div class="card purple">
+    📅 Магазин коинов
+  </div>
 
-        <!-- Топ дня -->
-        <div class="card orange">
-            <img src="https://em-content.zobj.net/thumbs/160/apple/354/trophy_1f3c6.png" alt="icon">
-            <div style="margin-top:10px; font-weight: bold;">Топ дня</div>
-        </div>
-    </div>
+  <!-- Активация промокода -->
+  <div class="card blue">
+    🎁 Активация промокода
+  </div>
 
-    <!-- Нижнее меню -->
-    <div class="bottom-menu">
-        <div>👤<br>Профиль</div>
-        <div>🌐<br>Команды</div>
-        <div>🎮<br>Играть</div>
-        <div>📊<br>Рейтинг</div>
-        <div>☰<br>Ещё</div>
-    </div>
-
+  <!-- Топ дня -->
+  <div class="card orange">
+    🏆 Топ дня
+  </div>
+</div>
 </body>
 </html>
