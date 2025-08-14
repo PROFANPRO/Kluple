@@ -78,6 +78,12 @@ body {
     font-size: 18px;
     font-weight: bold;
     animation: fadeIn 0.8s ease-in-out forwards;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+
+.card:active {
+    transform: scale(1.05);
 }
 
 .green { background-color: #22c55e; }
@@ -152,8 +158,14 @@ body {
 
     <!-- Две карточки -->
     <div class="row">
-        <div class="card green"><div class="icon-circle">💼</div></div>
-        <div class="card red"><div class="icon-circle">💼</div></div>
+        <div class="card green">
+            <div class="icon-circle">💼</div>
+            <p>Пополнить</p>
+        </div>
+        <div class="card red">
+            <div class="icon-circle">💼</div>
+            <p>Вывести</p>
+        </div>
     </div>
 
     <!-- Магазин коинов -->
