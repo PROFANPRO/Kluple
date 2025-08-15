@@ -3,199 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WC Game</title>
-
+<title>Мини-приложение</title>
 <style>
-/* ===== Общие стили ===== */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f172a;
-    color: white;
-    text-align: center;
-    overflow-x: hidden;
-}
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0f1a24;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        color: white;
+    }
 
-/* ===== Фон со звёздами ===== */
-.stars {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
-    animation: twinkle 5s infinite linear;
-    z-index: 0;
-}
+    /* Баланс */
+    .balance-card {
+        background-color: #4a4f55;
+        padding: 15px;
+        border-radius: 12px;
+        margin: 15px;
+    }
+    .balance-label {
+        font-size: 14px;
+        color: #ccc;
+    }
+    .balance-value {
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    /* Символ TON вниз */
+    .ton-icon {
+        width: 18px;
+        height: 18px;
+    }
 
-@keyframes twinkle {
-    from { background-position: 0 0; }
-    to { background-position: -100px 100px; }
-}
+    /* Кнопки */
+    .buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+    .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 90px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .button:active {
+        transform: scale(0.95);
+    }
 
-/* ===== Контейнер ===== */
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+    /* Цвета кнопок */
+    .green { background-color: #2a2a2a; }
+    .red   { background-color: #2a2a2a; }
+    .purple { background-color: #7d3cff; }
+    .blue { background-color: #2a82ff; }
 
-/* ===== Баланс ===== */
-.balance-card {
-    background-color: #4b5563; /* Серый */
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    animation: fadeIn 0.8s ease-in-out forwards;
-}
-
-.balance-text {
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-.balance-value {
-    font-size: 28px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.balance-icon {
-    width: 28px;
-    height: 28px;
-}
-
-/* ===== Карточки ===== */
-.row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.card {
-    flex: 1;
-    border-radius: 15px;
-    padding: 15px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    animation: fadeIn 0.8s ease-in-out forwards;
-}
-
-.green { background-color: #22c55e; }
-.red { background-color: #ef4444; }
-.purple { background-color: #9333ea; }
-.light-blue { background-color: #3b82f6; }
-.orange { background-color: #f97316; }
-
-/* ===== Иконка в круге ===== */
-.icon-circle {
-    background-color: white;
-    color: black;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px auto;
-    font-size: 28px;
-    animation: bounce 1.5s infinite ease-in-out;
-}
-
-/* ===== Нижнее меню ===== */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #1e293b;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid #334155;
-    z-index: 2;
-    animation: fadeIn 0.8s ease-in-out forwards;
-}
-
-.nav-item {
-    text-align: center;
-    font-size: 12px;
-    color: #cbd5e1;
-}
-
-.nav-item:hover {
-    color: white;
-}
-
-/* ===== Анимации ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
+    /* Иконки */
+    .icon {
+        width: 32px;
+        height: 32px;
+    }
 </style>
 </head>
 <body>
 
-<!-- Фон со звёздами -->
-<div class="stars"></div>
-
-<div class="container">
-
     <!-- Баланс -->
     <div class="balance-card">
-        <p class="balance-text">БАЛАНС</p>
-        <p class="balance-value">
+        <div class="balance-label">БАЛАНС</div>
+        <div class="balance-value">
             0
-            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
-                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+            <svg class="ton-icon" viewBox="0 0 24 24" fill="none" stroke="#0098ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22L2 4h20L12 22z"/>
+                <path d="M12 22V10"/>
             </svg>
-        </p>
+        </div>
     </div>
 
-    <!-- Две карточки -->
-    <div class="row">
-        <div class="card green"><div class="icon-circle">⬇️</div></div>
-        <div class="card red"><div class="icon-circle">⬆️</div></div>
+    <!-- Кнопки -->
+    <div class="buttons-container">
+        <!-- Пополнить -->
+        <div class="button green">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#00c853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+        </div>
+
+        <!-- Вывести -->
+        <div class="button red">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#d50000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/>
+            </svg>
+        </div>
+
+        <!-- Магазин коинов -->
+        <div class="button purple">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="7" width="18" height="13" rx="2" ry="2"/>
+                <path d="M16 3H8v4h8V3z"/>
+            </svg>
+        </div>
+
+        <!-- Активация промокода -->
+        <div class="button blue">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M12 7V3M8 7V3m8 4V3"/>
+            </svg>
+        </div>
     </div>
-
-    <!-- Магазин коинов -->
-    <div class="card purple">
-        <div class="icon-circle">🏪</div>
-        <p>Магазин коинов</p>
-    </div>
-
-    <!-- Активация промокода -->
-    <div class="card light-blue">
-        <div class="icon-circle">🎁</div>
-        <p>Активация промокода</p>
-    </div>
-
-    <!-- Топ дня -->
-    <div class="card orange">
-        <div class="icon-circle">🏆</div>
-        <p>Топ дня</p>
-    </div>
-
-</div>
-
-<!-- Нижнее меню -->
-<div class="bottom-nav">
-    <div class="nav-item">👤<br>Профиль</div>
-    <div class="nav-item">🌐<br>Команды</div>
-    <div class="nav-item">🎮<br>Играть</div>
-    <div class="nav-item">📊<br>Рейтинг</div>
-    <div class="nav-item">☰<br>Ещё</div>
-</div>
 
 </body>
-</html
+</html>
