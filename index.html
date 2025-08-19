@@ -45,7 +45,7 @@ body {
 
 /* ===== Баланс ===== */
 .balance-card {
-    background-color: #4b5563; /* Серый */
+    background-color: #4b5563;
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 15px;
@@ -69,7 +69,6 @@ body {
     justify-content: center;
 }
 
-/* Знак (перевёрнутый и сдвинутый) */
 .balance-icon {
     width: 24px;
     height: 24px;
@@ -88,8 +87,8 @@ body {
 /* ===== Карточки ===== */
 .card {
     flex: 1;
-    max-width: 45%;      /* по 2 в ряд — каждая до 45% */
-    height: 110px;       /* одинаковая высота */
+    max-width: 45%;
+    height: 110px;
     border-radius: 15px;
     text-align: center;
     font-size: 16px;
@@ -102,7 +101,7 @@ body {
 }
 
 .container > .card {
-    width: 90%;          /* одиночные блоки почти на всю ширину */
+    width: 90%;
     max-width: 400px;
 }
 
@@ -127,35 +126,44 @@ body {
     animation: bounce 1.5s infinite ease-in-out;
 }
 
-/* ===== Нижнее меню ===== */
+/* ===== Нижнее меню с закругленными кнопками ===== */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
+    bottom: 15px;
     width: 100%;
-    background-color: #1e293b;
     display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid #334155;
+    justify-content: center;
+    gap: 15px;
     z-index: 2;
-    animation: fadeIn 0.8s ease-in-out forwards;
 }
 
 .nav-item {
+    background-color: #1e293b;
+    border-radius: 15px;
+    padding: 10px 15px;
     text-align: center;
     font-size: 14px;
     color: #cbd5e1;
-    flex: 1;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 80px;
 }
 
 .nav-item span {
     display: block;
-    font-size: 26px; /* увеличенные эмодзи */
+    font-size: 26px;
     margin-bottom: 4px;
 }
 
 .nav-item:hover {
+    background-color: #334155;
     color: white;
+    transform: translateY(-3px);
 }
 
 /* ===== Анимации ===== */
