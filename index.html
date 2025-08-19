@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WC Game</title>
 <style>
+/* ===== Общие стили ===== */
 body {
     margin: 0;
     padding: 0;
@@ -15,30 +16,45 @@ body {
     overflow-x: hidden;
 }
 
-/* Фон со звёздами */
+/* ===== Фон со звёздами ===== */
 .stars {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
     animation: twinkle 5s infinite linear;
-    z-index: 0;
+    z-index: -1;
 }
-@keyframes twinkle { from {background-position:0 0;} to {background-position:-100px 100px;} }
 
-/* Общие контейнеры */
+@keyframes twinkle {
+    from { background-position: 0 0; }
+    to { background-position: -100px 100px; }
+}
+
+/* ===== Контейнер ===== */
 .container {
-    display: none; /* скрыты по умолчанию */
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     padding: 15px;
 }
 
-.active { display: flex; } /* видимое окно */
+/* ===== Заголовки страниц ===== */
+.header {
+    width: 100%;
+    background-color: #000;
+    padding: 15px 0;
+    font-weight: bold;
+    font-size: 20px;
+}
 
-/* Баланс */
+/* ===== Баланс ===== */
 .balance-card {
+    display: flex;
+    flex-direction: column;
     background-color: #4b5563;
     border-radius: 15px;
     padding: 15px;
@@ -47,58 +63,86 @@ body {
     max-width: 400px;
 }
 
-.balance-text { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
-.balance-value { font-size: 32px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; }
-
-/* Ряды карточек */
-.row { display: flex; gap: 15px; justify-content: center; width: 100%; }
-.card { flex: 1; max-width: 45%; height: 110px; border-radius: 15px; text-align:center; font-size:16px; font-weight:bold; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-.container > .card { width:90%; max-width:400px; }
-
-/* Цвета карточек */
-.green { background-color:#22c55e; }
-.red { background-color:#ef4444; }
-.orange { background-color:#f97316; }
-.light-blue { background-color:#3b82f6; }
-
-/* Иконка в круге */
-.icon-circle { background-color:white; color:black; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:10px auto; font-size:28px; cursor:pointer; }
-
-/* Игры — сетка 2x3 */
-.games-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    max-width: 400px;
-    margin: 30px auto;
+.balance-text {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
 }
-.icon-card {
-    background-color: #3b82f6;
+
+.balance-value {
+    font-size: 32px;
+    font-weight: bold;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.balance-icon {
+    width: 24px;
+    height: 24px;
+    transform: rotate(180deg);
+    margin-left: 6px;
+}
+
+/* ===== Ряды ===== */
+.row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ===== Карточки ===== */
+.card {
+    flex: 1;
+    max-width: 45%;
+    height: 110px;
     border-radius: 15px;
-    height: 120px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
-    font-weight: bold;
-    transition: transform 0.2s;
 }
-.icon-card:hover { transform: scale(1.1); }
 
-/* Верхняя полоска */
-.header { background-color: #000; padding: 15px 0; font-size: 20px; font-weight: bold; width: 100%; }
+.container > .card {
+    width: 90%;
+    max-width: 400px;
+}
 
-/* Нижнее меню */
+/* Цвета карточек */
+.green { background-color: #22c55e; }
+.red { background-color: #ef4444; }
+.orange { background-color: #f97316; }
+.light-blue { background-color: #3b82f6; }
+
+/* ===== Иконка в круге ===== */
+.icon-circle {
+    background-color: white;
+    color: black;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    font-size: 28px;
+}
+
+/* ===== Нижнее меню ===== */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background-color: #000;
+    background-color: #1e293b;
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
-    border-top: 1px solid #334155;
+    border-top: 1px solid #000;
     z-index: 2;
 }
 
@@ -107,40 +151,100 @@ body {
     font-size: 14px;
     color: #cbd5e1;
     flex: 1;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-.nav-item span { display:block; font-size:26px; margin-bottom:4px; }
-.nav-item.active { color:white; }
 
-/* Рейтинг — кнопки Топ недели/Топ месяца */
-.top-buttons { display:flex; gap:15px; justify-content:center; margin:20px 0; }
+.nav-item span {
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.nav-item.active { background-color: #3b82f6; color: white; border-radius: 5px; margin: 0 5px; }
+
+/* ===== Игры ===== */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.games-grid .card {
+    width: 100%;
+}
+
+/* ===== Рейтинг ===== */
+.top-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
 .top-buttons button {
     flex: 1;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    background-color:#000;
-    color:#fff;
-    font-weight:bold;
-    cursor:pointer;
-    transition: background 0.2s;
+    max-width: 150px;
+    background-color: #000;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    position: relative;
+    cursor: pointer;
 }
-.top-buttons button:hover { background-color:#222; }
 
-/* Списки рейтинга */
-.rank-list { text-align:left; max-width:300px; margin:0 auto; display:none; }
-.rank-list li { margin:5px 0; }
+.top-buttons button .active-indicator-top {
+    width: 8px;
+    height: 8px;
+    background-color: #3b82f6;
+    margin: 4px auto 0 auto;
+    border-radius: 2px;
+    display: none;
+}
+
+.top-buttons button.active .active-indicator-top { display: block; }
+
+.rank-list {
+    display: none;
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.rank-list li {
+    padding: 5px 0;
+}
+
+/* ===== Анимации ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 </style>
 </head>
 <body>
 
 <div class="stars"></div>
 
-<!-- Главное окно -->
-<div id="main" class="container active">
+<!-- Главная страница -->
+<div id="home" class="container" style="display:flex;">
     <div class="balance-card">
         <p class="balance-text">БАЛАНС</p>
-        <p class="balance-value">0</p>
+        <p class="balance-value">
+            0
+            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </p>
     </div>
 
     <div class="row">
@@ -159,25 +263,25 @@ body {
     </div>
 </div>
 
-<!-- Окно игр -->
+<!-- Страница игры -->
 <div id="games" class="container">
     <div class="header">Игры</div>
     <div class="games-grid">
-        <div class="icon-card">🎲</div>
-        <div class="icon-card">⚽</div>
-        <div class="icon-card">🧩</div>
-        <div class="icon-card">🎯</div>
-        <div class="icon-card">🏀</div>
-        <div class="icon-card">🎮</div>
+        <div class="card light-blue"><div class="icon-circle">🎮</div></div>
+        <div class="card light-blue"><div class="icon-circle">🎯</div></div>
+        <div class="card light-blue"><div class="icon-circle">🧩</div></div>
+        <div class="card light-blue"><div class="icon-circle">🕹️</div></div>
+        <div class="card light-blue"><div class="icon-circle">🎲</div></div>
+        <div class="card light-blue"><div class="icon-circle">⚽</div></div>
     </div>
 </div>
 
-<!-- Окно рейтинг -->
+<!-- Страница рейтинг -->
 <div id="rating" class="container">
     <div class="header">Рейтинг</div>
     <div class="top-buttons">
-        <button onclick="showRanking('week')">Топ недели</button>
-        <button onclick="showRanking('month')">Топ месяца</button>
+        <button onclick="showRanking('week', this)">Топ недели<div class="active-indicator-top"></div></button>
+        <button onclick="showRanking('month', this)">Топ месяца<div class="active-indicator-top"></div></button>
     </div>
     <ul id="week" class="rank-list">
         <li>1. Игрок1</li>
@@ -207,32 +311,30 @@ body {
 
 <!-- Нижнее меню -->
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="showWindow('main', this)"><span>📂</span>Меню</div>
-    <div class="nav-item" onclick="showWindow('games', this)"><span>🎮</span>Играть</div>
-    <div class="nav-item" onclick="showWindow('rating', this)"><span>📊</span>Рейтинг</div>
+    <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>
+    <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>
+    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Рейтинг</div>
 </div>
 
 <script>
-function showWindow(id, element){
-    // Скрываем все окна
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    // Показываем нужное
-    document.getElementById(id).classList.add('active');
+function showPage(pageId, btn){
+    document.querySelectorAll('.container').forEach(c => c.style.display='none');
+    document.getElementById(pageId).style.display='flex';
 
-    // Снимаем активность с всех кнопок
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    element.classList.add('active');
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-    // Если это рейтинг — скрываем все списки
-    if(id === 'rating'){
-        document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
-    }
+    // Скрыть все рейтинги при смене страницы
+    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
 }
 
-// Показ списка рейтинга
-function showRanking(period){
+// Показ списка рейтинга + подсветка кнопки
+function showRanking(period, btn){
     document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
     document.getElementById(period).style.display='block';
+
+    document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 }
 </script>
 
