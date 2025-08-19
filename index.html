@@ -126,13 +126,16 @@ body {
     animation: bounce 1.5s infinite ease-in-out;
 }
 
-/* ===== Нижнее меню с закругленными кнопками ===== */
+/* ===== Нижнее меню с полосой и кнопками ===== */
 .bottom-nav {
     position: fixed;
-    bottom: 15px;
+    bottom: 0;
     width: 100%;
+    background-color: #000000; /* Чёрная полоса */
+    border-top: 1px solid #111;
     display: flex;
     justify-content: center;
+    padding: 10px 0;
     gap: 15px;
     z-index: 2;
 }
