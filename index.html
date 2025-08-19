@@ -57,20 +57,24 @@ body {
 .balance-text {
     font-size: 14px;
     opacity: 0.9;
+    margin-bottom: 8px;
 }
 
 .balance-value {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
 }
 
+/* Знак (перевёрнутый и сдвинутый) */
 .balance-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+    transform: rotate(180deg);
+    margin-left: 6px;
 }
 
 /* ===== Ряды ===== */
@@ -139,8 +143,15 @@ body {
 
 .nav-item {
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
     color: #cbd5e1;
+    flex: 1;
+}
+
+.nav-item span {
+    display: block;
+    font-size: 26px; /* увеличенные эмодзи */
+    margin-bottom: 4px;
 }
 
 .nav-item:hover {
@@ -184,10 +195,10 @@ body {
         <div class="card red"><div class="icon-circle">⬆️</div></div>
     </div>
 
-    <!-- Топ лидеров (бывший фиолетовый блок) -->
+    <!-- Рейтинг -->
     <div class="card orange">
         <div class="icon-circle">🏆</div>
-        <p>Топ лидеров</p>
+        <p>Рейтинг</p>
     </div>
 
     <!-- Активация промокода -->
@@ -200,11 +211,9 @@ body {
 
 <!-- Нижнее меню -->
 <div class="bottom-nav">
-    <div class="nav-item">👤<br>Профиль</div>
-    <div class="nav-item">🌐<br>Команды</div>
-    <div class="nav-item">🎮<br>Играть</div>
-    <div class="nav-item">📊<br>Рейтинг</div>
-    <div class="nav-item">☰<br>Ещё</div>
+    <div class="nav-item"><span>📂</span>Меню</div>
+    <div class="nav-item"><span>🎮</span>Играть</div>
+    <div class="nav-item"><span>📊</span>Рейтинг</div>
 </div>
 
 </body>
