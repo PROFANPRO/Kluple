@@ -51,12 +51,16 @@ body {
     min-height: 100vh;
 }
 
-.container.active {
+    .container.active {
+    display: flex; /* вернём flex для выравнивания */
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* чтобы не прилипали */
     opacity: 1;
     visibility: visible;
-    position: relative;
-}
-
+    position: relative; /* оставим относительное, а не абсолют */
+    }
+    
 /* ===== Заголовки страниц ===== */
 .header {
     width: 100%;
