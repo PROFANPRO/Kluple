@@ -51,40 +51,6 @@ body {
     font-size: 20px;
 }
 
-/* ===== Баланс ===== */
-.balance-card {
-    display: flex;
-    flex-direction: column;
-    background-color: #4b5563;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    width: 90%;
-    max-width: 400px;
-}
-
-.balance-text {
-    font-size: 14px;
-    opacity: 0.9;
-    margin-bottom: 8px;
-}
-
-.balance-value {
-    font-size: 32px;
-    font-weight: bold;
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.balance-icon {
-    width: 24px;
-    height: 24px;
-    transform: rotate(180deg);
-    margin-left: 6px;
-}
-
 /* ===== Ряды ===== */
 .row {
     display: flex;
@@ -175,18 +141,18 @@ body {
 /* ===== Игры ===== */
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
+    grid-template-columns: 1fr 1fr; /* два блока в ряд */
     width: 100%;
-    margin: 0;
 }
 
 .games-grid .card {
     height: 120px;
     border-radius: 0;
     width: 100%;
+    margin: 0;
 }
 
+/* Закругления только по углам */
 .games-grid .card:nth-child(1) { border-top-left-radius: 15px; }
 .games-grid .card:nth-child(2) { border-top-right-radius: 15px; }
 .games-grid .card:nth-child(5) { border-bottom-left-radius: 15px; }
@@ -249,6 +215,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.7);
+    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -261,8 +228,8 @@ body {
     max-width: 300px;
     text-align: center;
     color: white;
-    position: relative;
     animation: fadeIn 0.3s ease;
+    position: relative;
 }
 
 .modal-content h2 {
@@ -310,17 +277,6 @@ body {
 
 <!-- Главная страница -->
 <div id="home" class="container" style="display:flex;">
-    <div class="balance-card">
-        <p class="balance-text">БАЛАНС</p>
-        <p class="balance-value">
-            0
-            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
-                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </p>
-    </div>
-
     <div class="row">
         <div class="card green"><div class="icon-circle">⬇️</div></div>
         <div class="card red"><div class="icon-circle">⬆️</div></div>
