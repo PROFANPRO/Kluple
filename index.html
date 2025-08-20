@@ -220,17 +220,19 @@ body {
 .rank-list {
     display: none;
     list-style: none;
-    padding: 10px;
-    text-align: left;
-    max-width: 300px;
-    margin: 0 auto;
-    background-color: #000;
-    border-radius: 10px;
+    padding: 0;
+    margin: 0;
+    width: 100%; /* растягиваем на весь экран */
+    max-width: none;
+    background-color: transparent;
 }
 
 .rank-list li {
-    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between; /* имя слева, сумма справа */
+    padding: 12px 20px;
     border-bottom: 1px solid #1e293b;
+    font-size: 16px;
 }
 
 .rank-list li:last-child {
