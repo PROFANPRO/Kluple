@@ -1,119 +1,131 @@
-<!DOCTYPE html>  <html lang="ru">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>WC Game</title>  
-<style>  
-/* ===== Общие стили ===== */  
-body {  
-    margin: 0;  
-    padding: 0;  
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
-    background-color: #0f172a;  
-    color: white;  
-    text-align: center;  
-    overflow-x: hidden;  
-}  /* ===== Фон со звёздами ===== */
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC Game</title>
+<style>
+/* ===== Общие стили ===== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+/* ===== Фон со звёздами ===== */
 .stars {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
-animation: twinkle 5s infinite linear;
-z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+    animation: twinkle 5s infinite linear;
+    z-index: -1;
 }
 
 @keyframes twinkle {
-from { background-position: 0 0; }
-to { background-position: -100px 100px; }
+    from { background-position: 0 0; }
+    to { background-position: -100px 100px; }
 }
 
 /* ===== Контейнер ===== */
 .container {
-display: none;
-flex-direction: column;
-align-items: center;
-gap: 15px;
-padding: 15px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.container.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* ===== Заголовки страниц ===== */
 .header {
-width: 100%;
-background-color: #000;
-padding: 15px 0;
-font-weight: bold;
-font-size: 20px;
+    width: 100%;
+    background-color: #000;
+    padding: 15px 0;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 /* ===== Баланс ===== */
 .balance-card {
-display: flex;
-flex-direction: column;
-background-color: #4b5563;
-border-radius: 15px;
-padding: 15px;
-margin-bottom: 15px;
-width: 90%;
-max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    background-color: #4b5563;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: 90%;
+    max-width: 400px;
 }
 
 .balance-text {
-font-size: 14px;
-opacity: 0.9;
-margin-bottom: 8px;
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
 }
 
 .balance-value {
-font-size: 32px;
-font-weight: bold;
-position: relative;
-display: inline-flex;
-align-items: center;
-justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .balance-icon {
-width: 24px;
-height: 24px;
-transform: rotate(180deg);
-margin-left: 6px;
+    width: 24px;
+    height: 24px;
+    transform: rotate(180deg);
+    margin-left: 6px;
 }
 
 /* ===== Ряды ===== */
 .row {
-display: flex;
-gap: 15px;
-justify-content: center;
-width: 100%;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
 }
 
 /* ===== Карточки ===== */
 .card {
-flex: 1;
-max-width: 45%;
-height: 110px;
-border-radius: 15px;
-text-align: center;
-font-size: 16px;
-font-weight: bold;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-transition: transform 0.15s ease;
-cursor: pointer;
+    flex: 1;
+    max-width: 45%;
+    height: 110px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+    cursor: pointer;
 }
 
 .card:active {
-transform: scale(0.95);
+    transform: scale(0.95);
 }
 
 .container > .card {
-width: 90%;
-max-width: 400px;
+    width: 90%;
+    max-width: 400px;
 }
 
 /* Цвета карточек */
@@ -124,313 +136,323 @@ max-width: 400px;
 
 /* ===== Иконка в круге ===== */
 .icon-circle {
-background-color: white;
-color: black;
-width: 60px;
-height: 60px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-margin: 10px auto;
-font-size: 28px;
+    background-color: white;
+    color: black;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    font-size: 28px;
 }
 
 /* ===== Нижнее меню ===== */
 .bottom-nav {
-position: fixed;
-bottom: 0;
-width: 100%;
-background-color: #1e293b;
-display: flex;
-justify-content: space-around;
-padding: 10px 0;
-border-top: 1px solid #000;
-z-index: 2;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #1e293b;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #000;
+    z-index: 2;
 }
 
 .nav-item {
-text-align: center;
-font-size: 14px;
-color: #cbd5e1;
-flex: 1;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    color: #cbd5e1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-item span {
-font-size: 26px;
-margin-bottom: 4px;
+    font-size: 26px;
+    margin-bottom: 4px;
 }
 
 .nav-item.active { background-color: #3b82f6; color: white; border-radius: 5px; margin: 0 5px; }
 
 /* ===== Игры ===== */
 .games-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 15px;
 }
 
 .games-grid .card {
-height: 120px;
-border-radius: 0;
-width: 100%;
-margin: 0;
+    height: 140px;
+    border-radius: 15px;
+    width: 100%;
 }
-
-/* Закругления */
-.games-grid .card:nth-child(1) { border-top-left-radius: 15px; }
-.games-grid .card:nth-child(2) { border-top-right-radius: 15px; }
-.games-grid .card:nth-child(5) { border-bottom-left-radius: 15px; }
-.games-grid .card:nth-child(6) { border-bottom-right-radius: 15px; }
 
 /* ===== Топ ===== */
 .top-buttons {
-display: flex;
-justify-content: center;
-gap: 10px;
-margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
 }
 
 .top-buttons button {
-flex: 1;
-max-width: 120px;
-background-color: #1e293b;
-color: #cbd5e1;
-border: none;
-padding: 10px;
-border-radius: 5px;
-font-weight: bold;
-cursor: pointer;
-transition: 0.2s;
+    flex: 1;
+    max-width: 120px;
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 .top-buttons button.active {
-background-color: #3b82f6;
-color: white;
+    background-color: #3b82f6;
+    color: white;
 }
 
-/* ===== Таблица топа ===== /
+/* ===== Таблица топа ===== */
 .rank-list {
-display: none;
-list-style: none;
-padding: 0;
-margin: 0 10px;             / небольшой отступ от краёв экрана /
-width: calc(100% - 20px);   / чтобы учесть margin /
-background-color: #000;      / тёмный фон /
-border-radius: 12px;     / закруглённые углы всей таблицы /
-overflow: hidden;            / чтобы элементы не выступали за края /
-box-shadow: 0 0 10px rgba(0,0,0,0.5); / мягкая тень */
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0 10px;
+    width: calc(100% - 20px);
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .rank-list li {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 12px 20px;
-border-bottom: 1px solid #1e293b;
-font-size: 16px;
-color: white;
-background-color: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #1e293b;
+    font-size: 16px;
+    color: white;
+    background-color: #000;
 }
 
-/* Верхний элемент закруглён сверху */
-.rank-list li:first-child {
-border-top-left-radius: 12px;
-border-top-right-radius: 12px;
-}
-
-/* Нижний элемент закруглён снизу и без линии */
 .rank-list li:last-child {
-border-bottom: none;
-border-bottom-left-radius: 12px;
-border-bottom-right-radius: 12px;
+    border-bottom: none;
 }
 
 /* ===== Модалка ===== */
 .modal {
-display: none;
-position: fixed;
-z-index: 10;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0,0,0,0.7);
-align-items: center;
-justify-content: center;
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-background: #1e293b;
-padding: 20px;
-border-radius: 12px;
-width: 90%;
-max-width: 300px;
-text-align: center;
-color: white;
-animation: fadeIn 0.3s ease;
-position: relative;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 300px;
+    text-align: center;
+    color: white;
+    animation: fadeIn 0.3s ease;
+    position: relative;
 }
 
 .modal-content h2 {
-margin-bottom: 15px;
-font-size: 18px;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
 .modal-content input {
-width: 100%;
-padding: 10px;
-border-radius: 8px;
-border: none;
-margin-bottom: 15px;
-text-align: center;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .modal-content button {
-background: #3b82f6;
-color: white;
-border: none;
-padding: 10px 20px;
-border-radius: 8px;
-cursor: pointer;
-font-weight: bold;
-transition: 0.2s;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
 }
 
 .modal-content button:hover {
-background: #2563eb;
+    background: #2563eb;
 }
 
 .close {
-position: absolute;
-top: 10px;
-right: 15px;
-font-size: 24px;
-cursor: pointer;
-color: white;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
 }
 </style>
+</head>
+<body>
 
-</head>  
-<body>  <div class="stars"></div>  <!-- Главная страница -->  <div id="home" class="container" style="display:flex;">  
-    <div class="balance-card">  
-        <p class="balance-text">БАЛАНС</p>  
-        <p class="balance-value">  
-            0  
-            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">  
-                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>  
-                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>  
-            </svg>  
-        </p>  
-    </div>  <div class="row">  
-    <div class="card green"><div class="icon-circle">⬇️</div></div>  
-    <div class="card red"><div class="icon-circle">⬆️</div></div>  
-</div>  
+<div class="stars"></div>
 
-<div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">  
-    <div class="icon-circle">🏆</div>  
-    <p>Топ</p>  
-</div>  
+<!-- Главная страница -->
+<div id="home" class="container active">
+    <div class="balance-card">
+        <p class="balance-text">БАЛАНС</p>
+        <p class="balance-value">
+            0
+            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </p>
+    </div>
 
-<div class="card light-blue" onclick="openPromoModal()">  
-    <div class="icon-circle">🎁</div>  
-    <p>Активация промокода</p>  
+    <div class="row">
+        <div class="card green"><div class="icon-circle">⬇️</div></div>
+        <div class="card red"><div class="icon-circle">⬆️</div></div>
+    </div>
+
+    <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+        <div class="icon-circle">🏆</div>
+        <p>Топ</p>
+    </div>
+
+    <div class="card light-blue" onclick="openPromoModal()">
+        <div class="icon-circle">🎁</div>
+        <p>Активация промокода</p>
+    </div>
 </div>
 
-</div>  <!-- Страница игры -->  <div id="games" class="container">  
-    <div class="header">Игры</div>  
-    <div class="games-grid">  
-        <div class="card light-blue"><div class="icon-circle">🎮</div></div>  
-        <div class="card light-blue"><div class="icon-circle">🎯</div></div>  
-        <div class="card light-blue"><div class="icon-circle">🧩</div></div>  
-        <div class="card light-blue"><div class="icon-circle">🕹️</div></div>  
-        <div class="card light-blue"><div class="icon-circle">🎲</div></div>  
-        <div class="card light-blue"><div class="icon-circle">⚽</div></div>  
-    </div>  
-</div>  <!-- Страница топ -->  <div id="rating" class="container">  
-    <div class="header">Топ</div>  
-    <div class="top-buttons">  
-        <button onclick="showRanking('week', this)" class="active">Неделя</button>  
-        <button onclick="showRanking('month', this)">Месяц</button>  
-    </div>  
-<ul id="week" class="rank-list" style="display:block;">  
-    <li><span>1. Игрок1</span><span>0</span></li>  
-    <li><span>2. Игрок2</span><span>0</span></li>  
-    <li><span>3. Игрок3</span><span>0</span></li>  
-    <li><span>4. Игрок4</span><span>0</span></li>  
-    <li><span>5. Игрок5</span><span>0</span></li>  
-    <li><span>6. Игрок6</span><span>0</span></li>  
-    <li><span>7. Игрок7</span><span>0</span></li>  
-    <li><span>8. Игрок8</span><span>0</span></li>  
-    <li><span>9. Игрок9</span><span>0</span></li>  
-    <li><span>10. Игрок10</span><span>0</span></li>  
-</ul>  <ul id="month" class="rank-list">  
-    <li><span>1. ИгрокA</span><span>0</span></li>  
-    <li><span>2. ИгрокB</span><span>0</span></li>  
-    <li><span>3. ИгрокC</span><span>0</span></li>  
-    <li><span>4. ИгрокD</span><span>0</span></li>  
-    <li><span>5. ИгрокE</span><span>0</span></li>  
-    <li><span>6. ИгрокF</span><span>0</span></li>  
-    <li><span>7. ИгрокG</span><span>0</span></li>  
-    <li><span>8. ИгрокH</span><span>0</span></li>  
-    <li><span>9. ИгрокI</span><span>0</span></li>  
-    <li><span>10. ИгрокJ</span><span>0</span></li>  
-</ul>  
-</div>  <!-- Нижнее меню -->  <div class="bottom-nav">  
-    <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>  
-    <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>  
-    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Топ</div>  
-</div>  <!-- Модальное окно промокода -->  <div id="promoModal" class="modal" onclick="if(event.target===this) closePromoModal()">  
-  <div class="modal-content">  
-    <span class="close" onclick="closePromoModal()">&times;</span>  
-    <h2>Введите промокод</h2>  
-    <input type="text" id="promoInput" placeholder="Ваш промокод">  
-    <button onclick="activatePromo()">Активировать</button>  
-  </div>  
-</div>  <script>  
-function showPage(pageId, btn){  
-    document.querySelectorAll('.container').forEach(c => c.style.display='none');  
-    document.getElementById(pageId).style.display='flex';  
-  
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));  
-    btn.classList.add('active');  
-  
-    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');  
-  
-    if(pageId === 'rating'){  
-        document.getElementById('week').style.display='block';  
-        document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));  
-        document.querySelector('.top-buttons button').classList.add('active');  
-    }  
-}  
-  
-function showRanking(period, btn){  
-    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');  
-    document.getElementById(period).style.display='block';  
-    document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));  
-    btn.classList.add('active');  
-}  
-  
-function openPromoModal() {  
-    document.getElementById("promoModal").style.display = "flex";  
-}  
-  
-function closePromoModal() {  
-    document.getElementById("promoModal").style.display = "none";  
-}  
-  
-function activatePromo() {  
-    const code = document.getElementById("promoInput").value;  
-    if(code.trim() === "") {  
-        alert("Введите промокод!");  
-    } else {  
-        alert("Промокод '" + code + "' активирован!");  
-        closePromoModal();  
-    }  
-}  
-</script>  </body>  
+<!-- Страница игры -->
+<div id="games" class="container">
+    <div class="header">Игры</div>
+    <div class="games-grid">
+        <div class="card light-blue"><div class="icon-circle">🎮</div></div>
+        <div class="card light-blue"><div class="icon-circle">🎯</div></div>
+        <div class="card light-blue"><div class="icon-circle">🧩</div></div>
+        <div class="card light-blue"><div class="icon-circle">🕹️</div></div>
+        <div class="card light-blue"><div class="icon-circle">🎲</div></div>
+        <div class="card light-blue"><div class="icon-circle">⚽</div></div>
+    </div>
+</div>
+
+<!-- Страница топ -->
+<div id="rating" class="container">
+    <div class="header">Топ</div>
+    <div class="top-buttons">
+        <button onclick="showRanking('week', this)" class="active">Неделя</button>
+        <button onclick="showRanking('month', this)">Месяц</button>
+    </div>
+    <ul id="week" class="rank-list" style="display:block;">
+        <li><span>1. Игрок1</span><span>0</span></li>
+        <li><span>2. Игрок2</span><span>0</span></li>
+        <li><span>3. Игрок3</span><span>0</span></li>
+        <li><span>4. Игрок4</span><span>0</span></li>
+        <li><span>5. Игрок5</span><span>0</span></li>
+        <li><span>6. Игрок6</span><span>0</span></li>
+        <li><span>7. Игрок7</span><span>0</span></li>
+        <li><span>8. Игрок8</span><span>0</span></li>
+        <li><span>9. Игрок9</span><span>0</span></li>
+        <li><span>10. Игрок10</span><span>0</span></li>
+    </ul>
+    <ul id="month" class="rank-list">
+        <li><span>1. ИгрокA</span><span>0</span></li>
+        <li><span>2. ИгрокB</span><span>0</span></li>
+        <li><span>3. ИгрокC</span><span>0</span></li>
+        <li><span>4. ИгрокD</span><span>0</span></li>
+        <li><span>5. ИгрокE</span><span>0</span></li>
+        <li><span>6. ИгрокF</span><span>0</span></li>
+        <li><span>7. ИгрокG</span><span>0</span></li>
+        <li><span>8. ИгрокH</span><span>0</span></li>
+        <li><span>9. ИгрокI</span><span>0</span></li>
+        <li><span>10. ИгрокJ</span><span>0</span></li>
+    </ul>
+</div>
+
+<!-- Нижнее меню -->
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>
+    <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>
+    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Топ</div>
+</div>
+
+<!-- Модальное окно промокода -->
+<div id="promoModal" class="modal" onclick="if(event.target===this) closePromoModal()">
+  <div class="modal-content">
+    <span class="close" onclick="closePromoModal()">&times;</span>
+    <h2>Введите промокод</h2>
+    <input type="text" id="promoInput" placeholder="Ваш промокод">
+    <button onclick="activatePromo()">Активировать</button>
+  </div>
+</div>
+
+<script>
+function showPage(pageId, btn){
+    document.querySelectorAll('.container').forEach(c => {
+        c.classList.remove('active');
+        setTimeout(()=>c.style.display='none',300);
+    });
+    const page = document.getElementById(pageId);
+    page.style.display = 'flex';
+    setTimeout(()=>page.classList.add('active'),10);
+
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if(pageId === 'rating'){
+        document.getElementById('week').style.display='block';
+        document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
+        document.querySelector('.top-buttons button').classList.add('active');
+    }
+}
+
+function showRanking(period, btn){
+    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
+    document.getElementById(period).style.display='block';
+    document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function openPromoModal() {
+    document.getElementById("promoModal").style.display = "flex";
+}
+
+function closePromoModal() {
+    document.getElementById("promoModal").style.display = "none";
+}
+
+function activatePromo() {
+    const code = document.getElementById("promoInput").value;
+    if(code.trim() === "") {
+        alert("Введите промокод!");
+    } else {
+        alert("Промокод '" + code + "' активирован!");
+        closePromoModal();
+    }
+}
+</script>
+
+</body>
 </html>
