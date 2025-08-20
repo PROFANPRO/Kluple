@@ -34,20 +34,27 @@ body {
 }
 
 /* ===== Контейнер ===== */
+/* Анимация переключения */
 .container {
-    display: none;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     padding: 15px;
 
     opacity: 0;
-    transition: opacity 0.4s ease;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
 }
 
-.container.show {
-    display: flex;
+.container.active {
     opacity: 1;
+    visibility: visible;
+    position: relative;
 }
 
 /* ===== Заголовки страниц ===== */
@@ -411,25 +418,25 @@ body {
 
 <script>
 function showPage(pageId, btn){
-    document.querySelectorAll('.container').forEach(c => {
-        c.classList.remove('show');
-        setTimeout(() => c.style.display = 'none', 400);
-    });
+    // убрать active со всех контейнеров
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
 
+    // добавить active к нужному
     const page = document.getElementById(pageId);
-    page.style.display = 'flex';
-    setTimeout(() => page.classList.add('show'), 10);
+    page.classList.add('active');
 
+    // нижнее меню
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
+    // логика для рейтинга
     if(pageId === 'rating'){
         document.getElementById('week').style.display='block';
+        document.getElementById('month').style.display='none';
         document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
         document.querySelector('.top-buttons button').classList.add('active');
     }
 }
-
 function showRanking(period, btn){
     document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
     document.getElementById(period).style.display='block';
