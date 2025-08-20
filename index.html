@@ -221,26 +221,35 @@ body {
     display: none;
     list-style: none;
     padding: 0;
-    margin: 0;
-    width: 100%;           /* растягиваем на всю ширину */
-    max-width: none;       /* снимаем ограничение ширины */
-    background-color: #000; /* чёрный фон для всей таблицы */
-    border-radius: 0;
+    margin: 0 10px;             /* небольшой отступ от краёв экрана */
+    width: calc(100% - 20px);   /* чтобы учесть margin */
+    background-color: #000;      /* тёмный фон */
+    overflow: hidden;            /* чтобы элементы не выступали за края */
+    box-shadow: 0 0 10px rgba(0,0,0,0.5); /* мягкая тень */
 }
 
 .rank-list li {
-    display: flex;           /* чтобы имя и сумма были в одной строке */
-    justify-content: space-between; /* имя слева, сумма справа */
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 12px 20px;
-    border-bottom: 1px solid #1e293b; /* разделитель */
+    border-bottom: 1px solid #1e293b;
     font-size: 16px;
-    color: white;            /* белый текст */
-    background-color: #000;  /* тёмный фон каждой строки */
+    color: white;
+    background-color: #000;
 }
 
+/* Верхний элемент закруглён сверху */
+.rank-list li:first-child {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Нижний элемент закруглён снизу и без линии */
 .rank-list li:last-child {
-    border-bottom: none;     /* убрать нижнюю линию у последнего */
+    border-bottom: none;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 /* ===== Модалка ===== */
