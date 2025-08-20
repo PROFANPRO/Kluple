@@ -35,20 +35,22 @@ body {
 
 /* ===== Контейнер ===== */
 .container {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
+    position: absolute; /* страницы одна над другой */
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 60px; /* место под меню */
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
 }
 
 .container.active {
-    display: flex;
     opacity: 1;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 /* ===== Заголовки страниц ===== */
@@ -410,13 +412,8 @@ body {
 
 <script>
 function showPage(pageId, btn){
-    document.querySelectorAll('.container').forEach(c => {
-        c.classList.remove('active');
-        setTimeout(()=>c.style.display='none',300);
-    });
-    const page = document.getElementById(pageId);
-    page.style.display = 'flex';
-    setTimeout(()=>page.classList.add('active'),10);
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
 
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
