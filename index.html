@@ -106,14 +106,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    /* Анимация нажатия */
-    transition: transform 0.15s ease;
-    cursor: pointer;
-}
-
-.card:active {
-    transform: scale(0.95);
 }
 
 .container > .card {
@@ -175,16 +167,16 @@ body {
 /* ===== Игры ===== */
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 игры в ряд */
-    gap: 15px;
-    width: 95%;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
     margin: 0 auto;
 }
 
 .games-grid .card {
-    height: 100px;   /* прямоугольные */
-    border-radius: 15px;
     width: 100%;
+    height: 120px;
+    border-radius: 15px;
 }
 
 /* ===== Рейтинг ===== */
@@ -204,32 +196,38 @@ body {
     padding: 10px;
     border-radius: 8px;
     font-weight: bold;
-    position: relative;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.top-buttons button .active-indicator-top {
-    width: 8px;
-    height: 8px;
+.top-buttons button.active {
     background-color: #3b82f6;
-    margin: 4px auto 0 auto;
-    border-radius: 2px;
-    display: none;
+    color: white;
 }
 
-.top-buttons button.active .active-indicator-top { display: block; }
-
+/* ===== Таблица рейтинга ===== */
 .rank-list {
     display: none;
-    list-style: none;
+    margin: 0;
     padding: 0;
-    text-align: left;
-    max-width: 300px;
-    margin: 0 auto;
+    width: 100%;
+    gap: 10px;
 }
 
-.rank-list li {
-    padding: 5px 0;
+.rank-item {
+    background-color: #000;
+    color: white;
+    padding: 15px 10px;
+    margin: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.rank-item:hover {
+    background-color: #1e293b;
 }
 
 /* ===== Анимации ===== */
@@ -261,8 +259,7 @@ body {
         <div class="card red"><div class="icon-circle">⬆️</div></div>
     </div>
 
-    <!-- Кнопка рейтинг ведет в навигацию "Рейтинг" -->
-    <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+    <div class="card orange" onclick="showPage('rating', document.querySelectorAll('.bottom-nav .nav-item')[2])">
         <div class="icon-circle">🏆</div>
         <p>Рейтинг</p>
     </div>
@@ -286,67 +283,47 @@ body {
     </div>
 </div>
 
-<!-- Страница рейтинг -->
+<!-- Страница рейтинга -->
 <div id="rating" class="container">
-    <div class="header">Рейтинг</div>
+    <div class="header">Топ</div>
     <div class="top-buttons">
-        <button onclick="showRanking('week', this)">Топ недели<div class="active-indicator-top"></div></button>
-        <button onclick="showRanking('month', this)">Топ месяца<div class="active-indicator-top"></div></button>
+        <button onclick="showRanking('week', this)" class="active">Неделя</button>
+        <button onclick="showRanking('month', this)">Месяц</button>
     </div>
-    <ul id="week" class="rank-list">
-        <li>1. Игрок1</li>
-        <li>2. Игрок2</li>
-        <li>3. Игрок3</li>
-        <li>4. Игрок4</li>
-        <li>5. Игрок5</li>
-        <li>6. Игрок6</li>
-        <li>7. Игрок7</li>
-        <li>8. Игрок8</li>
-        <li>9. Игрок9</li>
-        <li>10. Игрок10</li>
-    </ul>
-    <ul id="month" class="rank-list">
-        <li>1. ИгрокA</li>
-        <li>2. ИгрокB</li>
-        <li>3. ИгрокC</li>
-        <li>4. ИгрокD</li>
-        <li>5. ИгрокE</li>
-        <li>6. ИгрокF</li>
-        <li>7. ИгрокG</li>
-        <li>8. ИгрокH</li>
-        <li>9. ИгрокI</li>
-        <li>10. ИгрокJ</li>
-    </ul>
+
+    <div id="week" class="rank-list" style="display:block;">
+        <div class="rank-item">1. Игрок1</div>
+        <div class="rank-item">2. Игрок2</div>
+        <div class="rank-item">3. Игрок3</div>
+        <div class="rank-item">4. Игрок4</div>
+        <div class="rank-item">5. Игрок5</div>
+        <div class="rank-item">6. Игрок6</div>
+        <div class="rank-item">7. Игрок7</div>
+        <div class="rank-item">8. Игрок8</div>
+        <div class="rank-item">9. Игрок9</div>
+        <div class="rank-item">10. Игрок10</div>
+    </div>
+
+    <div id="month" class="rank-list">
+        <div class="rank-item">1. ИгрокA</div>
+        <div class="rank-item">2. ИгрокB</div>
+        <div class="rank-item">3. ИгрокC</div>
+        <div class="rank-item">4. ИгрокD</div>
+        <div class="rank-item">5. ИгрокE</div>
+        <div class="rank-item">6. ИгрокF</div>
+        <div class="rank-item">7. ИгрокG</div>
+        <div class="rank-item">8. ИгрокH</div>
+        <div class="rank-item">9. ИгрокI</div>
+        <div class="rank-item">10. ИгрокJ</div>
+    </div>
 </div>
 
 <!-- Нижнее меню -->
 <div class="bottom-nav">
     <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>
     <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>
-    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Рейтинг</div>
+    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Топ</div>
 </div>
 
 <script>
-function showPage(pageId, btn){
-    document.querySelectorAll('.container').forEach(c => c.style.display='none');
-    document.getElementById(pageId).style.display='flex';
-
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // Скрыть все рейтинги при смене страницы
-    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
-}
-
-// Показ списка рейтинга + подсветка кнопки
-function showRanking(period, btn){
-    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
-    document.getElementById(period).style.display='block';
-
-    document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-}
-</script>
-
-</body>
-</html>
+function showPage(page
