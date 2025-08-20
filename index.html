@@ -24,7 +24,13 @@ body {
     width: 100%;
     height: 100%;
     background: transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+    animation: twinkle 5s infinite linear;
     z-index: -1;
+}
+
+@keyframes twinkle {
+    from { background-position: 0 0; }
+    to { background-position: -100px 100px; }
 }
 
 /* ===== Контейнер ===== */
@@ -34,7 +40,6 @@ body {
     align-items: center;
     gap: 15px;
     padding: 15px;
-    animation: fadeIn 0.3s ease-in-out;
 }
 
 /* ===== Заголовки страниц ===== */
@@ -44,12 +49,6 @@ body {
     padding: 15px 0;
     font-weight: bold;
     font-size: 20px;
-}
-
-/* ===== Анимация ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== Баланс ===== */
@@ -130,7 +129,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: auto;
+    margin: 10px auto;
     font-size: 28px;
 }
 
@@ -156,7 +155,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
 .nav-item span {
@@ -169,8 +167,8 @@ body {
 /* ===== Игры ===== */
 .games-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
     width: 95%;
     margin: 0 auto;
 }
@@ -183,7 +181,7 @@ body {
 .top-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
     margin: 15px 0;
 }
 
@@ -196,41 +194,40 @@ body {
     padding: 10px;
     border-radius: 8px;
     font-weight: bold;
-    cursor: pointer;
     position: relative;
+    cursor: pointer;
 }
 
-.top-buttons button.active { background-color: #3b82f6; color: white; }
+.top-buttons button .active-indicator-top {
+    width: 8px;
+    height: 8px;
+    background-color: #3b82f6;
+    margin: 4px auto 0 auto;
+    border-radius: 2px;
+    display: none;
+}
 
-.rank-table {
-    width: 75%;
-    max-width: 500px;
-    margin: 10px auto 30px auto;
-    background-color: #000;
-    border-radius: 10px;
+.top-buttons button.active .active-indicator-top { display: block; }
+
+.rank-list {
+    display: none;
+    list-style: none;
+    padding: 0;
     text-align: left;
-    padding: 10px;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
-.rank-table .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 10px;
-    border-bottom: 1px solid #333;
-}
-
-.rank-table .row:last-child { border-bottom: none; }
-
-/* ===== Тексты ===== */
-.rank-table .name, .rank-table .score {
-    font-size: 16px;
+.rank-list li {
+    padding: 5px 0;
 }
 
 /* ===== Анимации ===== */
-@keyframes twinkle {
-    from { background-position: 0 0; }
-    to { background-position: -100px 100px; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
+
 </style>
 </head>
 <body>
@@ -261,7 +258,7 @@ body {
     </div>
 
     <div class="card light-blue">
-        <div class="icon-circle">📂</div>
+        <div class="icon-circle">🎁</div>
         <p>Активация промокода</p>
     </div>
 </div>
@@ -283,30 +280,63 @@ body {
 <div id="rating" class="container">
     <div class="header">Рейтинг</div>
     <div class="top-buttons">
-        <button onclick="showRanking('week', this)">Неделя</button>
-        <button onclick="showRanking('month', this)">Месяц</button>
+        <button onclick="showRanking('week', this)">Топ недели<div class="active-indicator-top"></div></button>
+        <button onclick="showRanking('month', this)">Топ месяца<div class="active-indicator-top"></div></button>
     </div>
-    <div id="week" class="rank-table">
-        <div class="row"><div class="name">1. Алексей</div><div class="score">0</div></div>
-        <div class="row"><div class="name">2. Мария</div><div class="score">0</div></div>
-        <div class="row"><div class="name">3. Дмитрий</div><div class="score">0</div></div>
-        <div class="row"><div class="name">4. Анна</div><div class="score">0</div></div>
-        <div class="row"><div class="name">5. Иван</div><div class="score">0</div></div>
-        <div class="row"><div class="name">6. Ольга</div><div class="score">0</div></div>
-        <div class="row"><div class="name">7. Сергей</div><div class="score">0</div></div>
-        <div class="row"><div class="name">8. Елена</div><div class="score">0</div></div>
-        <div class="row"><div class="name">9. Николай</div><div class="score">0</div></div>
-        <div class="row"><div class="name">10. Виктория</div><div class="score">0</div></div>
-    </div>
-    <div id="month" class="rank-table" style="display:none;">
-        <div class="row"><div class="name">1. Павел</div><div class="score">0</div></div>
-        <div class="row"><div class="name">2. Ксения</div><div class="score">0</div></div>
-        <div class="row"><div class="name">3. Артём</div><div class="score">0</div></div>
-        <div class="row"><div class="name">4. Наталья</div><div class="score">0</div></div>
-        <div class="row"><div class="name">5. Михаил</div><div class="score">0</div></div>
-        <div class="row"><div class="name">6. Светлана</div><div class="score">0</div></div>
-        <div class="row"><div class="name">7. Юрий</div><div class="score">0</div></div>
-        <div class="row"><div class="name">8. Татьяна</div><div class="score">0</div></div>
-        <div class="row"><div class="name">9. Игорь</div><div class="score">0</div></div>
-        <div class="row"><div class="name">10. Алина</div><div class="score">0</div></div>
-    </div
+    <ul id="week" class="rank-list">
+        <li>1. Игрок1</li>
+        <li>2. Игрок2</li>
+        <li>3. Игрок3</li>
+        <li>4. Игрок4</li>
+        <li>5. Игрок5</li>
+        <li>6. Игрок6</li>
+        <li>7. Игрок7</li>
+        <li>8. Игрок8</li>
+        <li>9. Игрок9</li>
+        <li>10. Игрок10</li>
+    </ul>
+    <ul id="month" class="rank-list">
+        <li>1. ИгрокA</li>
+        <li>2. ИгрокB</li>
+        <li>3. ИгрокC</li>
+        <li>4. ИгрокD</li>
+        <li>5. ИгрокE</li>
+        <li>6. ИгрокF</li>
+        <li>7. ИгрокG</li>
+        <li>8. ИгрокH</li>
+        <li>9. ИгрокI</li>
+        <li>10. ИгрокJ</li>
+    </ul>
+</div>
+
+<!-- Нижнее меню -->
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>
+    <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>
+    <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Рейтинг</div>
+</div>
+
+<script>
+function showPage(pageId, btn){
+    document.querySelectorAll('.container').forEach(c => c.style.display='none');
+    document.getElementById(pageId).style.display='flex';
+
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Скрыть все рейтинги при смене страницы
+    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
+}
+
+// Показ списка рейтинга + подсветка кнопки
+function showRanking(period, btn){
+    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
+    document.getElementById(period).style.display='block';
+
+    document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>
