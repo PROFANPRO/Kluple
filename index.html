@@ -40,6 +40,15 @@ body {
     align-items: center;
     gap: 15px;
     padding: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.container.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* ===== Заголовки страниц ===== */
@@ -175,20 +184,14 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
+    gap: 15px;
 }
 
 .games-grid .card {
-    height: 120px;
-    border-radius: 0;
+    height: 140px;
+    border-radius: 15px;
     width: 100%;
-    margin: 0;
 }
-
-/* Закругления */
-.games-grid .card:nth-child(1) { border-top-left-radius: 15px; }
-.games-grid .card:nth-child(2) { border-top-right-radius: 15px; }
-.games-grid .card:nth-child(5) { border-bottom-left-radius: 15px; }
-.games-grid .card:nth-child(6) { border-bottom-right-radius: 15px; }
 
 /* ===== Топ ===== */
 .top-buttons {
@@ -221,12 +224,12 @@ body {
     display: none;
     list-style: none;
     padding: 0;
-    margin: 0 10px;             /* небольшой отступ от краёв экрана */
-    width: calc(100% - 20px);   /* чтобы учесть margin */
-    background-color: #000;      /* тёмный фон */
-    border-radius: 12px;     /* закруглённые углы всей таблицы */
-    overflow: hidden;            /* чтобы элементы не выступали за края */
-    box-shadow: 0 0 10px rgba(0,0,0,0.5); /* мягкая тень */
+    margin: 0 10px;
+    width: calc(100% - 20px);
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .rank-list li {
@@ -240,17 +243,8 @@ body {
     background-color: #000;
 }
 
-/* Верхний элемент закруглён сверху */
-.rank-list li:first-child {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
-
-/* Нижний элемент закруглён снизу и без линии */
 .rank-list li:last-child {
     border-bottom: none;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
 }
 
 /* ===== Модалка ===== */
@@ -323,7 +317,7 @@ body {
 <div class="stars"></div>
 
 <!-- Главная страница -->
-<div id="home" class="container" style="display:flex;">
+<div id="home" class="container active">
     <div class="balance-card">
         <p class="balance-text">БАЛАНС</p>
         <p class="balance-value">
@@ -371,31 +365,30 @@ body {
         <button onclick="showRanking('week', this)" class="active">Неделя</button>
         <button onclick="showRanking('month', this)">Месяц</button>
     </div>
-<ul id="week" class="rank-list" style="display:block;">
-    <li><span>1. Игрок1</span><span>0</span></li>
-    <li><span>2. Игрок2</span><span>0</span></li>
-    <li><span>3. Игрок3</span><span>0</span></li>
-    <li><span>4. Игрок4</span><span>0</span></li>
-    <li><span>5. Игрок5</span><span>0</span></li>
-    <li><span>6. Игрок6</span><span>0</span></li>
-    <li><span>7. Игрок7</span><span>0</span></li>
-    <li><span>8. Игрок8</span><span>0</span></li>
-    <li><span>9. Игрок9</span><span>0</span></li>
-    <li><span>10. Игрок10</span><span>0</span></li>
-</ul>
-
-<ul id="month" class="rank-list">
-    <li><span>1. ИгрокA</span><span>0</span></li>
-    <li><span>2. ИгрокB</span><span>0</span></li>
-    <li><span>3. ИгрокC</span><span>0</span></li>
-    <li><span>4. ИгрокD</span><span>0</span></li>
-    <li><span>5. ИгрокE</span><span>0</span></li>
-    <li><span>6. ИгрокF</span><span>0</span></li>
-    <li><span>7. ИгрокG</span><span>0</span></li>
-    <li><span>8. ИгрокH</span><span>0</span></li>
-    <li><span>9. ИгрокI</span><span>0</span></li>
-    <li><span>10. ИгрокJ</span><span>0</span></li>
-</ul>
+    <ul id="week" class="rank-list" style="display:block;">
+        <li><span>1. Игрок1</span><span>0</span></li>
+        <li><span>2. Игрок2</span><span>0</span></li>
+        <li><span>3. Игрок3</span><span>0</span></li>
+        <li><span>4. Игрок4</span><span>0</span></li>
+        <li><span>5. Игрок5</span><span>0</span></li>
+        <li><span>6. Игрок6</span><span>0</span></li>
+        <li><span>7. Игрок7</span><span>0</span></li>
+        <li><span>8. Игрок8</span><span>0</span></li>
+        <li><span>9. Игрок9</span><span>0</span></li>
+        <li><span>10. Игрок10</span><span>0</span></li>
+    </ul>
+    <ul id="month" class="rank-list">
+        <li><span>1. ИгрокA</span><span>0</span></li>
+        <li><span>2. ИгрокB</span><span>0</span></li>
+        <li><span>3. ИгрокC</span><span>0</span></li>
+        <li><span>4. ИгрокD</span><span>0</span></li>
+        <li><span>5. ИгрокE</span><span>0</span></li>
+        <li><span>6. ИгрокF</span><span>0</span></li>
+        <li><span>7. ИгрокG</span><span>0</span></li>
+        <li><span>8. ИгрокH</span><span>0</span></li>
+        <li><span>9. ИгрокI</span><span>0</span></li>
+        <li><span>10. ИгрокJ</span><span>0</span></li>
+    </ul>
 </div>
 
 <!-- Нижнее меню -->
@@ -417,13 +410,16 @@ body {
 
 <script>
 function showPage(pageId, btn){
-    document.querySelectorAll('.container').forEach(c => c.style.display='none');
-    document.getElementById(pageId).style.display='flex';
+    document.querySelectorAll('.container').forEach(c => {
+        c.classList.remove('active');
+        setTimeout(()=>c.style.display='none',300);
+    });
+    const page = document.getElementById(pageId);
+    page.style.display = 'flex';
+    setTimeout(()=>page.classList.add('active'),10);
 
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
-    document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
 
     if(pageId === 'rating'){
         document.getElementById('week').style.display='block';
