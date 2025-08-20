@@ -51,6 +51,40 @@ body {
     font-size: 20px;
 }
 
+/* ===== Баланс ===== */
+.balance-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #4b5563;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.balance-text {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.balance-value {
+    font-size: 32px;
+    font-weight: bold;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.balance-icon {
+    width: 24px;
+    height: 24px;
+    transform: rotate(180deg);
+    margin-left: 6px;
+}
+
 /* ===== Ряды ===== */
 .row {
     display: flex;
@@ -72,8 +106,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    /* Анимация нажатия */
     transition: transform 0.15s ease;
     cursor: pointer;
 }
@@ -141,7 +173,7 @@ body {
 /* ===== Игры ===== */
 .games-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* два блока в ряд */
+    grid-template-columns: 1fr 1fr;
     width: 100%;
 }
 
@@ -152,7 +184,7 @@ body {
     margin: 0;
 }
 
-/* Закругления только по углам */
+/* Закругления */
 .games-grid .card:nth-child(1) { border-top-left-radius: 15px; }
 .games-grid .card:nth-child(2) { border-top-right-radius: 15px; }
 .games-grid .card:nth-child(5) { border-bottom-left-radius: 15px; }
@@ -215,7 +247,6 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.7);
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -277,6 +308,17 @@ body {
 
 <!-- Главная страница -->
 <div id="home" class="container" style="display:flex;">
+    <div class="balance-card">
+        <p class="balance-text">БАЛАНС</p>
+        <p class="balance-value">
+            0
+            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </p>
+    </div>
+
     <div class="row">
         <div class="card green"><div class="icon-circle">⬇️</div></div>
         <div class="card red"><div class="icon-circle">⬆️</div></div>
@@ -347,7 +389,7 @@ body {
 </div>
 
 <!-- Модальное окно промокода -->
-<div id="promoModal" class="modal">
+<div id="promoModal" class="modal" onclick="if(event.target===this) closePromoModal()">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
     <h2>Введите промокод</h2>
@@ -364,10 +406,8 @@ function showPage(pageId, btn){
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // Скрыть все рейтинги при смене страницы
     document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
 
-    // Если это топ, сразу открыть неделю
     if(pageId === 'rating'){
         document.getElementById('week').style.display='block';
         document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
@@ -375,16 +415,13 @@ function showPage(pageId, btn){
     }
 }
 
-// Показ списка рейтинга + подсветка кнопки
 function showRanking(period, btn){
     document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
     document.getElementById(period).style.display='block';
-
     document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 }
 
-// ===== Работа с модалкой =====
 function openPromoModal() {
     document.getElementById("promoModal").style.display = "flex";
 }
