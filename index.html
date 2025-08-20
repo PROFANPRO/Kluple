@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>WC Game</title>
 <style>
 /* ===== Общие стили ===== */
@@ -34,31 +34,19 @@ body {
 }
 
 /* ===== Контейнер ===== */
-/* Анимация переключения */
 .container {
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 15px;
     padding: 15px;
-
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh;
+    transition: opacity 0.4s ease;
 }
-
 .container.active {
-    display: flex; /* вернём flex для выравнивания */
-    flex-direction: column;
-    align-items: center;
-    gap: 15px; /* чтобы не прилипали */
+    display: flex;
     opacity: 1;
-    visibility: visible;
-    position: relative; /* оставим относительное, а не абсолют */
+    position: relative;
 }
 
 /* ===== Заголовки страниц ===== */
@@ -128,10 +116,7 @@ body {
     transition: transform 0.15s ease;
     cursor: pointer;
 }
-
-.card:active {
-    transform: scale(0.95);
-}
+.card:active { transform: scale(0.95); }
 
 .container > .card {
     width: 90%;
@@ -181,12 +166,7 @@ body {
     align-items: center;
     justify-content: center;
 }
-
-.nav-item span {
-    font-size: 26px;
-    margin-bottom: 4px;
-}
-
+.nav-item span { font-size: 26px; margin-bottom: 4px; }
 .nav-item.active { background-color: #3b82f6; color: white; border-radius: 5px; margin: 0 5px; }
 
 /* ===== Игры ===== */
@@ -194,20 +174,15 @@ body {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    gap: 15px 0; /* отступы только по вертикали */
 }
-
 .games-grid .card {
-    width: 50%;   /* половина экрана */
+    width: 50%;
     height: 140px;
+    margin: 7px 0;
     border-radius: 0;
 }
-.games-grid .card:nth-child(odd) {
-    border-right: 7.5px solid transparent; /* промежуток между левыми и правыми */
-}
-.games-grid .card:nth-child(even) {
-    border-left: 7.5px solid transparent;
-}
+.games-grid .card:nth-child(odd) { border-right: 7.5px solid transparent; }
+.games-grid .card:nth-child(even) { border-left: 7.5px solid transparent; }
 
 /* ===== Топ ===== */
 .top-buttons {
@@ -216,7 +191,6 @@ body {
     gap: 10px;
     margin: 15px 0;
 }
-
 .top-buttons button {
     flex: 1;
     max-width: 120px;
@@ -229,11 +203,7 @@ body {
     cursor: pointer;
     transition: 0.2s;
 }
-
-.top-buttons button.active {
-    background-color: #3b82f6;
-    color: white;
-}
+.top-buttons button.active { background-color: #3b82f6; color: white; }
 
 /* ===== Таблица топа ===== */
 .rank-list {
@@ -247,7 +217,6 @@ body {
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
-
 .rank-list li {
     display: flex;
     justify-content: space-between;
@@ -258,10 +227,7 @@ body {
     color: white;
     background-color: #000;
 }
-
-.rank-list li:last-child {
-    border-bottom: none;
-}
+.rank-list li:last-child { border-bottom: none; }
 
 /* ===== Модалка ===== */
 .modal {
@@ -276,7 +242,6 @@ body {
     align-items: center;
     justify-content: center;
 }
-
 .modal-content {
     background: #1e293b;
     padding: 20px;
@@ -285,15 +250,8 @@ body {
     max-width: 300px;
     text-align: center;
     color: white;
-    animation: fadeIn 0.3s ease;
-    position: relative;
 }
-
-.modal-content h2 {
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
+.modal-content h2 { margin-bottom: 15px; font-size: 18px; }
 .modal-content input {
     width: 100%;
     padding: 10px;
@@ -302,7 +260,6 @@ body {
     margin-bottom: 15px;
     text-align: center;
 }
-
 .modal-content button {
     background: #3b82f6;
     color: white;
@@ -311,13 +268,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.2s;
 }
-
-.modal-content button:hover {
-    background: #2563eb;
-}
-
 .close {
     position: absolute;
     top: 10px;
@@ -332,36 +283,30 @@ body {
 
 <div class="stars"></div>
 
-<!-- Главная страница -->
-<div id="home" class="container show">
+<!-- Главная -->
+<div id="home" class="container active">
     <div class="balance-card">
         <p class="balance-text">БАЛАНС</p>
-        <p class="balance-value">
-            0
-            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+        <p class="balance-value">0
+            <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6">
                 <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
                 <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
             </svg>
         </p>
     </div>
-
     <div class="row">
         <div class="card green"><div class="icon-circle">⬇️</div></div>
         <div class="card red"><div class="icon-circle">⬆️</div></div>
     </div>
-
     <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
-        <div class="icon-circle">🏆</div>
-        <p>Топ</p>
+        <div class="icon-circle">🏆</div><p>Топ</p>
     </div>
-
     <div class="card light-blue" onclick="openPromoModal()">
-        <div class="icon-circle">🎁</div>
-        <p>Активация промокода</p>
+        <div class="icon-circle">🎁</div><p>Активация промокода</p>
     </div>
 </div>
 
-<!-- Страница игры -->
+<!-- Игры -->
 <div id="games" class="container">
     <div class="header">Игры</div>
     <div class="games-grid">
@@ -374,48 +319,35 @@ body {
     </div>
 </div>
 
-<!-- Страница топ -->
+<!-- Топ -->
 <div id="rating" class="container">
     <div class="header">Топ</div>
     <div class="top-buttons">
         <button onclick="showRanking('week', this)" class="active">Неделя</button>
         <button onclick="showRanking('month', this)">Месяц</button>
     </div>
-<ul id="week" class="rank-list" style="display:block;">
-    <li><span>1. Игрок1</span><span>0</span></li>
-    <li><span>2. Игрок2</span><span>0</span></li>
-    <li><span>3. Игрок3</span><span>0</span></li>
-    <li><span>4. Игрок4</span><span>0</span></li>
-    <li><span>5. Игрок5</span><span>0</span></li>
-    <li><span>6. Игрок6</span><span>0</span></li>
-    <li><span>7. Игрок7</span><span>0</span></li>
-    <li><span>8. Игрок8</span><span>0</span></li>
-    <li><span>9. Игрок9</span><span>0</span></li>
-    <li><span>10. Игрок10</span><span>0</span></li>
-</ul>
-
-<ul id="month" class="rank-list">
-    <li><span>1. ИгрокA</span><span>0</span></li>
-    <li><span>2. ИгрокB</span><span>0</span></li>
-    <li><span>3. ИгрокC</span><span>0</span></li>
-    <li><span>4. ИгрокD</span><span>0</span></li>
-    <li><span>5. ИгрокE</span><span>0</span></li>
-    <li><span>6. ИгрокF</span><span>0</span></li>
-    <li><span>7. ИгрокG</span><span>0</span></li>
-    <li><span>8. ИгрокH</span><span>0</span></li>
-    <li><span>9. ИгрокI</span><span>0</span></li>
-    <li><span>10. ИгрокJ</span><span>0</span></li>
-</ul>
+    <ul id="week" class="rank-list" style="display:block;">
+        <li><span>1. Игрок1</span><span>0</span></li>
+        <li><span>2. Игрок2</span><span>0</span></li>
+        <li><span>3. Игрок3</span><span>0</span></li>
+        <li><span>4. Игрок4</span><span>0</span></li>
+        <li><span>5. Игрок5</span><span>0</span></li>
+    </ul>
+    <ul id="month" class="rank-list">
+        <li><span>1. ИгрокA</span><span>0</span></li>
+        <li><span>2. ИгрокB</span><span>0</span></li>
+        <li><span>3. ИгрокC</span><span>0</span></li>
+    </ul>
 </div>
 
-<!-- Нижнее меню -->
+<!-- Навигация -->
 <div class="bottom-nav">
     <div class="nav-item active" onclick="showPage('home', this)"><span>📂</span>Меню</div>
     <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Играть</div>
     <div class="nav-item" onclick="showPage('rating', this)"><span>📊</span>Топ</div>
 </div>
 
-<!-- Модальное окно промокода -->
+<!-- Модалка -->
 <div id="promoModal" class="modal" onclick="if(event.target===this) closePromoModal()">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -427,18 +359,10 @@ body {
 
 <script>
 function showPage(pageId, btn){
-    // убрать active со всех контейнеров
     document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-
-    // добавить active к нужному
-    const page = document.getElementById(pageId);
-    page.classList.add('active');
-
-    // нижнее меню
+    document.getElementById(pageId).classList.add('active');
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
-    // логика для рейтинга
     if(pageId === 'rating'){
         document.getElementById('week').style.display='block';
         document.getElementById('month').style.display='none';
@@ -452,24 +376,16 @@ function showRanking(period, btn){
     document.querySelectorAll('.top-buttons button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 }
-
-function openPromoModal() {
-    document.getElementById("promoModal").style.display = "flex";
-}
-
-function closePromoModal() {
-    document.getElementById("promoModal").style.display = "none";
-}
-
+function openPromoModal() { document.getElementById("promoModal").style.display = "flex"; }
+function closePromoModal() { document.getElementById("promoModal").style.display = "none"; }
 function activatePromo() {
     const code = document.getElementById("promoInput").value;
-    if(code.trim() === "") {
-        alert("Введите промокод!");
-    } else {
-        alert("Промокод '" + code + "' активирован!");
-        closePromoModal();
-    }
+    if(code.trim() === "") alert("Введите промокод!");
+    else { alert("Промокод '" + code + "' активирован!"); closePromoModal(); }
 }
+window.onload = () => {
+    showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
+};
 </script>
 
 </body>
