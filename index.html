@@ -35,22 +35,19 @@ body {
 
 /* ===== Контейнер ===== */
 .container {
-    position: absolute; /* страницы одна над другой */
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh;
-    padding-bottom: 60px; /* место под меню */
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    pointer-events: none;
+    transition: opacity 0.4s ease;
 }
 
-.container.active {
+.container.show {
+    display: flex;
     opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
 }
 
 /* ===== Заголовки страниц ===== */
@@ -185,12 +182,13 @@ body {
 .games-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 12px;
     width: 100%;
-    gap: 15px;
+    padding: 10px;
 }
 
 .games-grid .card {
-    height: 140px;
+    height: 120px;
     border-radius: 15px;
     width: 100%;
 }
@@ -319,7 +317,7 @@ body {
 <div class="stars"></div>
 
 <!-- Главная страница -->
-<div id="home" class="container active">
+<div id="home" class="container show">
     <div class="balance-card">
         <p class="balance-text">БАЛАНС</p>
         <p class="balance-value">
@@ -367,30 +365,31 @@ body {
         <button onclick="showRanking('week', this)" class="active">Неделя</button>
         <button onclick="showRanking('month', this)">Месяц</button>
     </div>
-    <ul id="week" class="rank-list" style="display:block;">
-        <li><span>1. Игрок1</span><span>0</span></li>
-        <li><span>2. Игрок2</span><span>0</span></li>
-        <li><span>3. Игрок3</span><span>0</span></li>
-        <li><span>4. Игрок4</span><span>0</span></li>
-        <li><span>5. Игрок5</span><span>0</span></li>
-        <li><span>6. Игрок6</span><span>0</span></li>
-        <li><span>7. Игрок7</span><span>0</span></li>
-        <li><span>8. Игрок8</span><span>0</span></li>
-        <li><span>9. Игрок9</span><span>0</span></li>
-        <li><span>10. Игрок10</span><span>0</span></li>
-    </ul>
-    <ul id="month" class="rank-list">
-        <li><span>1. ИгрокA</span><span>0</span></li>
-        <li><span>2. ИгрокB</span><span>0</span></li>
-        <li><span>3. ИгрокC</span><span>0</span></li>
-        <li><span>4. ИгрокD</span><span>0</span></li>
-        <li><span>5. ИгрокE</span><span>0</span></li>
-        <li><span>6. ИгрокF</span><span>0</span></li>
-        <li><span>7. ИгрокG</span><span>0</span></li>
-        <li><span>8. ИгрокH</span><span>0</span></li>
-        <li><span>9. ИгрокI</span><span>0</span></li>
-        <li><span>10. ИгрокJ</span><span>0</span></li>
-    </ul>
+<ul id="week" class="rank-list" style="display:block;">
+    <li><span>1. Игрок1</span><span>0</span></li>
+    <li><span>2. Игрок2</span><span>0</span></li>
+    <li><span>3. Игрок3</span><span>0</span></li>
+    <li><span>4. Игрок4</span><span>0</span></li>
+    <li><span>5. Игрок5</span><span>0</span></li>
+    <li><span>6. Игрок6</span><span>0</span></li>
+    <li><span>7. Игрок7</span><span>0</span></li>
+    <li><span>8. Игрок8</span><span>0</span></li>
+    <li><span>9. Игрок9</span><span>0</span></li>
+    <li><span>10. Игрок10</span><span>0</span></li>
+</ul>
+
+<ul id="month" class="rank-list">
+    <li><span>1. ИгрокA</span><span>0</span></li>
+    <li><span>2. ИгрокB</span><span>0</span></li>
+    <li><span>3. ИгрокC</span><span>0</span></li>
+    <li><span>4. ИгрокD</span><span>0</span></li>
+    <li><span>5. ИгрокE</span><span>0</span></li>
+    <li><span>6. ИгрокF</span><span>0</span></li>
+    <li><span>7. ИгрокG</span><span>0</span></li>
+    <li><span>8. ИгрокH</span><span>0</span></li>
+    <li><span>9. ИгрокI</span><span>0</span></li>
+    <li><span>10. ИгрокJ</span><span>0</span></li>
+</ul>
 </div>
 
 <!-- Нижнее меню -->
@@ -414,7 +413,7 @@ body {
 function showPage(pageId, btn){
     document.querySelectorAll('.container').forEach(c => {
         c.classList.remove('show');
-        setTimeout(() => c.style.display = 'none', 400); // плавное скрытие
+        setTimeout(() => c.style.display = 'none', 400);
     });
 
     const page = document.getElementById(pageId);
