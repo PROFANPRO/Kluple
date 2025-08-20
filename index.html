@@ -412,8 +412,14 @@ body {
 
 <script>
 function showPage(pageId, btn){
-    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.container').forEach(c => {
+        c.classList.remove('show');
+        setTimeout(() => c.style.display = 'none', 400); // плавное скрытие
+    });
+
+    const page = document.getElementById(pageId);
+    page.style.display = 'flex';
+    setTimeout(() => page.classList.add('show'), 10);
 
     document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
