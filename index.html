@@ -15,9 +15,9 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;position:relative;overflow:hidden}
 .user-left img{width:40px;height:40px;border-radius:50%}
 .name-scroll{position:relative;flex:1;overflow:hidden;min-width:0;}
-.name-inner{display:inline-block;white-space:nowrap;position:relative;}
-.name-inner span{padding-right:40px;}
-.name-fade{position:absolute;top:0;bottom:0;width:40px;background:linear-gradient(to right, #4b5563 0%, transparent 100%);pointer-events:none;}
+.name-inner{display:inline-block;white-space:nowrap;position:absolute;left:0;top:0;}
+.name-inner span{padding-left:40px;}
+.name-fade{position:absolute;top:0;bottom:0;width:40px;right:0;background:linear-gradient(to left, #4b5563 0%, transparent 100%);pointer-events:none;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
@@ -159,16 +159,17 @@ function closePromoModal(){document.getElementById('promoModal').style.display='
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
 window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal){closeMenu();}});
-// Прокрутка только длинных имен
 function startScroll(){
   const containerWidth = nameInner.parentElement.offsetWidth;
   const textWidth = nameInner.querySelector('span').offsetWidth;
   if(textWidth > containerWidth){
+    const clone = nameInner.querySelector('span').cloneNode(true);
+    nameInner.appendChild(clone);
     let pos = 0;
     function step(){
       pos += 1;
-      if(pos > textWidth + 30) pos = 0;
-      nameInner.style.transform = `translateX(-${pos}px)`;
+      if(pos >= textWidth + 40) pos = 0;
+      nameInner.style.transform = `translateX(${pos}px)`; // движемся вправо
       requestAnimationFrame(step);
     }
     step();
