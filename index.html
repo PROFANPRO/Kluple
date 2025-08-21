@@ -118,7 +118,7 @@ console.log(tg.initDataUnsafe.user);
 window.addEventListener("load", ()=>{
   let user = tg.initDataUnsafe.user;
   if(user){
-    document.getElementById("userName").textContent = "@" + (user.username || user.first_name);
+    document.getElementById("userName").textContent = user.username ? "@" + user.username : "Без ника";
     if(user.photo_url){
       document.getElementById("userPhoto").src = user.photo_url;
     } else {
