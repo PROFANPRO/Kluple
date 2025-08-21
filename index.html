@@ -13,8 +13,8 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .header{width:100%;background:#000;padding:15px 0;font-weight:bold;font-size:20px;text-align:center}
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:space-between}
-.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;position:relative;overflow:hidden}
-.user-left img{width:40px;height:40px;border-radius:50%;cursor:pointer}
+.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;position:relative;overflow:hidden}
+.user-left img{width:40px;height:40px;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,0.6);} /* добавлена тень */
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
@@ -59,8 +59,8 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
-      <div class="user-left">
-        <img id="userPhoto" src="" alt="user" onclick="openProfile()">
+      <div class="user-left" onclick="openProfile()">
+        <img id="userPhoto" src="https://via.placeholder.com/40?text=👤" alt="user">
       </div>
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
@@ -141,35 +141,43 @@ tg.expand();
 let user = tg.initDataUnsafe?.user || {};
 console.log(user);
 
+// Устанавливаем аватарку или дефолт
+const userPhoto = document.getElementById('userPhoto');
 if(user.photo_url){
-  document.getElementById('userPhoto').src = user.photo_url;
+  userPhoto.src = user.photo_url;
+} else {
+  userPhoto.src = "https://via.placeholder.com/40?text=👤";
 }
 
+// Переход в профиль по клику на аватарку, если есть username
 function openProfile(){
   if(user.username){
-    window.open('https://t.me/'+user.username,'_blank');
+    window.open('https://t.me/' + user.username, '_blank');
   }
 }
 
 function showPage(id, nav){
-  document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if(nav) nav.classList.add('active');
 }
+
 function showRanking(list, btn){
-  document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none');
-  document.getElementById(list).style.display='block';
-  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.rank-list').forEach(l => l.style.display = 'none');
+  document.getElementById(list).style.display = 'block';
+  btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
+
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
+
 window.addEventListener('click', function(e){
-  const modal=document.getElementById('menuModal');
-  if(e.target===modal){closeMenu();}
+  const modal = document.getElementById('menuModal');
+  if(e.target === modal) closeMenu();
 });
 </script>
 </body>
