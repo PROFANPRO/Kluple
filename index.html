@@ -14,7 +14,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:space-between}
 .user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;overflow:hidden;position:relative}
 .user-left img{width:40px;height:40px;border-radius:50%}
-.name-scroll{display:flex;gap:30px;min-width:100%;}
+.name-scroll{display:flex;gap:30px;min-width:100%;position:relative;}
 .name-scroll span{white-space:nowrap;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
@@ -171,16 +171,28 @@ window.addEventListener('click', function(e){
   const modal = document.getElementById('menuModal');
   if(e.target === modal){ closeMenu(); }
 });
-// Автопрокрутка имени
+// Прокрутка только длинных имен
 const scrollContainer = document.getElementById('nameScroll');
-function animateName(){
-  const spanWidth = document.getElementById('userName').offsetWidth + 30;
-  scrollContainer.animate([
-    { transform: 'translateX(0)' },
-    { transform: `translateX(-${spanWidth}px)` }
-  ], { duration: 4000, iterations: Infinity, direction: 'alternate', easing: 'linear' });
+const span1 = document.getElementById('userName');
+const span2 = document.getElementById('userName2');
+function startScroll(){
+  const containerWidth = scrollContainer.offsetWidth;
+  const textWidth = span1.offsetWidth;
+  if(textWidth > containerWidth){
+    span2.textContent = span1.textContent;
+    let pos = 0;
+    function step(){
+      pos += 1;
+      if(pos > textWidth + 30) pos = 0;
+      scrollContainer.style.transform = `translateX(-${pos}px)`;
+      requestAnimationFrame(step);
+    }
+    step();
+  } else {
+    scrollContainer.style.transform = `translateX(0)`;
+  }
 }
-animateName();
+startScroll();
 </script>
 </body>
 </html>
