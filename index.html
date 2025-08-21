@@ -16,7 +16,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
 .row{display:flex;gap:15px;justify-content:center;width:100%}
-.card{flex:1;max-width:45%;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease;cursor:pointer}
+.card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}
 .card:active{transform:scale(.95)}
 .container>.card{width:90%;max-width:400px}
 .green{background:#22c55e}
@@ -37,11 +37,25 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   width:100%;
 }
 .games-grid .card{
+  width:100%;
   height:140px;
-  border-radius:12px;
+  border-radius:20px;
   display:flex;
   align-items:center;
   justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  transition:transform .2s ease, box-shadow .2s ease;
+  position:relative;
+  overflow:hidden;
+}
+.games-grid .card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.5);
+}
+/* Эффект клика */
+.games-grid .card:active{
+  transform:scale(0.92);
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
 }
 
 .top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
