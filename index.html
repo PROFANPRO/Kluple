@@ -46,8 +46,30 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .orange{background:#f97316}
 .light-blue{background:#3b82f6}
 .icon-circle{background:white;color:black;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:28px}
+
+/* Текст и закругление для оранжевого и синего блоков */
+.card.orange,
+.card.light-blue {
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .2s ease;
+}
+.card.orange p,
+.card.light-blue p {
+    text-align: center;
+    font-weight: 600;
+    margin: 0;
+    margin-top: 8px;
+}
+
+/* Нижняя навигация */
 .bottom-nav{position:fixed;bottom:0;width:100%;background:#1e293b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #000;z-index:2}
-.nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600} /* добавлен font-weight */
+.nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .nav-item span{font-size:26px;margin-bottom:4px}
 .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
 
@@ -74,7 +96,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   transform:translateY(-4px);
   box-shadow:0 6px 16px rgba(0,0,0,0.5);
 }
-/* Эффект клика */
 .games-grid .card:active{
   transform:scale(0.92);
   box-shadow:0 2px 8px rgba(0,0,0,0.4);
@@ -109,8 +130,14 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <div class="card green"><div class="icon-circle">⬇️</div></div>
     <div class="card red"><div class="icon-circle">⬆️</div></div>
   </div>
-  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))"><div class="icon-circle">🏆</div><p>Топ</p></div>
-  <div class="card light-blue" onclick="openPromoModal()"><div class="icon-circle">🎁</div><p>Промокод</p></div>
+  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+    <div class="icon-circle">🏆</div>
+    <p>Топ</p>
+  </div>
+  <div class="card light-blue" onclick="openPromoModal()">
+    <div class="icon-circle">🎁</div>
+    <p>Промокод</p>
+  </div>
 </div>
 
 <!-- Игры -->
