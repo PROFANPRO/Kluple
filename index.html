@@ -12,10 +12,12 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .header{width:100%;background:#000;padding:15px 0;font-weight:bold;font-size:20px;text-align:center}
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:space-between}
-.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;overflow:hidden;position:relative}
+.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;position:relative;overflow:hidden}
 .user-left img{width:40px;height:40px;border-radius:50%}
-.name-scroll{display:flex;gap:30px;min-width:100%;position:relative;}
-.name-scroll span{white-space:nowrap;}
+.name-scroll{position:relative;flex:1;overflow:hidden;min-width:0;}
+.name-inner{display:inline-block;white-space:nowrap;position:relative;}
+.name-inner span{padding-right:40px;}
+.name-fade{position:absolute;top:0;bottom:0;width:40px;background:linear-gradient(to right, #4b5563 0%, transparent 100%);pointer-events:none;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
@@ -62,7 +64,10 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <div class="user-info">
       <div class="user-left" onclick="openProfile()">
         <img id="userPhoto" src="" alt="user">
-        <div class="name-scroll" id="nameScroll"><span id="userName">Пользователь</span><span id="userName2">Пользователь</span></div>
+        <div class="name-scroll">
+          <div class="name-inner" id="nameInner"><span id="userName">Пользователь</span></div>
+          <div class="name-fade"></div>
+        </div>
       </div>
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
@@ -143,53 +148,32 @@ let user = tg.initDataUnsafe?.user || {};
 console.log(user);
 let fullName = user.first_name || "";
 if(user.last_name){fullName += " " + user.last_name;}
-document.getElementById("userName").textContent = fullName || "Гость";
-document.getElementById("userName2").textContent = fullName || "Гость";
-if(user.photo_url){document.getElementById("userPhoto").src = user.photo_url;}
-function openProfile(){
-  if(user.username){
-    window.open("https://t.me/" + user.username,"_blank");
-  }
-}
-function showPage(id, nav){
-  document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  if(nav) nav.classList.add('active');
-}
-function showRanking(list, btn){
-  document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none');
-  document.getElementById(list).style.display='block';
-  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
-function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
-function openMenu(){ document.getElementById('menuModal').style.display='flex'; }
-function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
-window.addEventListener('click', function(e){
-  const modal = document.getElementById('menuModal');
-  if(e.target === modal){ closeMenu(); }
-});
+const nameInner = document.getElementById('nameInner');
+nameInner.querySelector('span').textContent = fullName || 'Гость';
+if(user.photo_url){document.getElementById('userPhoto').src = user.photo_url;}
+function openProfile(){if(user.username){window.open('https://t.me/'+user.username,'_blank');}}
+function showPage(id, nav){document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(nav) nav.classList.add('active');}
+function showRanking(list, btn){document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none');document.getElementById(list).style.display='block';btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
+function closePromoModal(){document.getElementById('promoModal').style.display='none';}
+function openMenu(){document.getElementById('menuModal').style.display='flex';}
+function closeMenu(){document.getElementById('menuModal').style.display='none';}
+window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal){closeMenu();}});
 // Прокрутка только длинных имен
-const scrollContainer = document.getElementById('nameScroll');
-const span1 = document.getElementById('userName');
-const span2 = document.getElementById('userName2');
 function startScroll(){
-  const containerWidth = scrollContainer.offsetWidth;
-  const textWidth = span1.offsetWidth;
+  const containerWidth = nameInner.parentElement.offsetWidth;
+  const textWidth = nameInner.querySelector('span').offsetWidth;
   if(textWidth > containerWidth){
-    span2.textContent = span1.textContent;
     let pos = 0;
     function step(){
       pos += 1;
       if(pos > textWidth + 30) pos = 0;
-      scrollContainer.style.transform = `translateX(-${pos}px)`;
+      nameInner.style.transform = `translateX(-${pos}px)`;
       requestAnimationFrame(step);
     }
     step();
   } else {
-    scrollContainer.style.transform = `translateX(0)`;
+    nameInner.style.transform = 'translateX(0)';
   }
 }
 startScroll();
