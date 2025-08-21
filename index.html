@@ -17,7 +17,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .user-left img{width:40px;height:40px;border-radius:50%}
 .name-scroll{position:relative;flex:1;overflow:hidden;min-width:0;}
 .name-inner{display:inline-block;white-space:nowrap;position:absolute;left:0;top:0;}
-.name-inner span{padding-left:40px;display:inline-block;}
+.name-inner span{padding-left:40px;}
 .name-fade{position:absolute;top:0;bottom:0;width:40px;right:0;background:linear-gradient(to left, #4b5563 0%, transparent 100%);pointer-events:none;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
@@ -26,7 +26,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .menu-content{background:#4b5563;padding:20px;border-radius:12px;width:80%;max-width:300px;color:white;text-align:center;position:relative}
 .menu-content h3{margin-top:0;margin-bottom:15px}
 .menu-close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
-/* остальные стили остаются без изменений */
 .row{display:flex;gap:15px;justify-content:center;width:90%;max-width:400px;margin:0 auto}
 .row .card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}
 .container>.card{width:90%;max-width:400px}
@@ -41,6 +40,22 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .nav-item span{font-size:26px;margin-bottom:4px}
 .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
+.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;width:100%}
+.games-grid .card{width:100%;height:140px;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform .2s ease, box-shadow .2s ease;position:relative;overflow:hidden}
+.games-grid .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.5)}
+.games-grid .card:active{transform:scale(0.92);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
+.top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
+.top-buttons button.active{background:#3b82f6;color:white}
+.rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
+.rank-list li:last-child{border-bottom:none}
+.modal{display:none;position:fixed;z-index:10;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center}
+.modal-content{background:#1e293b;padding:20px;border-radius:12px;width:90%;max-width:300px;text-align:center;color:white}
+.modal-content h2{margin-bottom:15px;font-size:18px}
+.modal-content input{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:15px;text-align:center}
+.modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
+.close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
 </style>
 </head>
 <body>
@@ -61,13 +76,76 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/><path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>
     </p>
   </div>
+  <div class="row">
+    <div class="card green"><div class="icon-circle">⬇️</div></div>
+    <div class="card red"><div class="icon-circle">⬆️</div></div>
+  </div>
+  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+    <div class="icon-circle">🏆</div>
+    <p>Топ</p>
+  </div>
+  <div class="card light-blue" onclick="openPromoModal()">
+    <div class="icon-circle">🎁</div>
+    <p>Промокод</p>
+  </div>
+</div>
+<div id="games" class="container">
+  <div class="header">Игры</div>
+  <div class="games-grid">
+    <div class="card light-blue"><div class="icon-circle">🎮</div></div>
+    <div class="card light-blue"><div class="icon-circle">🎯</div></div>
+    <div class="card light-blue"><div class="icon-circle">🧩</div></div>
+    <div class="card light-blue"><div class="icon-circle">🕹️</div></div>
+    <div class="card light-blue"><div class="icon-circle">🎲</div></div>
+    <div class="card light-blue"><div class="icon-circle">⚽</div></div>
+  </div>
+</div>
+<div id="rating" class="container">
+  <div class="header">Топ</div>
+  <div class="top-buttons">
+    <button onclick="showRanking('week', this)" class="active">Неделя</button>
+    <button onclick="showRanking('month', this)">Месяц</button>
+  </div>
+  <ul id="week" class="rank-list" style="display:block;">
+    <li><span>1. Игрок1</span><span>0</span></li>
+    <li><span>2. Игрок2</span><span>0</span></li>
+    <li><span>3. Игрок3</span><span>0</span></li>
+    <li><span>4. Игрок4</span><span>0</span></li>
+    <li><span>5. Игрок5</span><span>0</span></li>
+  </ul>
+  <ul id="month" class="rank-list">
+    <li><span>1. ИгрокA</span><span>0</span></li>
+    <li><span>2. ИгрокB</span><span>0</span></li>
+    <li><span>3. ИгрокC</span><span>0</span></li>
+    <li><span>4. ИгрокD</span><span>0</span></li>
+    <li><span>5. ИгрокE</span><span>0</span></li>
+  </ul>
+</div>
+<div id="promoModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closePromoModal()">&times;</span>
+    <h2>Введите промокод</h2>
+    <input type="text" placeholder="Промокод">
+    <button onclick="alert('Промокод активирован!')">Активировать</button>
+  </div>
+</div>
+<div class="menu-modal" id="menuModal">
+  <div class="menu-content">
+    <span class="menu-close" onclick="closeMenu()">&times;</span>
+    <h3>Меню</h3>
+    <p>Здесь будут настройки</p>
+  </div>
+</div>
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
+  <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
+  <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
 </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 let user = tg.initDataUnsafe?.user || {};
-console.log(user);
 let fullName = user.first_name || '';
 if(user.last_name){fullName += ' ' + user.last_name;}
 const nameInner = document.getElementById('nameInner');
@@ -75,18 +153,26 @@ const nameSpan = nameInner.querySelector('span');
 nameSpan.textContent = fullName || 'Гость';
 if(user.photo_url){document.getElementById('userPhoto').src = user.photo_url;}
 function openProfile(){if(user.username){window.open('https://t.me/'+user.username,'_blank');}}
+function showPage(id, nav){document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(nav) nav.classList.add('active');}
+function showRanking(list, btn){document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none');document.getElementById(list).style.display='block';btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
+function closePromoModal(){document.getElementById('promoModal').style.display='none';}
+function openMenu(){document.getElementById('menuModal').style.display='flex';}
+function closeMenu(){document.getElementById('menuModal').style.display='none';}
+window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal){closeMenu();}});
+
+// Прокрутка текста вправо, бесконечно
 function startScroll(){
   const containerWidth = nameInner.parentElement.offsetWidth;
   const textWidth = nameSpan.offsetWidth;
   if(textWidth > containerWidth){
-    // создаем копию для бесконечной прокрутки
     const clone = nameSpan.cloneNode(true);
     clone.style.paddingLeft = '40px';
     nameInner.appendChild(clone);
-    let pos = -textWidth;
+    let pos = -textWidth - 40;
     function step(){
-      pos += 1; // движение вправо
-      if(pos >= textWidth + 40) pos = -textWidth;
+      pos += 1;
+      if(pos >= 0) pos = -textWidth - 40;
       nameInner.style.transform = `translateX(${pos}px)`;
       requestAnimationFrame(step);
     }
