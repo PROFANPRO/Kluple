@@ -30,8 +30,19 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
 
 /* ===== Игры ===== */
-.games-grid{display:flex;flex-wrap:wrap;justify-content:space-between;width:100%}
-.games-grid .card{width:48%;height:140px;margin-bottom:15px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.games-grid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:15px;
+  width:100%;
+}
+.games-grid .card{
+  height:140px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
 .top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
 .top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
