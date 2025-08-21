@@ -16,8 +16,9 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;position:relative;overflow:hidden}
 .user-left img{width:40px;height:40px;border-radius:50%}
 .name-scroll{position:relative;flex:1;overflow:hidden;min-width:0;}
-.name-inner{display:inline-block;white-space:nowrap;position:absolute;left:0;top:0;}
-.name-fade{position:absolute;top:0;bottom:0;width:40px;right:0;background:linear-gradient(to left, #4b5563 0%, transparent 100%);pointer-events:none;}
+.name-inner{display:flex;white-space:nowrap;position:relative;left:0;top:0;}
+.name-inner span{padding-right:40px;}
+.name-fade{position:absolute;top:0;bottom:0;width:40px;right:0;background:linear-gradient(to left, #4b5563 0%, transparent 100%);pointer-events:none;z-index:5;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
@@ -147,12 +148,20 @@ let tg = window.Telegram.WebApp;
 tg.expand();
 let user = tg.initDataUnsafe?.user || {};
 console.log(user);
-let fullName = user.first_name || '';
-if(user.last_name){fullName += ' ' + user.last_name;}
-const nameInner = document.getElementById('nameInner');
-nameInner.querySelector('span').textContent = fullName || 'Гость';
-if(user.photo_url){document.getElementById('userPhoto').src = user.photo_url;}
 
+let fullName = (user.first_name || '') + (user.last_name ? ' ' + user.last_name : '');
+const nameInner = document.getElementById('nameInner');
+const nameSpan = document.getElementById('userName');
+
+// гарантированно вставляем имя
+nameSpan.textContent = fullName.trim() || 'Гость';
+
+// аватар
+if(user.photo_url){
+  document.getElementById('userPhoto').src = user.photo_url;
+}
+
+// функции навигации
 function openProfile(){if(user.username){window.open('https://t.me/'+user.username,'_blank');}}
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
@@ -175,35 +184,28 @@ window.addEventListener('click', function(e){
   if(e.target===modal){closeMenu();}
 });
 
-// Прокрутка имени вправо бесконечно
+// Прокрутка имени бесконечно вправо
 function startScroll(){
   const containerWidth = nameInner.parentElement.offsetWidth;
-  const textSpan = nameInner.querySelector('span');
-  const textWidth = textSpan.offsetWidth;
+  const textWidth = nameSpan.offsetWidth;
 
-  // короткие имена не прокручиваем
   if(textWidth <= containerWidth){
     nameInner.style.transform = 'translateX(0)';
     return;
   }
 
-  // создаем клон для бесконечной прокрутки
-  const clone = textSpan.cloneNode(true);
-  clone.style.paddingLeft = '40px';
+  const clone = nameSpan.cloneNode(true);
   nameInner.appendChild(clone);
 
   let pos = 0;
-
   function step(){
-    pos -= 1; // движемся вправо относительно контейнера
-    if(pos <= -textWidth - 40) pos = 0; // сброс после полного выхода текста
+    pos -= 1;
+    if(pos <= -textWidth - 40) pos = 0;
     nameInner.style.transform = `translateX(${pos}px)`;
     requestAnimationFrame(step);
   }
-
   step();
 }
-
 startScroll();
 </script>
 </body>
