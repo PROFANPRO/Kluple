@@ -16,7 +16,8 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer;position:relative;overflow:hidden}
 .user-left img{width:40px;height:40px;border-radius:50%}
 .name-scroll{position:relative;flex:1;overflow:hidden;min-width:0;}
-.name-inner{display:inline-block;white-space:nowrap;position:absolute;left:0;top:0;}
+.name-inner{display:flex;position:absolute;left:0;top:0;white-space:nowrap;}
+.name-inner span{padding-left:40px;display:inline-block;}
 .name-fade{position:absolute;top:0;bottom:0;width:40px;right:0;background:linear-gradient(to left, #4b5563 0%, transparent 100%);pointer-events:none;}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
@@ -59,6 +60,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 </head>
 <body>
 <div class="stars"></div>
+
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
@@ -75,6 +77,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/><path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>
     </p>
   </div>
+
   <div class="row">
     <div class="card green"><div class="icon-circle">⬇️</div></div>
     <div class="card red"><div class="icon-circle">⬆️</div></div>
@@ -88,6 +91,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <p>Промокод</p>
   </div>
 </div>
+
 <div id="games" class="container">
   <div class="header">Игры</div>
   <div class="games-grid">
@@ -99,6 +103,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <div class="card light-blue"><div class="icon-circle">⚽</div></div>
   </div>
 </div>
+
 <div id="rating" class="container">
   <div class="header">Топ</div>
   <div class="top-buttons">
@@ -120,6 +125,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <li><span>5. ИгрокE</span><span>0</span></li>
   </ul>
 </div>
+
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -128,6 +134,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <button onclick="alert('Промокод активирован!')">Активировать</button>
   </div>
 </div>
+
 <div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
@@ -135,6 +142,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <p>Здесь будут настройки</p>
   </div>
 </div>
+
 <div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
@@ -146,14 +154,12 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 let tg = window.Telegram.WebApp;
 tg.expand();
 let user = tg.initDataUnsafe?.user || {};
-console.log(user);
 let fullName = user.first_name || '';
-if(user.last_name){fullName += ' ' + user.last_name;}
-const nameInner = document.getElementById('nameInner');
-nameInner.querySelector('span').textContent = fullName || 'Гость';
-if(user.photo_url){document.getElementById('userPhoto').src = user.photo_url;}
+if(user.last_name) fullName += ' ' + user.last_name;
+document.getElementById('userName').textContent = fullName || 'Гость';
+if(user.photo_url) document.getElementById('userPhoto').src = user.photo_url;
 
-function openProfile(){if(user.username){window.open('https://t.me/'+user.username,'_blank');}}
+function openProfile(){if(user.username) window.open('https://t.me/'+user.username,'_blank');}
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c=>c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -170,40 +176,29 @@ function openPromoModal(){document.getElementById('promoModal').style.display='f
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
-window.addEventListener('click', function(e){
-  const modal=document.getElementById('menuModal');
-  if(e.target===modal){closeMenu();}
-});
+window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal) closeMenu();});
 
-// Прокрутка имени вправо бесконечно
 function startScroll(){
+  const nameInner = document.getElementById('nameInner');
   const containerWidth = nameInner.parentElement.offsetWidth;
-  const textSpan = nameInner.querySelector('span');
-  const textWidth = textSpan.offsetWidth;
-
-  // короткие имена не прокручиваем
-  if(textWidth <= containerWidth){
+  const span = nameInner.querySelector('span');
+  const textWidth = span.offsetWidth;
+  if(textWidth > containerWidth){
+    const clone = span.cloneNode(true);
+    clone.style.paddingLeft = '40px';
+    nameInner.appendChild(clone);
+    let pos = -textWidth-40;
+    function step(){
+      pos += 1;
+      if(pos >= 0) pos = -textWidth-40;
+      nameInner.style.transform = `translateX(${pos}px)`;
+      requestAnimationFrame(step);
+    }
+    step();
+  } else {
     nameInner.style.transform = 'translateX(0)';
-    return;
   }
-
-  // создаем клон для бесконечной прокрутки
-  const clone = textSpan.cloneNode(true);
-  clone.style.paddingLeft = '40px';
-  nameInner.appendChild(clone);
-
-  let pos = 0;
-
-  function step(){
-    pos -= 1; // движемся вправо относительно контейнера
-    if(pos <= -textWidth - 40) pos = 0; // сброс после полного выхода текста
-    nameInner.style.transform = `translateX(${pos}px)`;
-    requestAnimationFrame(step);
-  }
-
-  step();
 }
-
 startScroll();
 </script>
 </body>
