@@ -11,7 +11,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .container.active{display:flex;opacity:1}
 .header{width:100%;background:#000;padding:15px 0;font-weight:bold;font-size:20px;text-align:center}
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
-.user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer}
 .user-info img{width:40px;height:40px;border-radius:50%}
 .user-info span{font-weight:bold;font-size:16px}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
@@ -31,7 +31,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <body>
 <div class="stars"></div><!-- Главная --><div id="home" class="container active">
   <div class="balance-card">
-    <div class="user-info">
+    <div class="user-info" id="userBlock">
       <img id="userPhoto" src="" alt="user">
       <span id="userName">Пользователь</span>
     </div>
@@ -118,11 +118,22 @@ console.log(tg.initDataUnsafe.user);
 window.addEventListener("load", ()=>{
   let user = tg.initDataUnsafe.user;
   if(user){
-    document.getElementById("userName").textContent = user.username ? "@" + user.username : "Без ника";
+    let fullName = user.first_name || "";
+    if(user.last_name){
+      fullName += " " + user.last_name;
+    }
+    document.getElementById("userName").textContent = fullName || "Без имени";
+
     if(user.photo_url){
       document.getElementById("userPhoto").src = user.photo_url;
     } else {
       document.getElementById("userPhoto").src = "https://via.placeholder.com/40";
+    }
+
+    if(user.username){
+      document.getElementById("userBlock").addEventListener("click", ()=>{
+        window.open("https://t.me/" + user.username, "_blank");
+      });
     }
   }
 });
