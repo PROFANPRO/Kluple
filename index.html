@@ -12,33 +12,62 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .header{width:100%;background:#000;padding:15px 0;font-weight:bold;font-size:20px;text-align:center}
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:space-between}
-.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.user-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
 .user-left img{width:40px;height:40px;border-radius:50%}
-.user-left span{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:clip;max-width:200px;display:block}
+.name-scroll{max-width:200px;overflow:hidden;white-space:nowrap;position:relative}
+.name-scroll span{display:inline-block;padding-right:40px;white-space:nowrap;animation:scroll-name 28s linear infinite}
+@keyframes scroll-name{
+ 0%,20%{transform:translateX(0)}
+ 40%,60%{transform:translateX(-100%)}
+ 80%,100%{transform:translateX(0)}
+}
 .menu-btn{font-size:22px;cursor:pointer;user-select:none}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
-.balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}/* Меню */ .menu-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:20} .menu-content{background:#4b5563;padding:20px;border-radius:12px;width:80%;max-width:300px;color:white;text-align:center;position:relative} .menu-content h3{margin-top:0;margin-bottom:15px} .menu-close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
-
-/* === Ряд с кнопками (зелёная и красная) === */ .row{display:flex;gap:15px;justify-content:center;width:90%;max-width:400px;margin:0 auto} .row .card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}
-
-.container>.card{width:90%;max-width:400px} .green{background:#22c55e} .red{background:#ef4444} .orange{background:#f97316} .light-blue{background:#3b82f6} .icon-circle{background:white;color:black;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:28px}
-
-.card.orange, .card.light-blue {border-radius: 15px;display: flex;flex-direction: column;align-items: center;justify-content: center;padding: 15px 0;cursor: pointer;transition: transform .15s ease, box-shadow .2s ease;} .card.orange p, .card.light-blue p {text-align: center;font-weight: 600;margin: 0;margin-top: 8px;}
-
-.bottom-nav{position:fixed;bottom:0;width:100%;background:#1e293b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #000;z-index:2} .nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center} .nav-item span{font-size:26px;margin-bottom:4px} .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
-
-.games-grid{display:grid;grid-template-columns: repeat(2, 1fr);gap:15px;width:100%} .games-grid .card{width:100%;height:140px;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform .2s ease, box-shadow .2s ease;position:relative;overflow:hidden} .games-grid .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.5)} .games-grid .card:active{transform:scale(0.92);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
-
-.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0} .top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s} .top-buttons button.active{background:#3b82f6;color:white} .rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)} .rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000} .rank-list li:last-child{border-bottom:none} .modal{display:none;position:fixed;z-index:10;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center} .modal-content{background:#1e293b;padding:20px;border-radius:12px;width:90%;max-width:300px;text-align:center;color:white} .modal-content h2{margin-bottom:15px;font-size:18px} .modal-content input{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:15px;text-align:center} .modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold} .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white} </style>
-
+.balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
+.menu-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:20}
+.menu-content{background:#4b5563;padding:20px;border-radius:12px;width:80%;max-width:300px;color:white;text-align:center;position:relative}
+.menu-content h3{margin-top:0;margin-bottom:15px}
+.menu-close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
+.row{display:flex;gap:15px;justify-content:center;width:90%;max-width:400px;margin:0 auto}
+.row .card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}
+.container>.card{width:90%;max-width:400px}
+.green{background:#22c55e}
+.red{background:#ef4444}
+.orange{background:#f97316}
+.light-blue{background:#3b82f6}
+.icon-circle{background:white;color:black;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:28px}
+.card.orange,.card.light-blue{border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px 0;cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}
+.card.orange p,.card.light-blue p{text-align:center;font-weight:600;margin:0;margin-top:8px}
+.bottom-nav{position:fixed;bottom:0;width:100%;background:#1e293b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #000;z-index:2}
+.nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.nav-item span{font-size:26px;margin-bottom:4px}
+.nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
+.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;width:100%}
+.games-grid .card{width:100%;height:140px;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform .2s ease, box-shadow .2s ease;position:relative;overflow:hidden}
+.games-grid .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.5)}
+.games-grid .card:active{transform:scale(0.92);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
+.top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
+.top-buttons button.active{background:#3b82f6;color:white}
+.rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
+.rank-list li:last-child{border-bottom:none}
+.modal{display:none;position:fixed;z-index:10;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center}
+.modal-content{background:#1e293b;padding:20px;border-radius:12px;width:90%;max-width:300px;text-align:center;color:white}
+.modal-content h2{margin-bottom:15px;font-size:18px}
+.modal-content input{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:15px;text-align:center}
+.modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
+.close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
+</style>
 </head>
 <body>
-<div class="stars"></div><div id="home" class="container active">
+<div class="stars"></div>
+<div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
-      <div class="user-left">
+      <div class="user-left" onclick="openProfile()">
         <img id="userPhoto" src="" alt="user">
-        <span id="userName">Пользователь</span>
+        <div class="name-scroll"><span id="userName">Пользователь</span></div>
       </div>
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
@@ -58,7 +87,8 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <div class="icon-circle">🎁</div>
     <p>Промокод</p>
   </div>
-</div><div id="games" class="container">
+</div>
+<div id="games" class="container">
   <div class="header">Игры</div>
   <div class="games-grid">
     <div class="card light-blue"><div class="icon-circle">🎮</div></div>
@@ -68,7 +98,8 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <div class="card light-blue"><div class="icon-circle">🎲</div></div>
     <div class="card light-blue"><div class="icon-circle">⚽</div></div>
   </div>
-</div><div id="rating" class="container">
+</div>
+<div id="rating" class="container">
   <div class="header">Топ</div>
   <div class="top-buttons">
     <button onclick="showRanking('week', this)" class="active">Неделя</button>
@@ -88,68 +119,62 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <li><span>4. ИгрокD</span><span>0</span></li>
     <li><span>5. ИгрокE</span><span>0</span></li>
   </ul>
-</div><div id="promoModal" class="modal">
+</div>
+<div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
     <h2>Введите промокод</h2>
     <input type="text" placeholder="Промокод">
     <button onclick="alert('Промокод активирован!')">Активировать</button>
   </div>
-</div><div class="menu-modal" id="menuModal">
+</div>
+<div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
     <h3>Меню</h3>
-    <p>Здесь можно будет добавить настройки.</p>
+    <p>Здесь будут настройки</p>
   </div>
-</div><div class="bottom-nav">
+</div>
+<div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
   <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
-</div><script src="https://telegram.org/js/telegram-web-app.js"></script><script>
-function showPage(id, nav) {
+</div>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+let tg = window.Telegram.WebApp;
+tg.expand();
+let user = tg.initDataUnsafe?.user || {};
+console.log(user);
+let fullName = user.first_name || "";
+if(user.last_name){fullName += " " + user.last_name;}
+document.getElementById("userName").textContent = fullName || "Гость";
+if(user.photo_url){document.getElementById("userPhoto").src = user.photo_url;}
+function openProfile(){
+  if(user.username){
+    window.open("https://t.me/" + user.username,"_blank");
+  }
+}
+function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   if(nav) nav.classList.add('active');
 }
-
 function showRanking(list, btn){
   document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none');
   document.getElementById(list).style.display='block';
   btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
 function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
-
 function openMenu(){ document.getElementById('menuModal').style.display='flex'; }
 function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
 window.addEventListener('click', function(e){
-  let modal = document.getElementById('menuModal');
-  if(e.target === modal){
-    closeMenu();
-  }
+  const modal = document.getElementById('menuModal');
+  if(e.target === modal){ closeMenu(); }
 });
-
-let tg = window.Telegram.WebApp;
-tg.expand();
-console.log(tg.initDataUnsafe.user);
-
-window.addEventListener("load", ()=>{
-  let user = tg.initDataUnsafe.user;
-  if(user){
-    let fullName = user.first_name || "";
-    if(user.last_name){
-      fullName += " " + user.last_name;
-    }
-    document.getElementById("userName").textContent = fullName || "Без имени";
-    if(user.photo_url){
-      document.getElementById("userPhoto").src = user.photo_url;
-    } else {
-      document.getElementById("userPhoto").src = "https://via.placeholder.com/40";
-    }
-  }
-});
-</script></body>
+</script>
+</body>
 </html>
