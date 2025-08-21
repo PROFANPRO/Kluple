@@ -146,8 +146,8 @@ let tg = window.Telegram.WebApp;
 tg.expand();
 let user = tg.initDataUnsafe?.user || {};
 console.log(user);
-let fullName = user.first_name || "";
-if(user.last_name){fullName += " " + user.last_name;}
+let fullName = user.first_name || '';
+if(user.last_name){fullName += ' ' + user.last_name;}
 const nameInner = document.getElementById('nameInner');
 nameInner.querySelector('span').textContent = fullName || 'Гость';
 if(user.photo_url){document.getElementById('userPhoto').src = user.photo_url;}
@@ -158,26 +158,7 @@ function openPromoModal(){document.getElementById('promoModal').style.display='f
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
-window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal){closeMenu();}});
-function startScroll(){
-  const containerWidth = nameInner.parentElement.offsetWidth;
-  const textWidth = nameInner.querySelector('span').offsetWidth;
-  if(textWidth > containerWidth){
-    const clone = nameInner.querySelector('span').cloneNode(true);
-    nameInner.appendChild(clone);
-    let pos = 0;
-    function step(){
-      pos += 1;
-      if(pos >= textWidth + 40) pos = 0;
-      nameInner.style.transform = `translateX(${pos}px)`; // движемся вправо
-      requestAnimationFrame(step);
-    }
-    step();
-  } else {
-    nameInner.style.transform = 'translateX(0)';
-  }
-}
-startScroll();
-</script>
+window.addEventListener('click', function(e){const modal=document.getElementById('menuModal');if(e.target===modal){closeMenu();}});function startScroll(){ const containerWidth = nameInner.parentElement.offsetWidth; const textWidth = nameInner.querySelector('span').offsetWidth; if(textWidth > containerWidth){ const clone = nameInner.querySelector('span').cloneNode(true); clone.style.paddingLeft = '40px'; nameInner.appendChild(clone); let pos = -textWidth - 40; function step(){ pos += 1; if(pos >= 0) pos = -textWidth - 40; nameInner.style.transform = translateX(${pos}px); requestAnimationFrame(step); } step(); } else { nameInner.style.transform = 'translateX(0)'; } } startScroll(); </script>
+
 </body>
 </html>
