@@ -8,9 +8,31 @@
 body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:hidden}
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}
-.container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease}
+.container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease;min-height:100vh;box-sizing:border-box}
 .container.active{display:flex;opacity:1}
-.header{width:100%;background:#000;padding:15px 0;font-weight:bold;font-size:20px;text-align:center}
+
+/* Шапка для игр */
+.game-header{
+  width:100%;
+  background:#000;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  padding:14px 15px;
+  font-size:20px;
+  font-weight:bold;
+  box-sizing:border-box;
+}
+.back-btn{
+  background:none;
+  border:none;
+  color:white;
+  font-size:26px;
+  font-weight:bold;
+  margin-right:12px;
+  cursor:pointer;
+}
+
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}
 .user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}
@@ -39,71 +61,30 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .nav-item span{font-size:26px;margin-bottom:4px}
 .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
 .games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;width:100%}
-.games-grid .card{width:100%;height:140px;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform .2s ease, box-shadow .2s ease;position:relative;overflow:hidden}
-.games-grid .card:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.5)}
-.games-grid .card:active{transform:scale(0.92);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
-.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
-.top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
-.top-buttons button.active{background:#3b82f6;color:white}
-.rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
-.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
-.rank-list li:last-child{border-bottom:none}
-.modal{display:none;position:fixed;z-index:10;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center}
-.modal-content{background:#1e293b;padding:20px;border-radius:12px;width:90%;max-width:300px;text-align:center;color:white}
-.modal-content h2{margin-bottom:15px;font-size:18px}
-.modal-content input{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:15px;text-align:center}
-.modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
-.close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
 
-/* Блок рулетки с чёрной рамкой и без зазора */
-.roulette-wrapper{
+/* Общий стиль карточек игр */
+.game-wrapper{
   display:flex;
   flex-direction:column;
   width:100%;
-  border:2px solid #000;        /* чёрная обводка вокруг ВСЕГО блока */
-  border-radius:20px;           /* единое скругление по контейнеру */
-  overflow:hidden;              /* всё внутри «обрезаем» по скруглению */
-  background:#000;              /* если вдруг появится щель — она чёрная, не звёздный фон */
+  border:2px solid #000;
+  border-radius:20px;
+  overflow:hidden;
+  background:#000;
   box-shadow:0 4px 12px rgba(0,0,0,.3);
   transition:transform .2s ease, box-shadow .2s ease;
+  cursor:pointer;
 }
-.roulette-wrapper:hover{
-  transform:translateY(-4px);
-  box-shadow:0 6px 16px rgba(0,0,0,.5);
-}
-.roulette-wrapper:active{
-  transform:scale(.92);
-  box-shadow:0 2px 8px rgba(0,0,0,.4);
-}
-
-.roulette-card{
-  width:100%;
-  height:140px;
-  /* ВАЖНО: собственные скругления не нужны — скругляет wrapper */
-  border-radius:0;
-}
-.roulette-card img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.roulette-label{
-  width:100%;
-  text-align:center;
-  background:#000;
-  color:#fff;
-  font-weight:bold;
-  font-size:16px;
-  padding:8px 0;
-  /* без отдельных скруглений — управляет wrapper */
-}
+.game-wrapper:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.game-wrapper:active{transform:scale(.92);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.game-card{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#1e293b}
+.game-label{width:100%;text-align:center;background:#000;color:#fff;font-weight:bold;font-size:16px;padding:8px 0}
 </style>
 </head>
 <body>
 <div class="stars"></div>
 
+<!-- Главная -->
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
@@ -139,46 +120,63 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
+<!-- Игры -->
 <div id="games" class="container">
   <div class="header">Игры</div>
   <div class="games-grid">
-    <div class="roulette-wrapper">
-      <div class="roulette-card">
-        <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
-      </div>
-      <div class="roulette-label">Рулетка</div>
+    <div class="game-wrapper" onclick="openGame('roulette')">
+      <div class="game-card">🎡</div>
+      <div class="game-label">Рулетка</div>
     </div>
-
-    <div class="card light-blue"><div class="icon-circle">🎯</div></div>
-    <div class="card light-blue"><div class="icon-circle">🧩</div></div>
-    <div class="card light-blue"><div class="icon-circle">🕹️</div></div>
-    <div class="card light-blue"><div class="icon-circle">🎲</div></div>
-    <div class="card light-blue"><div class="icon-circle">⚽</div></div>
+    <div class="game-wrapper" onclick="openGame('ninja')">
+      <div class="game-card">🥷</div>
+      <div class="game-label">Ниндзя</div>
+    </div>
+    <div class="game-wrapper" onclick="openGame('tower')">
+      <div class="game-card">🗼</div>
+      <div class="game-label">Башня</div>
+    </div>
+    <div class="game-wrapper" onclick="openGame('seven')">
+      <div class="game-card">7️⃣</div>
+      <div class="game-label">Под 7 над</div>
+    </div>
+    <div class="game-wrapper" onclick="openGame('cs')">
+      <div class="game-card">🔫</div>
+      <div class="game-label">CS</div>
+    </div>
+    <div class="game-wrapper" onclick="openGame('luck')">
+      <div class="game-card">🍀</div>
+      <div class="game-label">Колесо удачи</div>
+    </div>
   </div>
 </div>
 
+<!-- Страницы игр -->
+<div id="game-roulette" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Рулетка</div>
+</div>
+<div id="game-ninja" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Ниндзя</div>
+</div>
+<div id="game-tower" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Башня</div>
+</div>
+<div id="game-seven" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Под 7 над</div>
+</div>
+<div id="game-cs" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> CS</div>
+</div>
+<div id="game-luck" class="container">
+  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Колесо удачи</div>
+</div>
+
+<!-- Топ -->
 <div id="rating" class="container">
   <div class="header">Топ</div>
-  <div class="top-buttons">
-    <button onclick="showRanking('week', this)" class="active">Неделя</button>
-    <button onclick="showRanking('month', this)">Месяц</button>
-  </div>
-  <ul id="week" class="rank-list" style="display:block;">
-    <li><span>1. Игрок1</span><span>0</span></li>
-    <li><span>2. Игрок2</span><span>0</span></li>
-    <li><span>3. Игрок3</span><span>0</span></li>
-    <li><span>4. Игрок4</span><span>0</span></li>
-    <li><span>5. Игрок5</span><span>0</span></li>
-  </ul>
-  <ul id="month" class="rank-list">
-    <li><span>1. ИгрокA</span><span>0</span></li>
-    <li><span>2. ИгрокB</span><span>0</span></li>
-    <li><span>3. ИгрокC</span><span>0</span></li>
-    <li><span>4. ИгрокD</span><span>0</span></li>
-    <li><span>5. ИгрокE</span><span>0</span></li>
-  </ul>
 </div>
 
+<!-- Модальные окна -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -187,7 +185,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <button onclick="alert('Промокод активирован!')">Активировать</button>
   </div>
 </div>
-
 <div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
@@ -196,6 +193,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
+<!-- Навигация -->
 <div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
@@ -212,26 +210,24 @@ userPhoto.src = user.photo_url || 'https://cdn-icons-png.flaticon.com/512/847/84
 userPhoto.addEventListener('click', function(){
   if(user.username){ window.open('https://t.me/' + user.username, '_blank'); }
 });
+
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // если открыли обычную вкладку - подсветить навигацию
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if(nav) nav.classList.add('active');
 }
-function showRanking(list, btn){
-  document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
-  document.getElementById(list).style.display='block';
-  btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+
+function openGame(name){
+  showPage('game-' + name, null);
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); // скрываем подсветку внизу
 }
+
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
-window.addEventListener('click', function(e){
-  const modal=document.getElementById('menuModal');
-  if(e.target===modal){closeMenu();}
-});
 </script>
 </body>
 </html>
