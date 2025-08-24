@@ -10,7 +10,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}
 .container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease;min-height:100vh;box-sizing:border-box}
 .container.active{display:flex;opacity:1}
-
 /* Шапки страниц и игр */
 .page-header, .game-header{
 width:100%;
@@ -105,10 +104,12 @@ cursor:pointer;
 .modal-buttons .activate{background:#3b82f6;color:white}
 .close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
 </style>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://unpkg.com/@tonconnect/sdk@0.13.1/dist/tonconnect.umd.min.js"></script>
 </head>
 <body>
 <div class="stars"></div>
-
 <!-- Главная -->
 <div id="home" class="container active">
   <div class="balance-card">
@@ -128,17 +129,14 @@ cursor:pointer;
       </svg>
     </p>
   </div>
-
   <div class="row">
     <div class="card green"><div class="icon-circle">⬇️</div></div>
     <div class="card red"><div class="icon-circle">⬆️</div></div>
   </div>
-
   <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
     <div class="icon-circle">🏆</div>
     <p>Топ</p>
   </div>
-
   <div class="card light-blue" onclick="openPromoModal()">
     <div class="icon-circle">🎁</div>
     <p>Промокод</p>
@@ -177,6 +175,7 @@ cursor:pointer;
     </div>
   </div>
 </div>
+
 <!-- Страницы игр -->
 <div id="game-roulette" class="container">
   <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Рулетка</div>
@@ -248,10 +247,6 @@ cursor:pointer;
   <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
 </div>
 
-<!-- TonConnect SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@tonconnect/sdk/dist/tonconnect.umd.js"></script>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
@@ -262,6 +257,34 @@ userPhoto.addEventListener('click', function(){
   if(user.username){ window.open('https://t.me/' + user.username, '_blank'); }
 });
 
+// TonConnect
+const tonConnect = new TonConnect.UI({
+    manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/tonconnect-manifest.json'
+});
+const walletBtn = document.querySelector('.wallet-btn');
+
+async function connectWallet() {
+    try {
+        const connectedWallet = await tonConnect.connect();
+        const address = connectedWallet.account.address;
+        walletBtn.textContent = `...${address.slice(-4)}`;
+        localStorage.setItem('tonWallet', address);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Сохраняем подключенный кошелек
+window.addEventListener('load', () => {
+    const savedAddress = localStorage.getItem('tonWallet');
+    if(savedAddress){
+        walletBtn.textContent = `...${savedAddress.slice(-4)}`;
+    }
+});
+
+walletBtn.addEventListener('click', connectWallet);
+
+// Страницы
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -285,40 +308,6 @@ function openPromoModal(){document.getElementById('promoModal').style.display='f
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
 function closeMenu(){document.getElementById('menuModal').style.display='none';}
-
-// ======= TonConnect Wallet =======
-const walletBtn = document.querySelector('.wallet-btn');
-const tonConnect = new TonConnect.TonConnectUI({ 
-  manifestUrl: 'https://your-manifest-url.json' 
-});
-
-async function connectWallet() {
-  try {
-    const storedState = localStorage.getItem('tonWallet');
-    if(storedState){
-      const wallet = JSON.parse(storedState);
-      walletBtn.textContent = '...' + wallet.account.slice(-4);
-      return;
-    }
-
-    const wallet = await tonConnect.connect();
-    walletBtn.textContent = '...' + wallet.account.slice(-4);
-    localStorage.setItem('tonWallet', JSON.stringify(wallet));
-  } catch(e){
-    console.log('Wallet connect cancelled or failed', e);
-  }
-}
-
-walletBtn.addEventListener('click', connectWallet);
-
-// Автоподключение если уже есть кошелёк
-window.addEventListener('load', async ()=>{
-  const stored = localStorage.getItem('tonWallet');
-  if(stored){
-    const wallet = JSON.parse(stored);
-    walletBtn.textContent = '...' + wallet.account.slice(-4);
-  }
-});
 </script>
 </body>
 </html>
