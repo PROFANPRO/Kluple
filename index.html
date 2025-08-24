@@ -12,7 +12,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .container.active{display:flex;opacity:1}
 
 /* Шапка для игр */
-.game-header{
+.game-header,.header{
   width:100%;
   background:#000;
   color:#fff;
@@ -22,7 +22,11 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   font-size:20px;
   font-weight:bold;
   box-sizing:border-box;
+  margin:0;
 }
+.game-header{justify-content:flex-start}
+.header{justify-content:center}
+
 .back-btn{
   background:none;
   border:none;
@@ -86,6 +90,17 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
 .rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
 .rank-list li:last-child{border-bottom:none}
+
+/* Модалка */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:30}
+.modal-content{background:#1e293b;padding:20px;border-radius:12px;width:80%;max-width:320px;color:white;display:flex;flex-direction:column;gap:15px}
+.modal-content h2{margin:0 0 10px;text-align:center}
+.modal-content input{padding:10px;border-radius:8px;border:none;width:100%;font-size:16px}
+.modal-content input::placeholder{color:rgba(255,255,255,0.5)}
+.modal-buttons{display:flex;justify-content:space-between;gap:10px}
+.modal-buttons button{flex:1;padding:10px;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer}
+.modal-buttons .cancel{background:#ef4444;color:white}
+.modal-buttons .activate{background:#3b82f6;color:white}
 </style>
 </head>
 <body>
@@ -206,10 +221,12 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <!-- Модальные окна -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closePromoModal()">&times;</span>
     <h2>Введите промокод</h2>
     <input type="text" placeholder="Промокод">
-    <button onclick="alert('Промокод активирован!')">Активировать</button>
+    <div class="modal-buttons">
+      <button class="cancel" onclick="closePromoModal()">Отмена</button>
+      <button class="activate" onclick="alert('Промокод активирован!')">Активировать</button>
+    </div>
   </div>
 </div>
 <div class="menu-modal" id="menuModal">
