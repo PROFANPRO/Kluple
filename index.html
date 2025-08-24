@@ -56,7 +56,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
 .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
 
-/* Стиль рулетки */
+/* Рулетка с фоном */
 .roulette-card {
   display: flex;
   flex-direction: column;
@@ -65,7 +65,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   border-radius:20px;
   overflow:hidden;
   cursor:pointer;
-  background: none;          /* прозрачный фон */
+  background:#2a4d3e; /* цвет фона блока, можно подстроить под картинку */
   box-shadow:0 4px 12px rgba(0,0,0,0.3);
   transition: transform .2s ease, box-shadow .2s ease;
   width:100%;
@@ -106,7 +106,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <body>
 <div class="stars"></div>
 
-<!-- Главная -->
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
@@ -142,7 +141,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Игры -->
 <div id="games" class="container">
   <div class="header">Игры</div>
   <div class="games-grid">
@@ -160,7 +158,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Рейтинг -->
 <div id="rating" class="container">
   <div class="header">Топ</div>
   <div class="top-buttons">
@@ -183,7 +180,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </ul>
 </div>
 
-<!-- Промокод -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -193,7 +189,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Меню -->
 <div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
@@ -202,7 +197,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Нижняя навигация -->
 <div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
