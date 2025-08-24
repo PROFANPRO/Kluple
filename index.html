@@ -55,18 +55,20 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
 .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
 
-/* Блок рулетки с черной полоской снизу для текста */
+/* Блок рулетки с черной полоской под блоком */
+.roulette-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 .roulette-card {
   width: 100%;
   height: 140px;
   border-radius: 20px;
   overflow: hidden;
-  position: relative;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   transition: transform .2s ease, box-shadow .2s ease;
-  display: flex;
-  flex-direction: column;
 }
 .roulette-card img {
   width: 100%;
@@ -76,24 +78,20 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   border-radius: 20px;
 }
 .roulette-label {
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  background: rgba(0,0,0,0.8);
   text-align: center;
-  font-size: 16px;
-  font-weight: bold;
+  background: #000;
   color: white;
-  padding: 6px 0;
-  box-sizing: border-box;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 8px 0;
+  border-radius: 0 0 20px 20px;
 }
-.roulette-card:hover {
+.roulette-wrapper:hover .roulette-card {
   transform: translateY(-4px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.5);
 }
-.roulette-card:active {
+.roulette-wrapper:active .roulette-card {
   transform: scale(0.92);
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
@@ -140,10 +138,13 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <div id="games" class="container">
   <div class="header">Игры</div>
   <div class="games-grid">
-    <div class="card roulette-card">
-      <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
+    <div class="roulette-wrapper">
+      <div class="roulette-card">
+        <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
+      </div>
       <div class="roulette-label">Рулетка</div>
     </div>
+
     <div class="card light-blue"><div class="icon-circle">🎯</div></div>
     <div class="card light-blue"><div class="icon-circle">🧩</div></div>
     <div class="card light-blue"><div class="icon-circle">🕹️</div></div>
