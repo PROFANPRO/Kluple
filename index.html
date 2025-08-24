@@ -55,45 +55,49 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .modal-content button{background:#3b82f6;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
 .close{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white}
 
-/* Блок рулетки с черной полоской под блоком */
-.roulette-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+/* Блок рулетки с чёрной рамкой и без зазора */
+.roulette-wrapper{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  border:2px solid #000;        /* чёрная обводка вокруг ВСЕГО блока */
+  border-radius:20px;           /* единое скругление по контейнеру */
+  overflow:hidden;              /* всё внутри «обрезаем» по скруглению */
+  background:#000;              /* если вдруг появится щель — она чёрная, не звёздный фон */
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+  transition:transform .2s ease, box-shadow .2s ease;
 }
-.roulette-card {
-  width: 100%;
-  height: 140px;
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: transform .2s ease, box-shadow .2s ease;
+.roulette-wrapper:hover{
+  transform:translateY(-4px);
+  box-shadow:0 6px 16px rgba(0,0,0,.5);
 }
-.roulette-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 20px;
+.roulette-wrapper:active{
+  transform:scale(.92);
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
 }
-.roulette-label {
-  width: 100%;
-  text-align: center;
-  background: #000;
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-  padding: 8px 0;
-  border-radius: 0 0 20px 20px;
+
+.roulette-card{
+  width:100%;
+  height:140px;
+  /* ВАЖНО: собственные скругления не нужны — скругляет wrapper */
+  border-radius:0;
 }
-.roulette-wrapper:hover .roulette-card {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+.roulette-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
-.roulette-wrapper:active .roulette-card {
-  transform: scale(0.92);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+
+.roulette-label{
+  width:100%;
+  text-align:center;
+  background:#000;
+  color:#fff;
+  font-weight:bold;
+  font-size:16px;
+  padding:8px 0;
+  /* без отдельных скруглений — управляет wrapper */
 }
 </style>
 </head>
