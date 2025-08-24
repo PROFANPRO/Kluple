@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WC Game</title>
 <style>
+/* --- твои стили без изменений --- */
 body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:hidden}
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}
@@ -104,6 +105,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <p>Промокод</p>
   </div>
 </div>
+
 <!-- Игры -->
 <div id="games" class="container">
   <div class="page-header">Игры</div>
@@ -180,7 +182,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </ul>
 </div>
 
-<!-- Модалки и меню -->
+<!-- Модалки -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -208,41 +210,49 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 </div>
 
 <!-- Скрипты -->
-<script src="https://unpkg.com/@tonconnect/sdk@1.5.0/dist/tonconnect.umd.min.js"></script>
+<script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
 <script>
+/* --- Telegram WebApp аватарка --- */
+let tg = window.Telegram?.WebApp;
+let user = tg?.initDataUnsafe?.user;
+const userPhoto = document.getElementById('userPhoto');
+if (user?.photo_url) {
+  userPhoto.src = user.photo_url;
+}
+
+/* --- TonConnect --- */
 const walletBtn = document.getElementById('walletBtn');
-const tonConnect = new TonConnect.TonConnect({
-    manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/tonconnect-manifest.json'
+const tonConnect = new TonConnectSDK.TonConnect({
+  manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/tonconnect-manifest.json'
 });
 
 async function connectWallet() {
-    try {
-        const wallet = await tonConnect.connect();
-        const address = wallet.account.address;
-        walletBtn.textContent = '...' + address.slice(-4);
-        localStorage.setItem('tonWallet', address);
-    } catch(e) {
-        console.log('User canceled or error', e);
-    }
+  try {
+    const wallet = await tonConnect.connectWallet();
+    const address = wallet.account.address;
+    walletBtn.textContent = '...' + address.slice(-4);
+    localStorage.setItem('tonWallet', address);
+  } catch(e) {
+    console.log('User canceled or error', e);
+  }
 }
 
 walletBtn.addEventListener('click', connectWallet);
 
-window.addEventListener('load', async () => {
-    const storedWallet = localStorage.getItem('tonWallet');
-    if(storedWallet) {
-        walletBtn.textContent = '...' + storedWallet.slice(-4);
-    }
+window.addEventListener('load', () => {
+  const storedWallet = localStorage.getItem('tonWallet');
+  if (storedWallet) {
+    walletBtn.textContent = '...' + storedWallet.slice(-4);
+  }
 });
 
-// Навигация и модалки
+/* --- Навигация и модалки --- */
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if(nav) nav.classList.add('active');
 }
-
 function openGame(name){
   showPage('game-' + name, null);
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
