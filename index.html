@@ -1,4 +1,5 @@
-<!DOCTYPE html>  <html lang="ru">  
+<!DOCTYPE html>
+<html lang="ru">  
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width, initial-scale=1">  
@@ -8,7 +9,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}  
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}  
 .container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease;min-height:100vh;box-sizing:border-box}  
-.container.active{display:flex;opacity:1}  /* Шапки страниц и игр */
+.container.active{display:flex;opacity:1}  
 .page-header, .game-header{
 width:100%;
 background:#000;
@@ -102,17 +103,18 @@ cursor:pointer;
 .modal-buttons .activate{background:#3b82f6;color:white}
 .close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
 </style>
-
 </head>  
 <body>  
-<div class="stars"></div>  <!-- Главная -->  <div id="home" class="container active">  
+<div class="stars"></div>
+  <!-- Главная -->
+<div id="home" class="container active">  
   <div class="balance-card">  
     <div class="user-info">  
       <div class="user-left">  
         <img id="userPhoto" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="user">  
       </div>  
       <div class="wallet-center">  
-        <div class="wallet-btn">Подключить кошелёк</div>  
+        <div id="walletBtn" class="wallet-btn">Подключить кошелёк</div>  
       </div>  
       <div class="menu-btn" onclick="openMenu()">≡</div>  
     </div>  
@@ -122,17 +124,26 @@ cursor:pointer;
         <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>  
       </svg>  
     </p>  
-  </div>    <div class="row">  
+  </div>  
+
+  <div class="row">  
     <div class="card green"><div class="icon-circle">⬇️</div></div>  
     <div class="card red"><div class="icon-circle">⬆️</div></div>  
-  </div>    <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">  
+  </div>  
+
+  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">  
     <div class="icon-circle">🏆</div>  
     <p>Топ</p>  
-  </div>    <div class="card light-blue" onclick="openPromoModal()">  
+  </div>  
+
+  <div class="card light-blue" onclick="openPromoModal()">  
     <div class="icon-circle">🎁</div>  
     <p>Промокод</p>  
   </div>  
-</div>  <!-- Игры -->  <div id="games" class="container">  
+</div>  
+
+<!-- Игры -->
+<div id="games" class="container">  
   <div class="page-header">Игры</div>  
   <div class="games-grid">  
     <div class="game-wrapper" onclick="openGame('roulette')">  
@@ -162,7 +173,10 @@ cursor:pointer;
       <div class="game-label">Колесо удачи</div>  
     </div>  
   </div>  
-</div>  <!-- Страницы игр -->  <div id="game-roulette" class="container">  
+</div>  
+
+<!-- Страницы игр -->
+<div id="game-roulette" class="container">  
   <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Рулетка</div>  
 </div>  
 <div id="game-ninja" class="container">  
@@ -179,7 +193,10 @@ cursor:pointer;
 </div>  
 <div id="game-luck" class="container">  
   <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Колесо удачи</div>  
-</div>  <!-- Топ -->  <div id="rating" class="container">  
+</div>  
+
+<!-- Топ -->
+<div id="rating" class="container">  
   <div class="page-header">Топ</div>  
   <div class="top-buttons">  
     <button onclick="showRanking('week', this)" class="active">Неделя</button>  
@@ -199,7 +216,10 @@ cursor:pointer;
     <li><span>4. ИгрокD</span><span>0</span></li>  
     <li><span>5. ИгрокE</span><span>0</span></li>  
   </ul>  
-</div>  <!-- Модальные окна -->  <div id="promoModal" class="modal">  
+</div>  
+
+<!-- Модальные окна -->
+<div id="promoModal" class="modal">  
   <div class="modal-content">  
     <span class="close" onclick="closePromoModal()">&times;</span>  
     <h2>Введите промокод</h2>  
@@ -210,17 +230,28 @@ cursor:pointer;
     </div>  
   </div>  
 </div>  
+
 <div class="menu-modal" id="menuModal">  
   <div class="menu-content">  
     <span class="menu-close" onclick="closeMenu()">&times;</span>  
     <h3>Меню</h3>  
     <p>Здесь будут настройки</p>  
   </div>  
-</div>  <!-- Навигация -->  <div class="bottom-nav">  
+</div>  
+
+<!-- Навигация -->
+<div class="bottom-nav">  
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>  
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>  
   <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>  
-</div>  <script src="https://telegram.org/js/telegram-web-app.js"></script>  <script>  
+</div>  
+
+<!-- Telegram SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>  
+<!-- TON Connect SDK -->
+<script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>  
+
+<script>  
 let tg = window.Telegram.WebApp;  
 tg.expand();  
 let user = tg.initDataUnsafe?.user || {};  
@@ -229,29 +260,55 @@ userPhoto.src = user.photo_url || 'https://cdn-icons-png.flaticon.com/512/847/84
 userPhoto.addEventListener('click', function(){  
   if(user.username){ window.open('https://t.me/' + user.username, '_blank'); }  
 });  
-  
+
 function showPage(id, nav){  
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));  
   document.getElementById(id).classList.add('active');  
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));  
   if(nav) nav.classList.add('active');  
 }  
-  
+
 function openGame(name){  
   showPage('game-' + name, null);  
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));  
 }  
-  
+
 function showRanking(list, btn){  
   document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');  
   document.getElementById(list).style.display='block';  
   btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));  
   btn.classList.add('active');  
 }  
-  
+
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}  
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}  
 function openMenu(){document.getElementById('menuModal').style.display='flex';}  
 function closeMenu(){document.getElementById('menuModal').style.display='none';}  
-</script>  </body>  
-</html>  
+
+// TON Connect
+const tonConnect = new TON_CONNECT.TonConnect({
+  manifestUrl: "https://kluple.vercel.app/tonconnect-manifest.json"
+});
+const walletBtn = document.getElementById('walletBtn');
+
+// Проверяем localStorage
+const savedWallet = localStorage.getItem("wallet");
+if (savedWallet) {
+  walletBtn.textContent = "..." + savedWallet.slice(-4);
+}
+
+walletBtn.addEventListener("click", async () => {
+  if (!tonConnect.connected) {
+    const wallet = await tonConnect.connect();
+    const address = wallet.account.address;
+    localStorage.setItem("wallet", address);
+    walletBtn.textContent = "..." + address.slice(-4);
+  } else {
+    localStorage.removeItem("wallet");
+    tonConnect.disconnect();
+    walletBtn.textContent = "Подключить кошелёк";
+  }
+});
+</script>  
+</body>  
+</html>
