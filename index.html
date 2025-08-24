@@ -78,7 +78,14 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .game-wrapper:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.5)}
 .game-wrapper:active{transform:scale(.92);box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .game-card{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#1e293b}
+.game-card img{width:100%;height:100%;object-fit:cover;display:block}
 .game-label{width:100%;text-align:center;background:#000;color:#fff;font-weight:bold;font-size:16px;padding:8px 0}
+.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
+.top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
+.top-buttons button.active{background:#3b82f6;color:white}
+.rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
+.rank-list li:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -125,7 +132,9 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   <div class="header">Игры</div>
   <div class="games-grid">
     <div class="game-wrapper" onclick="openGame('roulette')">
-      <div class="game-card">🎡</div>
+      <div class="game-card">
+        <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
+      </div>
       <div class="game-label">Рулетка</div>
     </div>
     <div class="game-wrapper" onclick="openGame('ninja')">
@@ -174,6 +183,24 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <!-- Топ -->
 <div id="rating" class="container">
   <div class="header">Топ</div>
+  <div class="top-buttons">
+    <button onclick="showRanking('week', this)" class="active">Неделя</button>
+    <button onclick="showRanking('month', this)">Месяц</button>
+  </div>
+  <ul id="week" class="rank-list" style="display:block;">
+    <li><span>1. Игрок1</span><span>0</span></li>
+    <li><span>2. Игрок2</span><span>0</span></li>
+    <li><span>3. Игрок3</span><span>0</span></li>
+    <li><span>4. Игрок4</span><span>0</span></li>
+    <li><span>5. Игрок5</span><span>0</span></li>
+  </ul>
+  <ul id="month" class="rank-list">
+    <li><span>1. ИгрокA</span><span>0</span></li>
+    <li><span>2. ИгрокB</span><span>0</span></li>
+    <li><span>3. ИгрокC</span><span>0</span></li>
+    <li><span>4. ИгрокD</span><span>0</span></li>
+    <li><span>5. ИгрокE</span><span>0</span></li>
+  </ul>
 </div>
 
 <!-- Модальные окна -->
@@ -222,6 +249,13 @@ function showPage(id, nav){
 function openGame(name){
   showPage('game-' + name, null);
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); // скрываем подсветку внизу
+}
+
+function showRanking(list, btn){
+  document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
+  document.getElementById(list).style.display='block';
+  btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
