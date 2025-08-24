@@ -69,7 +69,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <body>
 <div class="stars"></div>
 
-<!-- Главная -->
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
@@ -105,7 +104,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Игры -->
 <div id="games" class="container">
   <div class="page-header">Игры</div>
   <div class="games-grid">
@@ -189,19 +187,20 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 </div>
 
 <!-- Скрипты -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
 <script>
-/* --- Telegram WebApp аватарка и клик --- */
+// --- Telegram WebApp аватарка ---
 let tg = window.Telegram?.WebApp;
 tg?.expand();
-let user = tg?.initDataUnsafe?.user || {};
+let user = tg?.initDataUnsafe?.user;
 const userPhoto = document.getElementById('userPhoto');
-userPhoto.src = user.photo_url || 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
-userPhoto.addEventListener('click', function(){
-  if(user.username){ window.open('https://t.me/' + user.username, '_blank'); }
+if(user?.photo_url) userPhoto.src = user.photo_url;
+userPhoto.addEventListener('click', () => {
+  if(user?.username) window.open('https://t.me/' + user.username, '_blank');
 });
 
-/* --- TonConnect --- */
+// --- TonConnect ---
 const walletBtn = document.getElementById('walletBtn');
 const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/tonconnect-manifest.json'
@@ -212,15 +211,17 @@ async function connectWallet() {
     const address = wallet.account.address;
     walletBtn.textContent = '...' + address.slice(-4);
     localStorage.setItem('tonWallet', address);
-  } catch(e) { console.log('User canceled or error', e); }
+  } catch(e) {
+    console.log('User canceled or error', e);
+  }
 }
 walletBtn.addEventListener('click', connectWallet);
 window.addEventListener('load', () => {
   const storedWallet = localStorage.getItem('tonWallet');
-  if (storedWallet) walletBtn.textContent = '...' + storedWallet.slice(-4);
+  if(storedWallet) walletBtn.textContent = '...' + storedWallet.slice(-4);
 });
 
-/* --- Навигация и модалки --- */
+// --- Навигация и модалки ---
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
