@@ -13,6 +13,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .page-header, .game-header{width:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;padding:14px 15px;font-size:20px;font-weight:bold;box-sizing:border-box;margin:0;position:sticky;top:0;z-index:5}
 .game-header{justify-content:flex-start}
 .back-btn{background:none;border:none;color:white;font-size:26px;font-weight:bold;margin-right:12px;cursor:pointer}
+
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}
 .user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}
@@ -137,26 +138,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Страницы игр -->
-<div id="game-roulette" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Рулетка</div>
-</div>
-<div id="game-ninja" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Ниндзя</div>
-</div>
-<div id="game-tower" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Башня</div>
-</div>
-<div id="game-seven" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Под 7 над</div>
-</div>
-<div id="game-cs" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> CS</div>
-</div>
-<div id="game-luck" class="container">
-  <div class="game-header"><button class="back-btn" onclick="showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'))">←</button> Колесо удачи</div>
-</div>
-
 <!-- Топ -->
 <div id="rating" class="container">
   <div class="page-header">Топ</div>
@@ -210,44 +191,33 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <!-- Скрипты -->
 <script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
 <script>
-/* --- Telegram WebApp аватарка --- */
+/* --- Telegram WebApp аватарка и клик --- */
 let tg = window.Telegram?.WebApp;
-let user = tg?.initDataUnsafe?.user;
+tg?.expand();
+let user = tg?.initDataUnsafe?.user || {};
 const userPhoto = document.getElementById('userPhoto');
-if (user?.photo_url) {
-  userPhoto.src = user.photo_url;
-  if (user?.username) {
-    userPhoto.style.cursor = 'pointer';
-    userPhoto.addEventListener('click', () => {
-      window.open(`https://t.me/${user.username}`, '_blank');
-    });
-  }
-}
+userPhoto.src = user.photo_url || 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+userPhoto.addEventListener('click', function(){
+  if(user.username){ window.open('https://t.me/' + user.username, '_blank'); }
+});
 
 /* --- TonConnect --- */
 const walletBtn = document.getElementById('walletBtn');
-const tonConnect = new TonConnect.TonConnect({
+const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/tonconnect-manifest.json'
 });
-
 async function connectWallet() {
   try {
-    const wallet = await tonConnect.connect();
+    const wallet = await tonConnect.connectWallet();
     const address = wallet.account.address;
     walletBtn.textContent = '...' + address.slice(-4);
     localStorage.setItem('tonWallet', address);
-  } catch(e) {
-    console.log('User canceled or error', e);
-  }
+  } catch(e) { console.log('User canceled or error', e); }
 }
-
 walletBtn.addEventListener('click', connectWallet);
-
 window.addEventListener('load', () => {
   const storedWallet = localStorage.getItem('tonWallet');
-  if (storedWallet) {
-    walletBtn.textContent = '...' + storedWallet.slice(-4);
-  }
+  if (storedWallet) walletBtn.textContent = '...' + storedWallet.slice(-4);
 });
 
 /* --- Навигация и модалки --- */
@@ -261,14 +231,12 @@ function openGame(name){
   showPage('game-' + name, null);
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 }
-
 function showRanking(list, btn){
   document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
   document.getElementById(list).style.display='block';
   btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
