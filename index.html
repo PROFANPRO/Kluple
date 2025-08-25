@@ -13,7 +13,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .page-header, .game-header{width:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;padding:14px 15px;font-size:20px;font-weight:bold;box-sizing:border-box;margin:0;position:sticky;top:0;z-index:5}
 .game-header{justify-content:flex-start}
 .back-btn{background:none;border:none;color:white;font-size:26px;font-weight:bold;margin-right:12px;cursor:pointer}
-
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}
 .user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}
@@ -131,7 +130,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Топ -->
 <div id="rating" class="container">
   <div class="page-header">Топ</div>
   <div class="top-buttons">
@@ -154,7 +152,6 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </ul>
 </div>
 
-<!-- Модалки -->
 <div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
@@ -166,6 +163,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     </div>
   </div>
 </div>
+
 <div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
@@ -174,14 +172,12 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
   </div>
 </div>
 
-<!-- Навигация -->
 <div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
   <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
 </div>
 
-<!-- Скрипты -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
 <script>
@@ -195,7 +191,7 @@ userPhoto.addEventListener('click', () => {
   if(user?.username) window.open('https://t.me/' + user.username, '_blank');
 });
 
-// --- TonConnect ---
+// --- TonConnect SDK 2.2.0 ---
 const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 
@@ -203,39 +199,45 @@ const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
 });
 
-// Вспомогательная функция для обновления баланса
+// События подключения/отключения
+tonConnect.onStatusChange((status) => {
+  if(status === 'connected') {
+    const session = tonConnect.connectedWallet;
+    walletBtn.textContent = '...' + session.account.address.slice(-4);
+    updateBalance();
+  } else {
+    walletBtn.textContent = 'Подключить кошелёк';
+    balanceDisplay.textContent = '0 TON';
+  }
+});
+
+// Обновление баланса
 async function updateBalance() {
-  const session = tonConnect.restoreConnection();
-  if (!session) return;
+  if(!tonConnect.connectedWallet) return;
   try {
-    const provider = session.provider;
-    const address = session.account.address;
+    const address = tonConnect.connectedWallet.account.address;
+    const provider = tonConnect.connectedWallet.provider;
     const balanceNano = await provider.request({ method: "ton_getBalance", params: [address] });
     balanceDisplay.textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
-  } catch (e) {
-    console.log('Ошибка получения баланса:', e);
+  } catch(e) {
+    console.error('Ошибка получения баланса:', e);
   }
 }
 
-// Подключение кошелька по клику
-walletBtn.onclick = async function() {
+// Кнопка подключить кошелёк
+walletBtn.addEventListener('click', async () => {
   try {
-    const session = await tonConnect.connectWallet();
-    if (session?.account?.address) {
-      walletBtn.textContent = '...' + session.account.address.slice(-4);
-      updateBalance();
-      console.log('Wallet connected:', session.account.address);
-    }
-  } catch (e) {
+    await tonConnect.connect(); // вызов popup
+  } catch(e) {
     console.log('Подключение отменено или ошибка:', e);
   }
-};
+});
 
 // Восстановление сессии при загрузке
-window.addEventListener('load', () => {
-  const session = tonConnect.restoreConnection();
-  if (session?.account?.address) {
-    walletBtn.textContent = '...' + session.account.address.slice(-4);
+window.addEventListener('load', async () => {
+  await tonConnect.restoreConnection();
+  if(tonConnect.connectedWallet) {
+    walletBtn.textContent = '...' + tonConnect.connectedWallet.account.address.slice(-4);
     updateBalance();
   }
 });
