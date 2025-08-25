@@ -80,12 +80,7 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       </div>
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
-    <p class="balance-value">0
-      <svg class="balance-icon" viewBox="0 0 24 24" fill="#3b82f6">
-        <path d="M12 2L3 20H21L12 2Z" stroke="#3b82f6" stroke-width="2" fill="none"/>
-        <path d="M12 6V18" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </p>
+    <p id="balanceDisplay" class="balance-value">0 TON</p>
   </div>
 
   <div class="row">
@@ -202,31 +197,47 @@ userPhoto.addEventListener('click', () => {
 
 // --- TonConnect ---
 const walletBtn = document.getElementById('walletBtn');
+
 const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
 });
-let connectedWallet = null;
-
-async function connectWallet() {
-  try {
-    connectedWallet = await tonConnect.connectWallet();
-    const address = connectedWallet.account.address;
-    walletBtn.textContent = '...' + address.slice(-4);
-  } catch(e) {
-    console.log('User canceled or error', e);
-  }
-}
-
-walletBtn.addEventListener('click', connectWallet);
 
 // Восстановление сессии
 window.addEventListener('load', async () => {
   const session = tonConnect.restoreConnection();
   if(session) {
-    connectedWallet = session;
-    walletBtn.textContent = '...' + connectedWallet.account.address.slice(-4);
+    walletBtn.textContent = '...' + session.account.address.slice(-4);
+    updateBalance();
   }
 });
+
+// Подключение кошелька
+walletBtn.addEventListener('click', async () => {
+  try {
+    const session = await tonConnect.connectWallet();
+    if(session?.account?.address) {
+      walletBtn.textContent = '...' + session.account.address.slice(-4);
+      updateBalance();
+      console.log('Wallet connected:', session.account.address);
+    }
+  } catch(e) {
+    console.log('User canceled or error:', e);
+  }
+});
+
+// Обновление баланса
+async function updateBalance() {
+  const session = tonConnect.restoreConnection();
+  if(!session) return;
+  try {
+    const provider = session.provider;
+    const address = session.account.address;
+    const balanceNano = await provider.request({ method: "ton_getBalance", params: [address] });
+    document.getElementById('balanceDisplay').textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
+  } catch(e) {
+    console.log('Ошибка получения баланса:', e);
+  }
+}
 
 // --- Навигация и модалки ---
 function showPage(id, nav){
