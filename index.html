@@ -187,48 +187,56 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
 <script>
-let tg = window.Telegram?.WebApp;
-tg?.expand();
-let user = tg?.initDataUnsafe?.user;
-const userPhoto = document.getElementById('userPhoto');
-if(user?.photo_url) userPhoto.src = user.photo_url;
-userPhoto.addEventListener('click', () => {
-  if(user?.username) window.open('https://t.me/' + user.username, '_blank');
-});
+(async () => {
+  const tg = window.Telegram?.WebApp;
+  tg?.expand();
+  const user = tg?.initDataUnsafe?.user;
+  const userPhoto = document.getElementById('userPhoto');
+  if(user?.photo_url) userPhoto.src = user.photo_url;
+  userPhoto.addEventListener('click', () => {
+    if(user?.username) window.open('https://t.me/' + user.username, '_blank');
+  });
 
-// TonConnect
-const walletBtn = document.getElementById('walletBtn');
-const tonConnect = new TonConnectSDK.TonConnect({
-  manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
-});
+  const walletBtn = document.getElementById('walletBtn');
+  const tonConnect = new TonConnectSDK.TonConnect({
+    manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
+  });
 
-// Подключение кошелька
-walletBtn.addEventListener('click', async () => {
   try {
-    const session = await tonConnect.connectWallet();
+    const session = await tonConnect.restoreConnection();
     if(session?.account?.address) {
       walletBtn.textContent = '...' + session.account.address.slice(-4);
-      updateBalance();
-      console.log('Wallet connected:', session.account.address);
+      await updateBalance(session);
     }
   } catch(e) {
-    console.log('User canceled or error:', e);
+    console.log('Ошибка восстановления сессии:', e);
   }
-});
 
-// Баланс
-async function updateBalance() {
-  const session = tonConnect.restoreConnection();
-  if(!session) return;
-  try {
-    const provider = session.provider;
-    const address = session.account.address;
-    const balanceNano = await provider.request({ method: "ton_getBalance", params: [address] });
-    document.getElementById('balanceDisplay').textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
-  } catch(e) {
-    console.log('Ошибка получения баланса:', e);
+  walletBtn.addEventListener('click', async () => {
+    try {
+      const session = await tonConnect.connectWallet();
+      if(session?.account?.address) {
+        walletBtn.textContent = '...' + session.account.address.slice(-4);
+        await updateBalance(session);
+        console.log('Wallet connected:', session.account.address);
+      }
+    } catch(e) {
+      console.log('Пользователь отменил подключение или ошибка:', e);
+    }
+  });
+
+  async function updateBalance(session) {
+    if(!session) return;
+    try {
+      const provider = session.provider;
+      const address = session.account.address;
+      const balanceNano = await provider.request({ method: "ton_getBalance", params: [address] });
+      document.getElementById('balanceDisplay').textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
+    } catch(e) {
+      console.log('Ошибка получения баланса:', e);
+    }
   }
-}
+})();
 
 // Navigation & modals
 function showPage(id, nav){
