@@ -205,20 +205,27 @@ const walletBtn = document.getElementById('walletBtn');
 const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
 });
+let connectedWallet = null;
+
 async function connectWallet() {
   try {
-    const wallet = await tonConnect.connectWallet();
-    const address = wallet.account.address;
+    connectedWallet = await tonConnect.connectWallet();
+    const address = connectedWallet.account.address;
     walletBtn.textContent = '...' + address.slice(-4);
-    localStorage.setItem('tonWallet', address);
   } catch(e) {
     console.log('User canceled or error', e);
   }
 }
+
 walletBtn.addEventListener('click', connectWallet);
-window.addEventListener('load', () => {
-  const storedWallet = localStorage.getItem('tonWallet');
-  if(storedWallet) walletBtn.textContent = '...' + storedWallet.slice(-4);
+
+// Восстановление сессии
+window.addEventListener('load', async () => {
+  const session = tonConnect.restoreConnection();
+  if(session) {
+    connectedWallet = session;
+    walletBtn.textContent = '...' + connectedWallet.account.address.slice(-4);
+  }
 });
 
 // --- Навигация и модалки ---
