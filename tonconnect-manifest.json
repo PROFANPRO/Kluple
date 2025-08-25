@@ -1,6 +1,10 @@
 {
   "name": "WC Game",
-  "description": "Онлайн игра с подключением кошелька TON через TonConnect",
-  "iconUrl": "https://cdn-icons-png.flaticon.com/512/847/847969.png",
-  "requiredPermissions": ["tonclient.sendTransaction"]
+  "description": "Мини-игра с TON кошельком",
+  "icon": "https://raw.githubusercontent.com/PROFANPRO/Kluple/main/icon.png",
+  "categories": ["games"],
+  "developer": {
+    "name": "Ваш никнейм",
+    "url": "https://t.me/kluple"
+  }
 }
