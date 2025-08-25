@@ -197,47 +197,48 @@ userPhoto.addEventListener('click', () => {
 
 // --- TonConnect ---
 const walletBtn = document.getElementById('walletBtn');
+const balanceDisplay = document.getElementById('balanceDisplay');
 
 const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/tonconnect-manifest.json'
 });
 
-// Восстановление сессии
-window.addEventListener('load', async () => {
-  const session = tonConnect.restoreConnection();
-  if(session) {
-    walletBtn.textContent = '...' + session.account.address.slice(-4);
-    updateBalance();
-  }
-});
-
-// Подключение кошелька
-walletBtn.addEventListener('click', async () => {
-  try {
-    const session = await tonConnect.connectWallet();
-    if(session?.account?.address) {
-      walletBtn.textContent = '...' + session.account.address.slice(-4);
-      updateBalance();
-      console.log('Wallet connected:', session.account.address);
-    }
-  } catch(e) {
-    console.log('User canceled or error:', e);
-  }
-});
-
-// Обновление баланса
+// Вспомогательная функция для обновления баланса
 async function updateBalance() {
   const session = tonConnect.restoreConnection();
-  if(!session) return;
+  if (!session) return;
   try {
     const provider = session.provider;
     const address = session.account.address;
     const balanceNano = await provider.request({ method: "ton_getBalance", params: [address] });
-    document.getElementById('balanceDisplay').textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
-  } catch(e) {
+    balanceDisplay.textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
+  } catch (e) {
     console.log('Ошибка получения баланса:', e);
   }
 }
+
+// Подключение кошелька по клику
+walletBtn.onclick = async function() {
+  try {
+    const session = await tonConnect.connectWallet();
+    if (session?.account?.address) {
+      walletBtn.textContent = '...' + session.account.address.slice(-4);
+      updateBalance();
+      console.log('Wallet connected:', session.account.address);
+    }
+  } catch (e) {
+    console.log('Подключение отменено или ошибка:', e);
+  }
+};
+
+// Восстановление сессии при загрузке
+window.addEventListener('load', () => {
+  const session = tonConnect.restoreConnection();
+  if (session?.account?.address) {
+    walletBtn.textContent = '...' + session.account.address.slice(-4);
+    updateBalance();
+  }
+});
 
 // --- Навигация и модалки ---
 function showPage(id, nav){
