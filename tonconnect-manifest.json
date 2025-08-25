@@ -1,0 +1,6 @@
+{
+  "name": "WC Game",
+  "description": "Онлайн игра с подключением кошелька TON через TonConnect",
+  "iconUrl": "https://cdn-icons-png.flaticon.com/512/847/847969.png",
+  "requiredPermissions": ["tonclient.sendTransaction"]
+}
