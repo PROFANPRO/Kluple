@@ -1,10 +1,12 @@
 {
+  "manifest_version": 1,
   "name": "WC Game",
   "description": "Мини-игра с TON кошельком",
   "icon": "https://raw.githubusercontent.com/PROFANPRO/Kluple/main/icon.png",
   "categories": ["games"],
+  "homepage": "https://kluple.vercel.app/",
   "developer": {
-    "name": "Ваш никнейм",
+    "name": "kluple",
     "url": "https://t.me/kluplegame_bot"
   }
 }
