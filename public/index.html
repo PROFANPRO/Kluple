@@ -184,73 +184,73 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 
 <!-- Scripts -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect.umd.min.js"></script>
+<script src="https://unpkg.com/@tonconnect/sdk@2.3.0/dist/tonconnect.umd.min.js"></script>
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+const tg = window.Telegram?.WebApp;
+tg?.expand();
 
 // Telegram user avatar / profile
-let user = tg.initDataUnsafe?.user;
+let user = tg?.initDataUnsafe?.user;
 const userPhoto = document.getElementById('userPhoto');
-if (user?.photo_url) userPhoto.src = user.photo_url;
+if(user?.photo_url) userPhoto.src = user.photo_url;
 userPhoto.addEventListener('click', () => {
-  if (user?.username) window.open('https://t.me/' + user.username, '_blank');
+  if(user?.username) window.open('https://t.me/' + user.username, '_blank');
 });
 
 // ===== TON Connect =====
 const walletBtn = document.getElementById('walletBtn');
 
-// ВАЖНО: замените manifestUrl на ваш публичный HTTPS-адрес манифеста
+// Инициализация TonConnect
 const tonConnect = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
-// Восстановление сессии при загрузке
-window.addEventListener('load', initWallet);
+console.log('TonConnectSDK loaded:', TonConnectSDK, tonConnect);
 
-async function initWallet() {
+// Восстановление сессии при загрузке
+window.addEventListener('load', async () => {
   try {
     const session = await tonConnect.restoreConnection();
-    if (session?.account?.address) {
+    if(session?.account?.address){
       setWalletUi(session.account.address);
-      updateBalance(session);
+      await updateBalance(session);
     }
-  } catch (e) {
+  } catch(e){
     console.error('Ошибка восстановления сессии:', e);
-  }
-}
-
-// Клик по кнопке "Подключить кошелёк"
-walletBtn.addEventListener('click', async () => {
-  try {
-    const session = await tonConnect.connectWallet();
-    if (session?.account?.address) {
-      setWalletUi(session.account.address);
-      updateBalance(session);
-      console.log('Wallet connected:', session.account.address);
-    }
-  } catch (e) {
-    // Пользователь мог отменить — это не ошибка
-    console.warn('Подключение отменено или ошибка:', e?.message || e);
   }
 });
 
-function setWalletUi(address) {
+// Подключение кошелька
+walletBtn.onclick = async () => {
+  console.log('Click wallet');
+  try {
+    const session = await tonConnect.connectWallet();
+    console.log('Session:', session);
+    if(session?.account?.address){
+      setWalletUi(session.account.address);
+      await updateBalance(session);
+    }
+  } catch(e){
+    console.warn('Подключение отменено или ошибка:', e?.message || e);
+  }
+};
+
+function setWalletUi(address){
   walletBtn.textContent = '...' + address.slice(-4);
 }
 
 // Обновление баланса
-async function updateBalance(session) {
-  if (!session?.account?.address) return;
+async function updateBalance(session){
+  if(!session?.account?.address) return;
   try {
     const provider = session.provider;
     const balanceNano = await provider.request({
       method: "ton_getBalance",
       params: [session.account.address]
     });
-    const ton = (Number(balanceNano) / 1e9).toFixed(4);
+    const ton = (Number(balanceNano)/1e9).toFixed(4);
     document.getElementById('balanceDisplay').textContent = ton + ' TON';
-  } catch (e) {
+  } catch(e){
     console.error('Ошибка получения баланса:', e);
   }
 }
@@ -264,10 +264,9 @@ function showPage(id, nav){
 }
 
 function openGame(name){
-  // Если будут отдельные страницы игр вида #game-*, покажет их
   const pageId = 'game-' + name;
   const page = document.getElementById(pageId);
-  if (page) {
+  if(page){
     showPage(pageId, null);
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   }
