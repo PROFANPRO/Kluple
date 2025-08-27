@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "name": "WC Game",
   "description": "Мини-игра с TON кошельком",
-  "icon": "https://raw.githubusercontent.com/PROFANPRO/Kluple/main/icon.png",
+  "icon": "https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/icon.png",
   "categories": ["games"],
   "homepage": "https://kluple.vercel.app/",
   "developer": {
