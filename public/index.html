@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
 <title>WC Game</title>
 <style>
+/* === Стили оставлены без изменений === */
 body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:hidden}
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}
@@ -188,72 +189,97 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+// Telegram user avatar / profile
 let user = tg.initDataUnsafe?.user;
 const userPhoto = document.getElementById('userPhoto');
-if(user?.photo_url) userPhoto.src = user.photo_url;
+if (user?.photo_url) userPhoto.src = user.photo_url;
 userPhoto.addEventListener('click', () => {
-  if(user?.username) window.open('https://t.me/' + user.username, '_blank');
+  if (user?.username) window.open('https://t.me/' + user.username, '_blank');
 });
 
-// TonConnect
+// ===== TON Connect =====
 const walletBtn = document.getElementById('walletBtn');
+
+// ВАЖНО: замените manifestUrl на ваш публичный HTTPS-адрес манифеста
 const tonConnect = new TonConnectSDK.TonConnect({
-  manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/public/tonconnect-manifest.json' // публичный URL!
+  manifestUrl: 'https://your-domain.com/tonconnect-manifest.json'
 });
 
-// Восстановление сессии
-window.addEventListener('load', async () => {
-  const session = await tonConnect.restoreConnection();
-  if(session?.account?.address) {
-    walletBtn.textContent = '...' + session.account.address.slice(-4);
-    updateBalance();
+// Восстановление сессии при загрузке
+window.addEventListener('load', initWallet);
+
+async function initWallet() {
+  try {
+    const session = await tonConnect.restoreConnection();
+    if (session?.account?.address) {
+      setWalletUi(session.account.address);
+      updateBalance(session);
+    }
+  } catch (e) {
+    console.error('Ошибка восстановления сессии:', e);
   }
-});
+}
 
-// Подключение кошелька
+// Клик по кнопке "Подключить кошелёк"
 walletBtn.addEventListener('click', async () => {
   try {
     const session = await tonConnect.connectWallet();
-    if(session?.account?.address) {
-      walletBtn.textContent = '...' + session.account.address.slice(-4);
-      updateBalance();
+    if (session?.account?.address) {
+      setWalletUi(session.account.address);
+      updateBalance(session);
       console.log('Wallet connected:', session.account.address);
     }
-  } catch(e) {
-    console.error('User canceled or error:', e);
+  } catch (e) {
+    // Пользователь мог отменить — это не ошибка
+    console.warn('Подключение отменено или ошибка:', e?.message || e);
   }
 });
 
-// Баланс
-async function updateBalance() {
-  const session = await tonConnect.restoreConnection();
-  if(!session) return;
+function setWalletUi(address) {
+  walletBtn.textContent = '...' + address.slice(-4);
+}
+
+// Обновление баланса
+async function updateBalance(session) {
+  if (!session?.account?.address) return;
   try {
     const provider = session.provider;
-    const balanceNano = await provider.request({ method: "ton_getBalance", params: [session.account.address] });
-    document.getElementById('balanceDisplay').textContent = (balanceNano / 1e9).toFixed(4) + ' TON';
-  } catch(e) {
+    const balanceNano = await provider.request({
+      method: "ton_getBalance",
+      params: [session.account.address]
+    });
+    const ton = (Number(balanceNano) / 1e9).toFixed(4);
+    document.getElementById('balanceDisplay').textContent = ton + ' TON';
+  } catch (e) {
     console.error('Ошибка получения баланса:', e);
   }
 }
 
-// Navigation & modals
+// ===== Навигация / модалки / прочее =====
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if(nav) nav.classList.add('active');
 }
+
 function openGame(name){
-  showPage('game-' + name, null);
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  // Если будут отдельные страницы игр вида #game-*, покажет их
+  const pageId = 'game-' + name;
+  const page = document.getElementById(pageId);
+  if (page) {
+    showPage(pageId, null);
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  }
 }
+
 function showRanking(list, btn){
   document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
   document.getElementById(list).style.display='block';
   btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
+
 function openPromoModal(){document.getElementById('promoModal').style.display='flex';}
 function closePromoModal(){document.getElementById('promoModal').style.display='none';}
 function openMenu(){document.getElementById('menuModal').style.display='flex';}
