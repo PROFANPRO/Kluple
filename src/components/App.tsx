@@ -1,8 +1,8 @@
 import React from "react";
-import WalletButton from "./components/WalletButton";
-import Balance from "./components/Balance";
-import SendTx from "./components/SendTx";
-import Sign from "./components/Sign";
+import WalletButton from "./WalletButton";
+import Balance from "./Balance";
+import SendTx from "./SendTx";
+import Sign from "./Sign";
 
 export default function App() {
   return (
