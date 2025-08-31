@@ -1,18 +1,21 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
 <title>WC Game</title>
 <style>
-/* === Базовые стили (ваши, без изменений по смыслу) === */
+/* === Базовые стили === */
 body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:hidden}
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}
 @keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}
 .container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease;min-height:100vh;box-sizing:border-box}
 .container.active{display:flex;opacity:1}
+/* === Заголовки === */
 .page-header,.game-header{width:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;padding:14px 15px;font-size:20px;font-weight:bold;box-sizing:border-box;margin:0;position:sticky;top:0;z-index:5}
 .game-header{justify-content:flex-start}
 .back-btn{background:none;border:none;color:white;font-size:26px;font-weight:bold;margin-right:12px;cursor:pointer}
+/* === Карточки баланса === */
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}
 .user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}
 .user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}
@@ -22,10 +25,12 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .wallet-btn{background:#3b82f6;color:white;font-weight:bold;font-size:13px;padding:5px 12px;border-radius:12px;cursor:pointer;white-space:nowrap}
 .balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}
 .balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}
+/* === Меню === */
 .menu-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:20}
 .menu-content{background:#4b5563;padding:20px;border-radius:12px;width:80%;max-width:300px;color:white;text-align:center;position:relative}
 .menu-content h3{margin-top:0;margin-bottom:15px}
 .menu-close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
+/* === Ряд карточек === */
 .row{display:flex;gap:15px;justify-content:center;width:90%;max-width:400px;margin:0 auto}
 .row .card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}
 .container>.card{width:90%;max-width:400px}
@@ -34,12 +39,15 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .orange{background:#f97316}
 .light-blue{background:#3b82f6}
 .icon-circle{background:white;color:black;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:28px}
+/* === Карточки дополнительного цвета === */
 .card.orange,.card.light-blue{border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px 0;cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}
 .card.orange p,.card.light-blue p{text-align:center;font-weight:600;margin:0;margin-top:8px}
+/* === Bottom Nav === */
 .bottom-nav{position:fixed;bottom:0;width:100%;background:#1e293b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #000;z-index:2}
 .nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .nav-item span{font-size:26px;margin-bottom:4px}
 .nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}
+/* === Игры === */
 .games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;width:100%}
 .game-wrapper{display:flex;flex-direction:column;width:100%;border:2px solid #000;border-radius:20px;overflow:hidden;background:#000;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .2s ease, box-shadow .2s ease;cursor:pointer}
 .game-wrapper:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.5)}
@@ -47,12 +55,15 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .game-card{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#1e293b}
 .game-card img{width:100%;height:100%;object-fit:cover;display:block}
 .game-label{width:100%;text-align:center;background:#000;color:#fff;font-weight:bold;font-size:16px;padding:8px 0}
+/* === Top buttons === */
 .top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}
 .top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}
 .top-buttons button.active{background:#3b82f6;color:white}
+/* === Rank list === */
 .rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}
 .rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}
 .rank-list li:last-child{border-bottom:none}
+/* === Modal === */
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:30}
 .modal-content{background:#1e293b;padding:20px;border-radius:12px;width:80%;max-width:320px;color:white;text-align:center;position:relative;display:flex;flex-direction:column;gap:15px}
 .modal-content h2{margin:0 0 10px 0;font-size:18px;font-weight:bold}
@@ -62,11 +73,24 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .modal-buttons button{flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer}
 .modal-buttons .cancel{background:#ef4444;color:white}
 .modal-buttons .activate{background:#3b82f6;color:white}
-.close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}/* === Модалка выбора кошелька (добавлено) === */ .wallet-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:40} .wallet-box{background:#1e293b;padding:20px;border-radius:16px;width:90%;max-width:360px;color:#fff} .wallet-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow:auto} .wallet-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:#0f172a;cursor:pointer;border:1px solid #334155;transition:transform .15s ease, box-shadow .2s ease} .wallet-item img{width:28px;height:28px;border-radius:6px} .wallet-item:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.4)} .wallet-title{margin:0 0 10px 0;font-size:18px;font-weight:bold} </style>
-
+.close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}
+/* === Wallet modal === */
+.wallet-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:40}
+.wallet-box{background:#1e293b;padding:20px;border-radius:16px;width:90%;max-width:360px;color:#fff}
+.wallet-list{display:flex;flex-direction:column;gap:10px;max-height:60vh;overflow:auto}
+.wallet-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:#0f172a;cursor:pointer;border:1px solid #334155;transition:transform .15s ease, box-shadow .2s ease}
+.wallet-item img{width:28px;height:28px;border-radius:6px}
+.wallet-item:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.wallet-title{margin:0 0 10px 0;font-size:18px;font-weight:bold}
+/* === Deposit/Withdraw modals === */
+#depositModal, #withdrawModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:50}
+</style>
 </head>
 <body>
-<div class="stars"></div><!-- Home --><div id="home" class="container active">
+<div class="stars"></div>
+
+<!-- Home -->
+<div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
       <div class="user-left">
@@ -78,17 +102,26 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
     <p id="balanceDisplay" class="balance-value">0 TON</p>
-  </div>  <div class="row">
+  </div>
+
+  <div class="row">
     <div class="card green"><div class="icon-circle">⬇️</div></div>
     <div class="card red"><div class="icon-circle">⬆️</div></div>
-  </div>  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+  </div>
+
+  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
     <div class="icon-circle">🏆</div>
     <p>Топ</p>
-  </div>  <div class="card light-blue" onclick="openPromoModal()">
+  </div>
+
+  <div class="card light-blue" onclick="openPromoModal()">
     <div class="icon-circle">🎁</div>
     <p>Промокод</p>
   </div>
-</div><!-- Games --><div id="games" class="container">
+</div>
+
+<!-- Games -->
+<div id="games" class="container">
   <div class="page-header">Игры</div>
   <div class="games-grid">
     <div class="game-wrapper" onclick="openGame('roulette')">
@@ -118,7 +151,10 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       <div class="game-label">Колесо удачи</div>
     </div>
   </div>
-</div><!-- Rating --><div id="rating" class="container">
+</div>
+
+<!-- Rating -->
+<div id="rating" class="container">
   <div class="page-header">Топ</div>
   <div class="top-buttons">
     <button onclick="showRanking('week', this)" class="active">Неделя</button>
@@ -138,7 +174,10 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     <li><span>4. ИгрокD</span><span>0</span></li>
     <li><span>5. ИгрокE</span><span>0</span></li>
   </ul>
-</div><!-- Promo Modal --><div id="promoModal" class="modal">
+</div>
+
+<!-- Promo Modal -->
+<div id="promoModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closePromoModal()">&times;</span>
     <h2>Введите промокод</h2>
@@ -148,13 +187,45 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
       <button class="activate" onclick="alert('Промокод активирован!')">Активировать</button>
     </div>
   </div>
-</div><!-- Menu --><div class="menu-modal" id="menuModal">
+</div>
+
+<!-- Deposit Modal -->
+<div id="depositModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeDepositModal()">&times;</span>
+    <h2>Введите сумму депозита</h2>
+    <input type="number" id="depositAmount" placeholder="Сумма в TON">
+    <div class="modal-buttons">
+      <button class="cancel" onclick="closeDepositModal()">Отмена</button>
+      <button class="activate" onclick="confirmDeposit()">Перевести</button>
+    </div>
+  </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div id="withdrawModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeWithdrawModal()">&times;</span>
+    <h2>Введите сумму вывода</h2>
+    <input type="number" id="withdrawAmount" placeholder="Сумма в TON">
+    <div class="modal-buttons">
+      <button class="cancel" onclick="closeWithdrawModal()">Отмена</button>
+      <button class="activate" onclick="confirmWithdraw()">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Menu -->
+<div class="menu-modal" id="menuModal">
   <div class="menu-content">
     <span class="menu-close" onclick="closeMenu()">&times;</span>
     <h3>Меню</h3>
     <p>Здесь будут настройки</p>
   </div>
-</div><!-- Wallets Modal (TonConnect SDK) --><div id="walletModal" class="wallet-modal">
+</div>
+
+<!-- Wallet Modal -->
+<div id="walletModal" class="wallet-modal">
   <div class="wallet-box">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
       <h3 class="wallet-title">Выберите кошелёк</h3>
@@ -162,15 +233,21 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
     </div>
     <div id="walletList" class="wallet-list"></div>
   </div>
-</div><!-- Bottom Navigation --><div class="bottom-nav">
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
   <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
   <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
-</div><!-- Scripts --><script src="https://telegram.org/js/telegram-web-app.js"></script><!-- TonConnect SDK по README: глобальная переменная TonConnectSDK --><script src="https://unpkg.com/@tonconnect/sdk@3.2.0/dist/tonconnect-sdk.min.js"></script><script>
+</div>
+
+<!-- Scripts -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://unpkg.com/@tonconnect/sdk@3.2.0/dist/tonconnect-sdk.min.js"></script>
+<script>
 // === Telegram WebApp ===
 const tg = window.Telegram?.WebApp; tg?.expand();
-
-// Telegram user avatar / profile
 const userPhoto = document.getElementById('userPhoto');
 const user = tg?.initDataUnsafe?.user;
 if (user?.photo_url) userPhoto.src = user.photo_url;
@@ -180,19 +257,18 @@ userPhoto.addEventListener('click', () => { if (user?.username) window.open('htt
 const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 
-// Инициализация коннектора по README SDK (manifestUrl можно оставить как у вас)
+// Инициализация коннектора
 const connector = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
-// Реакция на изменение статуса соединения
+// Отслеживание статуса подключения
 connector.onStatusChange((wallet) => {
   if (wallet) {
-    const raw = wallet.account.address; // "0:..."
     let friendly;
-    try { friendly = TonConnectSDK.toUserFriendlyAddress(raw); } catch { friendly = raw; }
+    try { friendly = TonConnectSDK.toUserFriendlyAddress(wallet.account.address); } 
+    catch { friendly = wallet.account.address; }
     setWalletUi(friendly);
-    // Попробуем обновить баланс (best-effort, без ключа API может быть ограничение)
     updateBalanceByPublicAPIs(friendly);
     closeWalletModal();
   } else {
@@ -201,128 +277,75 @@ connector.onStatusChange((wallet) => {
   }
 });
 
-// Восстановление сессии при загрузке
+// Восстановление сессии
 window.addEventListener('load', async () => {
   try { await connector.restoreConnection(); } catch(e){ console.warn('restoreConnection error:', e); }
 });
 
-// Клик по кнопке подключения — показываем список кошельков (SDK не даёт встроенной модалки)
+// Подключение кошелька
 walletBtn.onclick = async () => {
-  try {
-    // Если уже подключены — ничего не делаем (можно добавить disconnect в меню)
-    if (connector.connected && connector.wallet?.account?.address) return;
-    openWalletModal();
-    await renderWalletList();
-  } catch (e) {
-    console.warn('open wallets list error:', e);
-  }
+  if (connector.connected && connector.wallet?.account?.address) return;
+  openWalletModal();
+  await renderWalletList();
 };
 
 function setWalletUi(friendlyAddress){
-  // EQB... формат, укоротим для кнопки
   const short = friendlyAddress.length > 12 ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) : friendlyAddress;
   walletBtn.textContent = short;
 }
 
-// Рендерим список кошельков из SDK и подключаемся согласно README (remote / injected / embedded)
 async function renderWalletList(){
   const listEl = document.getElementById('walletList');
   listEl.innerHTML = '<div style="opacity:.7;">Загрузка списка кошельков…</div>';
   let wallets = [];
-  try {
-    wallets = await connector.getWallets();
-  } catch(e){
-    console.error('getWallets error:', e);
-  }
-  if (!Array.isArray(wallets) || wallets.length === 0){
-    listEl.innerHTML = '<div style="opacity:.8;">Кошельки не найдены. Попробуйте ещё раз.</div>';
-    return;
-  }
+  try { wallets = await connector.getWallets(); } catch(e){ console.error(e); }
+  if (!wallets.length){ listEl.innerHTML = '<div style="opacity:.8;">Кошельки не найдены.</div>'; return; }
   listEl.innerHTML = '';
   wallets.forEach((w) => {
     const item = document.createElement('div');
     item.className = 'wallet-item';
     const icon = w.imageUrl ? `<img src="${w.imageUrl}" alt="${w.name}">` : '<div style="width:28px;height:28px;border-radius:6px;background:#334155"></div>';
-    item.innerHTML = `${icon}<div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:600">${w.name}</div>${w.tondns ? `<div style=\"opacity:.7;font-size:12px\">${w.tondns}</div>` : ''}</div>`;
-
+    item.innerHTML = `${icon}<div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:600">${w.name}</div>${w.tondns ? `<div style="opacity:.7;font-size:12px">${w.tondns}</div>` : ''}</div>`;
     item.onclick = () => connectByWalletInfo(w);
     listEl.appendChild(item);
   });
 }
 
 function connectByWalletInfo(w){
-  try{
-    // 1) Если приложение открыто внутри браузера кошелька
-    if (TonConnectSDK.isWalletInfoCurrentlyEmbedded?.(w)) {
+  try {
+    if (TonConnectSDK.isWalletInfoCurrentlyEmbedded?.(w) || TonConnectSDK.isWalletInfoCurrentlyInjected?.(w)) {
       connector.connect({ jsBridgeKey: w.jsBridgeKey });
       return;
     }
-    // 2) Если кошелёк инжектирован (например, расширение)
-    if (TonConnectSDK.isWalletInfoCurrentlyInjected?.(w)) {
-      connector.connect({ jsBridgeKey: w.jsBridgeKey });
-      return;
-    }
-    // 3) Обычный удалённый кошелёк через универсальную ссылку + bridge
     if (TonConnectSDK.isWalletInfoRemote?.(w)) {
       const link = connector.connect({ universalLink: w.universalLink, bridgeUrl: w.bridgeUrl });
-      if (link) {
-        if (tg?.openLink) tg.openLink(link);
-        else window.open(link, '_blank', 'noopener');
-      }
+      if (link) { if (tg?.openLink) tg.openLink(link); else window.open(link, '_blank','noopener'); }
       return;
     }
-  } catch(e){ console.error('connect error:', e); }
+  } catch(e){ console.error(e); }
 }
 
-// Обновление баланса через публичные API (best-effort)
 async function updateBalanceByPublicAPIs(friendlyAddress){
-  // 1) Попробуем TonAPI v2
   try {
     const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(friendlyAddress)}`);
-    if (r.ok){
-      const j = await r.json();
-      const nano = (j && (j.balance ?? j.account?.balance));
-      if (typeof nano === 'number' || typeof nano === 'string'){
-        const ton = (Number(nano)/1e9).toFixed(4);
-        balanceDisplay.textContent = ton + ' TON';
-        return;
-      }
-    }
+    if (r.ok){ const j = await r.json(); const nano = j?.balance ?? j?.account?.balance; if(nano!==undefined){ balanceDisplay.textContent = (Number(nano)/1e9).toFixed(4)+' TON'; return; } }
   } catch {}
-  // 2) Фоллбэк Toncenter v2
   try {
     const r2 = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${encodeURIComponent(friendlyAddress)}`);
-    if (r2.ok){
-      const j2 = await r2.json();
-      const nano2 = j2?.result ?? j2?.balance;
-      if (nano2 !== undefined){
-        const ton2 = (Number(nano2)/1e9).toFixed(4);
-        balanceDisplay.textContent = ton2 + ' TON';
-        return;
-      }
-    }
+    if(r2.ok){ const j2 = await r2.json(); const nano2 = j2?.result ?? j2?.balance; if(nano2!==undefined){ balanceDisplay.textContent=(Number(nano2)/1e9).toFixed(4)+' TON'; return; } }
   } catch {}
 }
 
-// ===== Навигация / модалки / прочее =====
+// ===== Navigation / modals =====
 function showPage(id, nav){
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (nav) nav.classList.add('active');
+  if(nav) nav.classList.add('active');
 }
 
-function openGame(name){
-  const pageId = 'game-' + name; const page = document.getElementById(pageId);
-  if (page){ showPage(pageId, null); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); }
-}
-
-function showRanking(list, btn){
-  document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');
-  document.getElementById(list).style.display='block';
-  btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+function openGame(name){ const pageId='game-'+name; const page=document.getElementById(pageId); if(page){ showPage(pageId,null); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); } }
+function showRanking(list, btn){ document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); document.getElementById(list).style.display='block'; btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
 
 function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
 function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
@@ -330,5 +353,48 @@ function openMenu(){ document.getElementById('menuModal').style.display='flex'; 
 function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
 function openWalletModal(){ document.getElementById('walletModal').style.display='flex'; }
 function closeWalletModal(){ document.getElementById('walletModal').style.display='none'; }
-</script></body>
+
+// ===== Deposit / Withdraw =====
+const depositModal = document.getElementById('depositModal');
+const withdrawModal = document.getElementById('withdrawModal');
+
+document.querySelector('.card.green').onclick = () => depositModal.style.display='flex';
+document.querySelector('.card.red').onclick = () => withdrawModal.style.display='flex';
+
+function closeDepositModal(){ depositModal.style.display='none'; }
+function closeWithdrawModal(){ withdrawModal.style.display='none'; }
+
+async function confirmDeposit(){
+  const amt = parseFloat(document.getElementById('depositAmount').value);
+  if(!amt || amt<=0){ alert('Введите корректную сумму'); return; }
+  if(!connector.connected || !connector.wallet?.account?.address){ alert('Подключите кошелёк'); return; }
+  try{
+    const transfer = await connector.sendTransaction({
+      recipient: connector.wallet.account.address, 
+      amount: amt.toString() 
+    });
+    alert('Транзакция отправлена!'); 
+    closeDepositModal();
+    setTimeout(()=>updateBalanceByPublicAPIs(connector.wallet.account.address), 3000);
+  } catch(e){ console.error(e); alert('Ошибка при депозите'); }
+}
+
+async function confirmWithdraw(){
+  const amt = parseFloat(document.getElementById('withdrawAmount').value);
+  if(!amt || amt<=0){ alert('Введите корректную сумму'); return; }
+  if(!connector.connected || !connector.wallet?.account?.address){ alert('Подключите кошелёк'); return; }
+  try{
+    const recipient = prompt('Введите адрес для вывода TON:');
+    if(!recipient) return;
+    await connector.sendTransaction({
+      recipient: recipient,
+      amount: amt.toString()
+    });
+    alert('Вывод отправлен!');
+    closeWithdrawModal();
+    setTimeout(()=>updateBalanceByPublicAPIs(connector.wallet.account.address), 3000);
+  } catch(e){ console.error(e); alert('Ошибка при выводе'); }
+}
+</script>
+</body>
 </html>
