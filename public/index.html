@@ -1,11 +1,263 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WC Game</title>
-</head>
-<body>
-  <div id="root"></div>
-</body>
+<!DOCTYPE html>  <html lang="ru">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">  
+<title>WC Game</title>  
+<style>  
+/* === Стили оставлены без изменений === */  
+body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:hidden}  
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent url("https://www.transparenttextures.com/patterns/stardust.png") repeat;animation:twinkle 5s infinite linear;z-index:-1}  
+@keyframes twinkle{from{background-position:0 0}to{background-position:-100px 100px}}  
+.container{display:none;flex-direction:column;align-items:center;gap:15px;padding:15px;opacity:0;transition:opacity .4s ease;min-height:100vh;box-sizing:border-box}  
+.container.active{display:flex;opacity:1}  
+.page-header, .game-header{width:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;padding:14px 15px;font-size:20px;font-weight:bold;box-sizing:border-box;margin:0;position:sticky;top:0;z-index:5}  
+.game-header{justify-content:flex-start}  
+.back-btn{background:none;border:none;color:white;font-size:26px;font-weight:bold;margin-right:12px;cursor:pointer}  
+.balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px}  
+.user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}  
+.user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}  
+.user-left img{width:40px;height:40px;border-radius:50%;cursor:pointer;position:relative;z-index:1}  
+.menu-btn{font-size:22px;cursor:pointer;user-select:none}  
+.wallet-center{display:flex;justify-content:center}  
+.wallet-btn{background:#3b82f6;color:white;font-weight:bold;font-size:13px;padding:5px 12px;border-radius:12px;cursor:pointer;white-space:nowrap}  
+.balance-value{font-size:32px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center}  
+.balance-icon{width:24px;height:24px;transform:rotate(180deg);margin-left:6px}  
+.menu-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:20}  
+.menu-content{background:#4b5563;padding:20px;border-radius:12px;width:80%;max-width:300px;color:white;text-align:center;position:relative}  
+.menu-content h3{margin-top:0;margin-bottom:15px}  
+.menu-close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}  
+.row{display:flex;gap:15px;justify-content:center;width:90%;max-width:400px;margin:0 auto}  
+.row .card{flex:1;height:110px;border-radius:15px;text-align:center;font-size:16px;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s ease, box-shadow .2s ease;cursor:pointer}  
+.container>.card{width:90%;max-width:400px}  
+.green{background:#22c55e}  
+.red{background:#ef4444}  
+.orange{background:#f97316}  
+.light-blue{background:#3b82f6}  
+.icon-circle{background:white;color:black;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;font-size:28px}  
+.card.orange,.card.light-blue{border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:15px 0;cursor:pointer;transition:transform .15s ease, box-shadow .2s ease}  
+.card.orange p,.card.light-blue p{text-align:center;font-weight:600;margin:0;margin-top:8px}  
+.bottom-nav{position:fixed;bottom:0;width:100%;background:#1e293b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #000;z-index:2}  
+.nav-item{text-align:center;font-size:14px;color:#cbd5e1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}  
+.nav-item span{font-size:26px;margin-bottom:4px}  
+.nav-item.active{background:#3b82f6;color:white;border-radius:5px;margin:0 5px}  
+.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;width:100%}  
+.game-wrapper{display:flex;flex-direction:column;width:100%;border:2px solid #000;border-radius:20px;overflow:hidden;background:#000;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .2s ease, box-shadow .2s ease;cursor:pointer}  
+.game-wrapper:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.5)}  
+.game-wrapper:active{transform:scale(.92);box-shadow:0 2px 8px rgba(0,0,0,.4)}  
+.game-card{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;background:#1e293b}  
+.game-card img{width:100%;height:100%;object-fit:cover;display:block}  
+.game-label{width:100%;text-align:center;background:#000;color:#fff;font-weight:bold;font-size:16px;padding:8px 0}  
+.top-buttons{display:flex;justify-content:center;gap:10px;margin:15px 0}  
+.top-buttons button{flex:1;max-width:120px;background:#1e293b;color:#cbd5e1;border:none;padding:10px;border-radius:5px;font-weight:bold;cursor:pointer;transition:.2s}  
+.top-buttons button.active{background:#3b82f6;color:white}  
+.rank-list{display:none;list-style:none;padding:0;margin:0 10px;width:calc(100% - 20px);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.5)}  
+.rank-list li{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #1e293b;font-size:16px;color:white;background:#000}  
+.rank-list li:last-child{border-bottom:none}  
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:30}  
+.modal-content{background:#1e293b;padding:20px;border-radius:12px;width:80%;max-width:320px;color:white;text-align:center;position:relative;display:flex;flex-direction:column;gap:15px}  
+.modal-content h2{margin:0 0 10px 0;font-size:18px;font-weight:bold}  
+.modal-content input{padding:10px;border:none;border-radius:8px;width:100%;box-sizing:border-box;font-size:14px}  
+.modal-content input::placeholder{color:#cbd5e1;opacity:0.6}  
+.modal-buttons{display:flex;justify-content:space-between;gap:10px;margin-top:10px}  
+.modal-buttons button{flex:1;padding:10px;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer}  
+.modal-buttons .cancel{background:#ef4444;color:white}  
+.modal-buttons .activate{background:#3b82f6;color:white}  
+.close{position:absolute;top:10px;right:15px;font-size:22px;cursor:pointer}  
+</style>  
+</head>  
+<body>  
+<div class="stars"></div>  <!-- Home -->  <div id="home" class="container active">  
+  <div class="balance-card">  
+    <div class="user-info">  
+      <div class="user-left">  
+        <img id="userPhoto" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="user">  
+      </div>  
+      <div class="wallet-center">  
+        <div class="wallet-btn" id="walletBtn">Подключить кошелёк</div>  
+      </div>  
+      <div class="menu-btn" onclick="openMenu()">≡</div>  
+    </div>  
+    <p id="balanceDisplay" class="balance-value">0 TON</p>  
+  </div>  
+  <div class="row">  
+    <div class="card green"><div class="icon-circle">⬇️</div></div>  
+    <div class="card red"><div class="icon-circle">⬆️</div></div>  
+  </div>  
+  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">  
+    <div class="icon-circle">🏆</div>  
+    <p>Топ</p>  
+  </div>  
+  <div class="card light-blue" onclick="openPromoModal()">  
+    <div class="icon-circle">🎁</div>  
+    <p>Промокод</p>  
+  </div>  
+</div>  <!-- Games -->  <div id="games" class="container">  
+  <div class="page-header">Игры</div>  
+  <div class="games-grid">  
+    <div class="game-wrapper" onclick="openGame('roulette')">  
+      <div class="game-card">  
+        <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">  
+      </div>  
+      <div class="game-label">Рулетка</div>  
+    </div>  
+    <div class="game-wrapper" onclick="openGame('ninja')">  
+      <div class="game-card">🥷</div>  
+      <div class="game-label">Ниндзя</div>  
+    </div>  
+    <div class="game-wrapper" onclick="openGame('tower')">  
+      <div class="game-card">🗼</div>  
+      <div class="game-label">Башня</div>  
+    </div>  
+    <div class="game-wrapper" onclick="openGame('seven')">  
+      <div class="game-card">7️⃣</div>  
+      <div class="game-label">Под 7 над</div>  
+    </div>  
+    <div class="game-wrapper" onclick="openGame('cs')">  
+      <div class="game-card">🔫</div>  
+      <div class="game-label">CS</div>  
+    </div>  
+    <div class="game-wrapper" onclick="openGame('luck')">  
+      <div class="game-card">🍀</div>  
+      <div class="game-label">Колесо удачи</div>  
+    </div>  
+  </div>  
+</div>  <!-- Rating -->  <div id="rating" class="container">  
+  <div class="page-header">Топ</div>  
+  <div class="top-buttons">  
+    <button onclick="showRanking('week', this)" class="active">Неделя</button>  
+    <button onclick="showRanking('month', this)">Месяц</button>  
+  </div>  
+  <ul id="week" class="rank-list" style="display:block;">  
+    <li><span>1. Игрок1</span><span>0</span></li>  
+    <li><span>2. Игрок2</span><span>0</span></li>  
+    <li><span>3. Игрок3</span><span>0</span></li>  
+    <li><span>4. Игрок4</span><span>0</span></li>  
+    <li><span>5. Игрок5</span><span>0</span></li>  
+  </ul>  
+  <ul id="month" class="rank-list">  
+    <li><span>1. ИгрокA</span><span>0</span></li>  
+    <li><span>2. ИгрокB</span><span>0</span></li>  
+    <li><span>3. ИгрокC</span><span>0</span></li>  
+    <li><span>4. ИгрокD</span><span>0</span></li>  
+    <li><span>5. ИгрокE</span><span>0</span></li>  
+  </ul>  
+</div>  <!-- Promo Modal -->  <div id="promoModal" class="modal">  
+  <div class="modal-content">  
+    <span class="close" onclick="closePromoModal()">&times;</span>  
+    <h2>Введите промокод</h2>  
+    <input type="text" placeholder="Промокод">  
+    <div class="modal-buttons">  
+      <button class="cancel" onclick="closePromoModal()">Отмена</button>  
+      <button class="activate" onclick="alert('Промокод активирован!')">Активировать</button>  
+    </div>  
+  </div>  
+</div>  <!-- Menu -->  <div class="menu-modal" id="menuModal">  
+  <div class="menu-content">  
+    <span class="menu-close" onclick="closeMenu()">&times;</span>  
+    <h3>Меню</h3>  
+    <p>Здесь будут настройки</p>  
+  </div>  
+</div>  <!-- Bottom Navigation -->  <div class="bottom-nav">  
+  <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>  
+  <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>  
+  <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>  
+</div>  <!-- Scripts -->  <script src="https://telegram.org/js/telegram-web-app.js"></script>  <script src="https://unpkg.com/@tonconnect/sdk@2.3.0/dist/tonconnect.umd.min.js"></script>  <script>  
+const tg = window.Telegram?.WebApp;  
+tg?.expand();  
+  
+// Telegram user avatar / profile  
+let user = tg?.initDataUnsafe?.user;  
+const userPhoto = document.getElementById('userPhoto');  
+if(user?.photo_url) userPhoto.src = user.photo_url;  
+userPhoto.addEventListener('click', () => {  
+  if(user?.username) window.open('https://t.me/' + user.username, '_blank');  
+});  
+  
+// ===== TON Connect =====  
+const walletBtn = document.getElementById('walletBtn');  
+  
+// Инициализация TonConnect  
+const tonConnect = new TonConnectSDK.TonConnect({  
+  manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'  
+});  
+  
+console.log('TonConnectSDK loaded:', TonConnectSDK, tonConnect);  
+  
+// Восстановление сессии при загрузке  
+window.addEventListener('load', async () => {  
+  try {  
+    const session = await tonConnect.restoreConnection();  
+    if(session?.account?.address){  
+      setWalletUi(session.account.address);  
+      await updateBalance(session);  
+    }  
+  } catch(e){  
+    console.error('Ошибка восстановления сессии:', e);  
+  }  
+});  
+  
+// Подключение кошелька  
+walletBtn.onclick = async () => {  
+  console.log('Click wallet');  
+  try {  
+    const session = await tonConnect.connectWallet();  
+    console.log('Session:', session);  
+    if(session?.account?.address){  
+      setWalletUi(session.account.address);  
+      await updateBalance(session);  
+    }  
+  } catch(e){  
+    console.warn('Подключение отменено или ошибка:', e?.message || e);  
+  }  
+};  
+  
+function setWalletUi(address){  
+  walletBtn.textContent = '...' + address.slice(-4);  
+}  
+  
+// Обновление баланса  
+async function updateBalance(session){  
+  if(!session?.account?.address) return;  
+  try {  
+    const provider = session.provider;  
+    const balanceNano = await provider.request({  
+      method: "ton_getBalance",  
+      params: [session.account.address]  
+    });  
+    const ton = (Number(balanceNano)/1e9).toFixed(4);  
+    document.getElementById('balanceDisplay').textContent = ton + ' TON';  
+  } catch(e){  
+    console.error('Ошибка получения баланса:', e);  
+  }  
+}  
+  
+// ===== Навигация / модалки / прочее =====  
+function showPage(id, nav){  
+  document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));  
+  document.getElementById(id).classList.add('active');  
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));  
+  if(nav) nav.classList.add('active');  
+}  
+  
+function openGame(name){  
+  const pageId = 'game-' + name;  
+  const page = document.getElementById(pageId);  
+  if(page){  
+    showPage(pageId, null);  
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));  
+  }  
+}  
+  
+function showRanking(list, btn){  
+  document.querySelectorAll('.rank-list').forEach(l => l.style.display='none');  
+  document.getElementById(list).style.display='block';  
+  btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));  
+  btn.classList.add('active');  
+}  
+  
+function openPromoModal(){document.getElementById('promoModal').style.display='flex';}  
+function closePromoModal(){document.getElementById('promoModal').style.display='none';}  
+function openMenu(){document.getElementById('menuModal').style.display='flex';}  
+function closeMenu(){document.getElementById('menuModal').style.display='none';}  
+</script>  </body>  
 </html>
