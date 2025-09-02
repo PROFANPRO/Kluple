@@ -20,11 +20,14 @@ const initializeUserConnector = (userId) => {
     userWallets[userId] = new TonConnectSDK.TonConnect({
       manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
     });
+    
+    // Отслеживание статуса подключения для конкретного пользователя
+    userWallets[userId].onStatusChange = (wallet) => handleStatusChange(wallet, userId);
   }
   return userWallets[userId];
 };
 
-// Отслеживание статуса подключения
+// Отслеживание статуса подключения для конкретного пользователя
 const handleStatusChange = (wallet, userId) => {
   if (wallet) {
     let friendly;
