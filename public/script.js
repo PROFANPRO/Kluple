@@ -12,15 +12,10 @@ const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 
 // Инициализация коннектора
-const connector = new TonConnectSDK.TonConnect({
-  manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
-});
-
-// Модуль для хранения нескольких пользователей
 const userWallets = {}; // Храним коннекторы для каждого пользователя
 
 // Отслеживание статуса подключения
-connector.onStatusChange((wallet) => {
+const handleStatusChange = (wallet, userId) => {
   if (wallet) {
     let friendly;
     try { friendly = TonConnectSDK.toUserFriendlyAddress(wallet.account.address); } 
@@ -32,7 +27,9 @@ connector.onStatusChange((wallet) => {
     walletBtn.textContent = 'Подключить кошелёк';
     balanceDisplay.textContent = '0 TON';
   }
-});
+};
+
+connector.onStatusChange((wallet) => handleStatusChange(wallet, user?.id || 'default'));
 
 // Восстановление сессии
 window.addEventListener('load', async () => {
