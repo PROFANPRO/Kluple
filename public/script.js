@@ -66,6 +66,7 @@ walletBtn.onclick = async () => {
     // Прямо обновляем кнопку с адресом
     const friendly = TonConnectSDK.toUserFriendlyAddress(connector.wallet.account.address);
     setWalletUi(friendly, userId);
+    closeWalletModal();  // Закрываем модальное окно с выбором кошельков сразу
     return;
   }
 
