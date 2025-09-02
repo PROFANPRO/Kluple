@@ -152,4 +152,37 @@ function showPage(id, nav) {
   if (nav) nav.classList.add('active');
 }
 
-// Остальной код остается без изменений...
+function openGame(name){ const pageId='game-'+name; const page=document.getElementById(pageId); if(page){ showPage(pageId,null); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); } }
+function showRanking(list, btn){ document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); document.getElementById(list).style.display='block'; btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+
+function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
+function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
+function openMenu(){ document.getElementById('menuModal').style.display='flex'; }
+function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
+function openWalletModal(){ document.getElementById('walletModal').style.display='flex'; }
+function closeWalletModal(){ document.getElementById('walletModal').style.display='none'; }
+
+function openDepositModal(){ document.getElementById('depositModal').style.display='flex'; }
+function closeDepositModal(){ document.getElementById('depositModal').style.display='none'; }
+
+function openWithdrawModal(){ document.getElementById('withdrawModal').style.display='flex'; }
+function closeWithdrawModal(){ document.getElementById('withdrawModal').style.display='none'; }
+
+function confirmDeposit(){
+    const val = document.getElementById('depositAmount').value;
+    if(!val || isNaN(val) || Number(val)<=0){ alert('Введите корректную сумму'); return; }
+    alert('Депозит: '+val+' TON'); 
+    closeDepositModal();
+}
+
+function confirmWithdraw(){
+    const val = document.getElementById('withdrawAmount').value;
+    if(!val || isNaN(val) || Number(val)<=0){ alert('Введите корректную сумму'); return; }
+    alert('Вывод: '+val+' TON'); 
+    closeWithdrawModal();
+}
+
+// === Инициализация ===
+document.addEventListener('DOMContentLoaded', () => {
+    showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
+});
