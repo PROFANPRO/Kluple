@@ -36,7 +36,7 @@ const handleStatusChange = (wallet, userId) => {
     } catch { 
       friendly = wallet.account.address; 
     }
-    setWalletUi(friendly); // Обновляем UI кнопки
+    setWalletUi(friendly); // Обновляем UI кнопки с адресом кошелька
     updateBalanceByPublicAPIs(friendly);
     closeWalletModal();
   } else {
@@ -70,7 +70,7 @@ walletBtn.onclick = async () => {
 
 function setWalletUi(friendlyAddress) {
   const short = friendlyAddress.length > 12 ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) : friendlyAddress;
-  walletBtn.textContent = short; // Устанавливаем адрес кошелька на кнопку
+  walletBtn.textContent = short; // Обновляем кнопку с адресом кошелька
 }
 
 async function renderWalletList(userId) {
