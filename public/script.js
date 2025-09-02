@@ -38,7 +38,7 @@ const handleStatusChange = (wallet, userId) => {
     }
     setWalletUi(friendly, userId); // Обновляем UI кнопки с адресом кошелька
     updateBalanceByPublicAPIs(friendly);
-    closeWalletModal();
+    closeWalletModal(); // Закрываем модальное окно выбора кошелька
   } else {
     walletBtn.textContent = 'Подключить кошелёк';
     balanceDisplay.textContent = '0 TON';
