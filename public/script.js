@@ -20,7 +20,7 @@ const initializeUserConnector = (userId) => {
     userWallets[userId] = new TonConnectSDK.TonConnect({
       manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
     });
-    
+
     // Отслеживание статуса подключения для конкретного пользователя
     userWallets[userId].onStatusChange = (wallet) => handleStatusChange(wallet, userId);
   }
@@ -36,7 +36,7 @@ const handleStatusChange = (wallet, userId) => {
     } catch { 
       friendly = wallet.account.address; 
     }
-    setWalletUi(friendly); // Обновляем UI кнопки с адресом кошелька
+    setWalletUi(friendly, userId); // Обновляем UI кнопки с адресом кошелька
     updateBalanceByPublicAPIs(friendly);
     closeWalletModal();
   } else {
@@ -62,13 +62,18 @@ walletBtn.onclick = async () => {
   const connector = initializeUserConnector(userId);
 
   // Если кошелек уже подключен
-  if (connector.connected && connector.wallet?.account?.address) return;
+  if (connector.connected && connector.wallet?.account?.address) {
+    // Прямо обновляем кнопку с адресом
+    const friendly = TonConnectSDK.toUserFriendlyAddress(connector.wallet.account.address);
+    setWalletUi(friendly, userId);
+    return;
+  }
 
   openWalletModal();
   await renderWalletList(userId);
 };
 
-function setWalletUi(friendlyAddress) {
+function setWalletUi(friendlyAddress, userId) {
   const short = friendlyAddress.length > 12 ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) : friendlyAddress;
   walletBtn.textContent = short; // Обновляем кнопку с адресом кошелька
 }
