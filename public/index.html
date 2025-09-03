@@ -9,7 +9,7 @@
 <body>
 <div class="stars"></div>
 
-<!-- Homee -->
+<!-- Home -->
 <div id="home" class="container active">
   <div class="balance-card">
     <div class="user-info">
@@ -151,7 +151,9 @@
       <h3 class="wallet-title">Выберите кошелёк</h3>
       <span class="close" onclick="closeWalletModal()" title="Закрыть">&times;</span>
     </div>
-    <div id="walletList" class="wallet-list"></div>
+    <div id="walletList" class="wallet-list">
+      <!-- Кошельки с иконками будут рендериться здесь -->
+    </div>
   </div>
 </div>
 
@@ -166,4 +168,4 @@
 <script src="https://unpkg.com/@tonconnect/sdk@3.2.0/dist/tonconnect-sdk.min.js"></script>
 <script src="script.js"></script>
 </body>
-  </html>
+</html>
