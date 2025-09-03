@@ -1,6 +1,4 @@
 export default async function handler(req, res) {
-  // Балансы будем хранить в памяти (для теста)
-  // ⚠️ потом заменим на базу данных
   if (!global.USER_BALANCES) global.USER_BALANCES = {};
 
   const { method } = req;
