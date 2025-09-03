@@ -80,20 +80,35 @@ function connectByWalletInfo(w){
 async function updateBalanceByPublicAPIs(friendlyAddress){
   try {
     const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(friendlyAddress)}`);
-    if (r.ok){ const j = await r.json(); const nano = j?.balance ?? j?.account?.balance; if(nano!==undefined){ balanceDisplay.textContent = (Number(nano)/1e9).toFixed(4)+' TON'; return; } }
-  } catch {}
+    if (r.ok) {
+      const j = await r.json();
+      const nano = j?.balance ?? j?.account?.balance;
+      if (nano !== undefined) {
+        balanceDisplay.textContent = (Number(nano) / 1e9).toFixed(4) + ' TON';
+        return;
+      }
+    }
+  } catch (err) {}
+
   try {
     const r2 = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${encodeURIComponent(friendlyAddress)}`);
-    if(r2.ok){ const j2 = await r2.json(); const nano2 = j2?.result ?? j2?.balance; if(nano2!==undefined){ balanceDisplay.textContent=(Number(nano2)/1e9).toFixed(4)+' TON'; return; } }
-  } catch {}
+    if (r2.ok) {
+      const j2 = await r2.json();
+      const nano2 = j2?.result ?? j2?.balance;
+      if (nano2 !== undefined) {
+        balanceDisplay.textContent = (Number(nano2) / 1e9).toFixed(4) + ' TON';
+        return;
+      }
+    }
+  } catch (err) {}
 }
 
-// ===== Navigation / modals =====
-function showPage(id, nav){
+// === Navigation / modals ===
+function showPage(id, nav) {
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if(nav) nav.classList.add('active');
+  if (nav) nav.classList.add('active');
 }
 
 function openGame(name){ const pageId='game-'+name; const page=document.getElementById(pageId); if(page){ showPage(pageId,null); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); } }
