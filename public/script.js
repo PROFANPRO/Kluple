@@ -1,20 +1,22 @@
 // === Telegram WebApp ===
-const tg = window.Telegram?.WebApp; tg?.expand();
+const tg = window.Telegram?.WebApp; 
+tg?.expand();
+
 const userPhoto = document.getElementById('userPhoto');
 const user = tg?.initDataUnsafe?.user;
 if (user?.photo_url) userPhoto.src = user.photo_url;
-userPhoto.addEventListener('click', () => { if (user?.username) window.open('https://t.me/' + user.username, '_blank'); });
+userPhoto.addEventListener('click', () => { 
+  if (user?.username) window.open('https://t.me/' + user.username, '_blank'); 
+});
 
 // === TonConnect SDK ===
 const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 
-// Инициализация коннектора
 const connector = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
-// Отслеживание статуса подключения
 connector.onStatusChange((wallet) => {
   if (wallet) {
     let friendly;
@@ -29,12 +31,10 @@ connector.onStatusChange((wallet) => {
   }
 });
 
-// Восстановление сессии
 window.addEventListener('load', async () => {
   try { await connector.restoreConnection(); } catch(e){ console.warn('restoreConnection error:', e); }
 });
 
-// Подключение кошелька
 walletBtn.onclick = async () => {
   if (connector.connected && connector.wallet?.account?.address) return;
   openWalletModal();
@@ -123,10 +123,10 @@ function closeWalletModal(){ document.getElementById('walletModal').style.displa
 
 function openDepositModal(){ document.getElementById('depositModal').style.display='flex'; }
 function closeDepositModal(){ document.getElementById('depositModal').style.display='none'; }
-
 function openWithdrawModal(){ document.getElementById('withdrawModal').style.display='flex'; }
 function closeWithdrawModal(){ document.getElementById('withdrawModal').style.display='none'; }
 
+// === API calls for deposit/withdraw ===
 async function confirmDeposit(){
     const val = document.getElementById('depositAmount').value;
     if(!val || isNaN(val) || Number(val) <= 0){
