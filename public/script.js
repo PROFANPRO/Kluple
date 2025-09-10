@@ -127,18 +127,65 @@ function closeDepositModal(){ document.getElementById('depositModal').style.disp
 function openWithdrawModal(){ document.getElementById('withdrawModal').style.display='flex'; }
 function closeWithdrawModal(){ document.getElementById('withdrawModal').style.display='none'; }
 
-function confirmDeposit(){
+async function confirmDeposit(){
     const val = document.getElementById('depositAmount').value;
-    if(!val || isNaN(val) || Number(val)<=0){ alert('Введите корректную сумму'); return; }
-    alert('Депозит: '+val+' TON'); 
+    if(!val || isNaN(val) || Number(val) <= 0){
+        alert('Введите корректную сумму');
+        return;
+    }
+
+    try {
+        const userId = tg?.initDataUnsafe?.user?.id || 'guest';
+        const response = await fetch('/api/balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, amount: Number(val), action: 'deposit' })
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            balanceDisplay.textContent = data.balance + ' TON';
+            alert('Депозит успешно: ' + val + ' TON');
+        } else {
+            alert(data.error || 'Ошибка депозита');
+        }
+    } catch(err){
+        console.error(err);
+        alert('Ошибка сервера');
+    }
+
     closeDepositModal();
 }
 
-function confirmWithdraw(){
+async function confirmWithdraw(){
     const val = document.getElementById('withdrawAmount').value;
-    if(!val || isNaN(val) || Number(val)<=0){ alert('Введите корректную сумму'); return; }
-    alert('Вывод: '+val+' TON'); 
+    if(!val || isNaN(val) || Number(val) <= 0){
+        alert('Введите корректную сумму');
+        return;
+    }
+
+    try {
+        const userId = tg?.initDataUnsafe?.user?.id || 'guest';
+        const response = await fetch('/api/balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, amount: Number(val), action: 'withdraw' })
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            balanceDisplay.textContent = data.balance + ' TON';
+            alert('Вывод успешно: ' + val + ' TON');
+        } else {
+            alert(data.error || 'Ошибка вывода');
+        }
+    } catch(err){
+        console.error(err);
+        alert('Ошибка сервера');
+    }
+
     closeWithdrawModal();
+}
 }
 
 // === Инициализация ===
