@@ -186,7 +186,6 @@ async function confirmWithdraw(){
 
     closeWithdrawModal();
 }
-}
 
 // === Инициализация ===
 document.addEventListener('DOMContentLoaded', () => {
