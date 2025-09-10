@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (method === "GET") {
     const userId = req.query.user;
     const balance = global.USER_BALANCES[userId] || 0;
-    return res.status(200).json({ balance });
+    return res.status(200).json({ balance: Number(balance.toFixed(4)) });
   }
 
   if (method === "POST") {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
     return res
       .status(200)
-      .json({ balance: global.USER_BALANCES[userId] });
+      .json({ balance: Number(global.USER_BALANCES[userId].toFixed(4)) });
   }
 
   return res.status(405).json({ error: "Метод не поддерживается" });
