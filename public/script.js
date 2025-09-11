@@ -17,13 +17,34 @@ const connector = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
+// Обновляем баланс с бэкенда
+async function updateBalanceByBackend(friendlyAddress) {
+  try {
+    const resp = await fetch(`/api/balance?userAddress=${friendlyAddress}`);
+    const data = await resp.json();
+
+    if (resp.ok) {
+      balanceDisplay.textContent = data.balanceTON.toFixed(4) + " TON";
+    } else {
+      console.error("Ошибка при получении баланса:", data.error);
+      balanceDisplay.textContent = "0 TON";
+    }
+  } catch (e) {
+    console.error("Ошибка запроса баланса:", e);
+    balanceDisplay.textContent = "0 TON";
+  }
+}
+
 connector.onStatusChange((wallet) => {
   if (wallet) {
     let friendly;
-    try { friendly = TonConnectSDK.toUserFriendlyAddress(wallet.account.address); } 
-    catch { friendly = wallet.account.address; }
+    try { 
+      friendly = TonConnectSDK.toUserFriendlyAddress(wallet.account.address); 
+    } catch { 
+      friendly = wallet.account.address; 
+    }
     setWalletUi(friendly);
-    updateBalanceByPublicAPIs(friendly);
+    updateBalanceByBackend(friendly);
     closeWalletModal();
   } else {
     walletBtn.textContent = 'Подключить кошелёк';
@@ -42,7 +63,9 @@ walletBtn.onclick = async () => {
 };
 
 function setWalletUi(friendlyAddress){
-  const short = friendlyAddress.length > 12 ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) : friendlyAddress;
+  const short = friendlyAddress.length > 12 
+    ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) 
+    : friendlyAddress;
   walletBtn.textContent = short;
 }
 
@@ -51,13 +74,21 @@ async function renderWalletList(){
   listEl.innerHTML = '<div style="opacity:.7;">Загрузка списка кошельков…</div>';
   let wallets = [];
   try { wallets = await connector.getWallets(); } catch(e){ console.error(e); }
-  if (!wallets.length){ listEl.innerHTML = '<div style="opacity:.8;">Кошельки не найдены.</div>'; return; }
+  if (!wallets.length){ 
+    listEl.innerHTML = '<div style="opacity:.8;">Кошельки не найдены.</div>'; 
+    return; 
+  }
   listEl.innerHTML = '';
   wallets.forEach((w) => {
     const item = document.createElement('div');
     item.className = 'wallet-item';
-    const icon = w.imageUrl ? `<img src="${w.imageUrl}" alt="${w.name}">` : '<div style="width:28px;height:28px;border-radius:6px;background:#334155"></div>';
-    item.innerHTML = `${icon}<div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:600">${w.name}</div>${w.tondns ? `<div style="opacity:.7;font-size:12px">${w.tondns}</div>` : ''}</div>`;
+    const icon = w.imageUrl 
+      ? `<img src="${w.imageUrl}" alt="${w.name}">` 
+      : '<div style="width:28px;height:28px;border-radius:6px;background:#334155"></div>';
+    item.innerHTML = `${icon}<div style="display:flex;flex-direction:column;gap:2px">
+      <div style="font-weight:600">${w.name}</div>
+      ${w.tondns ? `<div style="opacity:.7;font-size:12px">${w.tondns}</div>` : ''}
+    </div>`;
     item.onclick = () => connectByWalletInfo(w);
     listEl.appendChild(item);
   });
@@ -71,36 +102,13 @@ function connectByWalletInfo(w){
     }
     if (TonConnectSDK.isWalletInfoRemote?.(w)) {
       const link = connector.connect({ universalLink: w.universalLink, bridgeUrl: w.bridgeUrl });
-      if (link) { if (tg?.openLink) tg.openLink(link); else window.open(link, '_blank','noopener'); }
+      if (link) { 
+        if (tg?.openLink) tg.openLink(link); 
+        else window.open(link, '_blank','noopener'); 
+      }
       return;
     }
   } catch(e){ console.error(e); }
-}
-
-async function updateBalanceByPublicAPIs(friendlyAddress){
-  try {
-    const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(friendlyAddress)}`);
-    if (r.ok) {
-      const j = await r.json();
-      const nano = j?.balance ?? j?.account?.balance;
-      if (nano !== undefined) {
-        balanceDisplay.textContent = (Number(nano) / 1e9).toFixed(4) + ' TON';
-        return;
-      }
-    }
-  } catch (err) {}
-
-  try {
-    const r2 = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${encodeURIComponent(friendlyAddress)}`);
-    if (r2.ok) {
-      const j2 = await r2.json();
-      const nano2 = j2?.result ?? j2?.balance;
-      if (nano2 !== undefined) {
-        balanceDisplay.textContent = (Number(nano2) / 1e9).toFixed(4) + ' TON';
-        return;
-      }
-    }
-  } catch (err) {}
 }
 
 // === Navigation / modals ===
@@ -111,8 +119,20 @@ function showPage(id, nav) {
   if (nav) nav.classList.add('active');
 }
 
-function openGame(name){ const pageId='game-'+name; const page=document.getElementById(pageId); if(page){ showPage(pageId,null); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); } }
-function showRanking(list, btn){ document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); document.getElementById(list).style.display='block'; btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function openGame(name){ 
+  const pageId='game-'+name; 
+  const page=document.getElementById(pageId); 
+  if(page){ 
+    showPage(pageId,null); 
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); 
+  } 
+}
+function showRanking(list, btn){ 
+  document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); 
+  document.getElementById(list).style.display='block'; 
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); 
+  btn.classList.add('active'); 
+}
 
 function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
 function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
@@ -135,7 +155,6 @@ async function confirmDeposit(){
     }
 
     try {
-        // 1. Берём адрес кассы с сервера
         const cashierResp = await fetch('/api/get-cashier-address');
         const cashierData = await cashierResp.json();
         if (!cashierResp.ok) {
@@ -146,20 +165,12 @@ async function confirmDeposit(){
         const cashierAddress = cashierData.address;
         const nanoAmount = Math.floor(Number(val) * 1e9);
 
-        // 2. Отправляем реальную транзакцию через TonConnect
         await connector.sendTransaction({
-            validUntil: Math.floor(Date.now() / 1000) + 300, // 5 минут
-            messages: [
-                {
-                    address: cashierAddress,
-                    amount: nanoAmount.toString()
-                }
-            ]
+            validUntil: Math.floor(Date.now() / 1000) + 300,
+            messages: [{ address: cashierAddress, amount: nanoAmount.toString() }]
         });
 
         alert('Транзакция отправлена! Проверяем депозит...');
-
-        // 3. Ждём несколько секунд, пока транзакция попадёт в блокчейн
         setTimeout(async () => {
             const friendlyAddress = connector.wallet?.account?.address;
             if (!friendlyAddress) return;
@@ -178,7 +189,7 @@ async function confirmDeposit(){
                 console.error('Ошибка проверки депозита:', err);
                 alert('Ошибка проверки депозита');
             }
-        }, 7000); // ждём 7 секунд
+        }, 7000);
 
     } catch(err){
         console.error(err);
@@ -189,32 +200,7 @@ async function confirmDeposit(){
 }
 
 async function confirmWithdraw(){
-    const val = document.getElementById('withdrawAmount').value;
-    if(!val || isNaN(val) || Number(val) <= 0){
-        alert('Введите корректную сумму');
-        return;
-    }
-
-    try {
-        const userId = tg?.initDataUnsafe?.user?.id || 'guest';
-        const response = await fetch('/api/balance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, amount: Number(val), action: 'withdraw' })
-        });
-
-        const data = await response.json();
-        if(response.ok){
-            balanceDisplay.textContent = data.balance + ' TON';
-            alert('Вывод успешно: ' + val + ' TON');
-        } else {
-            alert(data.error || 'Ошибка вывода');
-        }
-    } catch(err){
-        console.error(err);
-        alert('Ошибка сервера');
-    }
-
+    alert('Вывод реализуется на сервере (не забудь дописать логику вывода TON)');
     closeWithdrawModal();
 }
 
