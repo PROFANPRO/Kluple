@@ -135,23 +135,54 @@ async function confirmDeposit(){
     }
 
     try {
-        const userId = tg?.initDataUnsafe?.user?.id || 'guest';
-        const response = await fetch('/api/balance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, amount: Number(val), action: 'deposit' })
+        // 1. Берём адрес кассы с сервера
+        const cashierResp = await fetch('/api/get-cashier-address');
+        const cashierData = await cashierResp.json();
+        if (!cashierResp.ok) {
+            alert(cashierData.error || 'Не удалось получить адрес кассы');
+            return;
+        }
+
+        const cashierAddress = cashierData.address;
+        const nanoAmount = Math.floor(Number(val) * 1e9);
+
+        // 2. Отправляем реальную транзакцию через TonConnect
+        await connector.sendTransaction({
+            validUntil: Math.floor(Date.now() / 1000) + 300, // 5 минут
+            messages: [
+                {
+                    address: cashierAddress,
+                    amount: nanoAmount.toString()
+                }
+            ]
         });
 
-        const data = await response.json();
-        if(response.ok){
-            balanceDisplay.textContent = data.balance + ' TON';
-            alert('Депозит успешно: ' + val + ' TON');
-        } else {
-            alert(data.error || 'Ошибка депозита');
-        }
+        alert('Транзакция отправлена! Проверяем депозит...');
+
+        // 3. Ждём несколько секунд, пока транзакция попадёт в блокчейн
+        setTimeout(async () => {
+            const friendlyAddress = connector.wallet?.account?.address;
+            if (!friendlyAddress) return;
+
+            try {
+                const verifyResp = await fetch(`/api/verify-deposit?userAddress=${friendlyAddress}`);
+                const verifyData = await verifyResp.json();
+
+                if (verifyResp.ok) {
+                    balanceDisplay.textContent = `${verifyData.totalDepositedTON.toFixed(4)} TON`;
+                    alert(`Зачислено: ${verifyData.totalDepositedTON.toFixed(4)} TON`);
+                } else {
+                    alert(verifyData.error || 'Не удалось проверить депозит');
+                }
+            } catch (err) {
+                console.error('Ошибка проверки депозита:', err);
+                alert('Ошибка проверки депозита');
+            }
+        }, 7000); // ждём 7 секунд
+
     } catch(err){
         console.error(err);
-        alert('Ошибка сервера');
+        alert('Ошибка при отправке транзакции');
     }
 
     closeDepositModal();
