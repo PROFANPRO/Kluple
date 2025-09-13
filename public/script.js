@@ -24,7 +24,7 @@ async function updateBalanceByBackend(friendlyAddress) {
     const resp = await fetch(`/api/balance?userAddress=${encodeURIComponent(friendlyAddress)}`);
     const data = await resp.json();
     if (resp.ok) {
-      balanceDisplay.textContent = (Number(data.balance) || 0).toFixed(4) + ' TON';
+      balanceDisplay.textContent = (Number(data.balanceTON) || 0).toFixed(4) + ' TON';
     } else {
       balanceDisplay.textContent = '0 TON';
     }
@@ -33,7 +33,6 @@ async function updateBalanceByBackend(friendlyAddress) {
     balanceDisplay.textContent = '0 TON';
   }
 }
-
 connector.onStatusChange((wallet) => {
   if (wallet) {
     try {
