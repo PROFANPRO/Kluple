@@ -103,7 +103,20 @@ walletIcon.onclick = () => {
   walletDropdown.classList.toggle('show');
 };
 
+// === Отключение кошелька ===
 disconnectBtn.onclick = async () => {
+  try {
+    if (userId && userAddress) {
+      await fetch('/api/unlink-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, wallet: userAddress })
+      });
+    }
+  } catch (err) {
+    console.error('Ошибка при отвязке кошелька:', err);
+  }
+
   await connector.disconnect();
   resetWalletUI();
   walletDropdown.classList.remove('show');
