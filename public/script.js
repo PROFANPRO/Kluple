@@ -73,37 +73,39 @@ connector.onStatusChange(async (wallet) => {
     userAddress = null;
   }
 });
-                         
-  window.addEventListener('load', async () => {
+
+window.addEventListener('load', async () => {
   try { 
     const restored = await connector.restoreConnection();
-    
-    // Если подключение восстановлено, проверим валидность
+
     if (connector.connected && connector.wallet?.account?.address) {
       const restoredAddr = TonConnectSDK.toUserFriendlyAddress(connector.wallet.account.address);
 
-      // 🔑 Дополнительная проверка — есть ли связка с текущим Telegram ID
+      // ✅ проверяем у сервера, что этот кошелёк ещё разрешён для этого Telegram ID
       if (userId) {
-        const resp = await fetch(`/api/check-wallet?wallet=${restoredAddr}&userId=${userId}`);
-        const data = await resp.json();
+        try {
+          const resp = await fetch(`/api/check-wallet?wallet=${restoredAddr}&userId=${userId}`);
+          const data = await resp.json();
 
-        if (!resp.ok || data.error || data.allowed === false) {
-          console.warn('Старая сессия невалидна, отключаем кошелёк');
-          await connector.disconnect(); // 💥 Сбрасываем старую сессию
-          userAddress = null;
-          walletBtn.textContent = 'Подключить кошелёк';
-          balanceDisplay.textContent = '0 TON';
-          return;
+          if (!resp.ok || data.allowed === false) {
+            console.warn('Старая сессия больше не разрешена, сбрасываем');
+            await connector.disconnect(); // 💥 очищаем localStorage
+            walletBtn.textContent = 'Подключить кошелёк';
+            balanceDisplay.textContent = '0 TON';
+            userAddress = null;
+            return;
+          }
+        } catch (err) {
+          console.error('Ошибка проверки кошелька:', err);
         }
       }
 
-      // если всё норм — продолжаем
+      // если проверка пройдена — используем старый адрес
       userAddress = restoredAddr;
       setWalletUi(userAddress);
       updateBalanceByBackend(userAddress);
     }
-
-  } catch(e){
+  } catch (e) {
     console.warn('restoreConnection error:', e);
   }
 });
