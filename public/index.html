@@ -124,7 +124,7 @@
     <input type="number" id="depositAmount" placeholder="Сумма в TON">
     <div class="modal-buttons">
       <button class="cancel" onclick="closeDepositModal()">Отмена</button>
-      <button class="activate" onclick="confirmDeposit()">Перевести</button>
+      <button class="activate" id="depositSubmit">Перевести</button> <!-- ← id -->
     </div>
   </div>
 </div>
@@ -137,7 +137,7 @@
     <input type="number" id="withdrawAmount" placeholder="Сумма в TON">
     <div class="modal-buttons">
       <button class="cancel" onclick="closeWithdrawModal()">Отмена</button>
-      <button class="activate" onclick="confirmWithdraw()">Отправить</button>
+      <button class="activate" id="withdrawSubmit">Отправить</button> <!-- ← id -->
     </div>
   </div>
 </div>
