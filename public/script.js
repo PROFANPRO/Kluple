@@ -72,7 +72,7 @@ connector.onStatusChange(async (wallet) => {
     balanceDisplay.textContent = '0 TON';
     userAddress = null;
   }
-}
+});
                          
   window.addEventListener('load', async () => {
   try { 
