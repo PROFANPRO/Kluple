@@ -1,6 +1,5 @@
 // /pages/api/link-wallet.js
-// ❗ Память сервера — будет сбрасываться при каждом деплое, 
-// лучше использовать БД, если проект пойдёт в продакшн
+// ❗ Память сервера — сбрасывается при каждом деплое. Для продакшена используй БД.
 if (!global.USER_WALLETS) global.USER_WALLETS = {};
 
 export default async function handler(req, res) {
@@ -21,7 +20,13 @@ export default async function handler(req, res) {
     }
   }
 
-  // Привязываем кошелёк
+  // ✅ Если этот же userId уже привязан к этому кошельку — не выдаём ошибку, а просто возвращаем успех
+  if (global.USER_WALLETS[userId] === wallet) {
+    console.log(`[link-wallet] user ${userId} уже привязан к ${wallet}`);
+    return res.status(200).json({ success: true, wallet });
+  }
+
+  // Привязываем кошелёк к пользователю
   global.USER_WALLETS[userId] = wallet;
   console.log(`[link-wallet] user ${userId} привязал ${wallet}`);
 
