@@ -72,11 +72,40 @@ connector.onStatusChange(async (wallet) => {
     balanceDisplay.textContent = '0 TON';
     userAddress = null;
   }
-});
+}
+                         
+  window.addEventListener('load', async () => {
+  try { 
+    const restored = await connector.restoreConnection();
+    
+    // Если подключение восстановлено, проверим валидность
+    if (connector.connected && connector.wallet?.account?.address) {
+      const restoredAddr = TonConnectSDK.toUserFriendlyAddress(connector.wallet.account.address);
 
-window.addEventListener('load', async () => {
-  try { await connector.restoreConnection(); } 
-  catch(e){ console.warn('restoreConnection error:', e); }
+      // 🔑 Дополнительная проверка — есть ли связка с текущим Telegram ID
+      if (userId) {
+        const resp = await fetch(`/api/check-wallet?wallet=${restoredAddr}&userId=${userId}`);
+        const data = await resp.json();
+
+        if (!resp.ok || data.error || data.allowed === false) {
+          console.warn('Старая сессия невалидна, отключаем кошелёк');
+          await connector.disconnect(); // 💥 Сбрасываем старую сессию
+          userAddress = null;
+          walletBtn.textContent = 'Подключить кошелёк';
+          balanceDisplay.textContent = '0 TON';
+          return;
+        }
+      }
+
+      // если всё норм — продолжаем
+      userAddress = restoredAddr;
+      setWalletUi(userAddress);
+      updateBalanceByBackend(userAddress);
+    }
+
+  } catch(e){
+    console.warn('restoreConnection error:', e);
+  }
 });
 
 walletBtn.onclick = async () => {
