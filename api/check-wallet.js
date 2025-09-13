@@ -1,3 +1,6 @@
+// /pages/api/check-wallet.js
+if (!global.USER_WALLETS) global.USER_WALLETS = {};
+
 export default async function handler(req, res) {
   const { wallet, userId } = req.query;
 
@@ -5,8 +8,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ allowed: false, error: "wallet или userId не указаны" });
   }
 
-  // ⚠️ Временная простая логика:
-  // Всегда разрешаем. Ты можешь хранить связки userId <-> wallet в базе данных,
-  // чтобы проверять что этот кошелёк действительно привязан к этому пользователю.
-  return res.status(200).json({ allowed: true });
+  const linkedWallet = global.USER_WALLETS[userId];
+
+  // Разрешаем только если кошелёк совпадает с ранее привязанным
+  if (linkedWallet && linkedWallet === wallet) {
+    return res.status(200).json({ allowed: true });
+  }
+
+  return res.status(403).json({ allowed: false, error: "Кошелёк не привязан к этому аккаунту" });
 }
