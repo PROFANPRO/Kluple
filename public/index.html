@@ -18,6 +18,10 @@
       </div>
       <div class="wallet-center">
         <div class="wallet-btn" id="walletBtn">Подключить кошелёк</div>
+        <div class="wallet-icon" id="walletIcon">💼</div>
+        <div class="wallet-dropdown" id="walletDropdown">
+          <button class="disconnect-btn" id="disconnectBtn">Отключить кошелёк</button>
+        </div>
       </div>
       <div class="menu-btn" onclick="openMenu()">≡</div>
     </div>
@@ -25,16 +29,15 @@
   </div>
 
   <div class="row">
-  <div class="card green" onclick="openDepositModal()">
-    <div class="icon-circle">⬇️</div>
-    <p>Депозит</p>
+    <div class="card green" onclick="openDepositModal()">
+      <div class="icon-circle">⬇️</div>
+      <p>Депозит</p>
+    </div>
+    <div class="card red" onclick="openWithdrawModal()">
+      <div class="icon-circle">⬆️</div>
+      <p>Вывод</p>
+    </div>
   </div>
-  <div class="card red" onclick="openWithdrawModal()">
-    <div class="icon-circle">⬆️</div>
-    <p>Вывод</p>
-  </div>
-  </div>
-  
 
   <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
     <div class="icon-circle">🏆</div>
@@ -124,7 +127,7 @@
     <input type="number" id="depositAmount" placeholder="Сумма в TON">
     <div class="modal-buttons">
       <button class="cancel" onclick="closeDepositModal()">Отмена</button>
-      <button class="activate" id="depositSubmit">Перевести</button> <!-- ← id -->
+      <button class="activate" id="depositSubmit">Перевести</button>
     </div>
   </div>
 </div>
@@ -137,7 +140,7 @@
     <input type="number" id="withdrawAmount" placeholder="Сумма в TON">
     <div class="modal-buttons">
       <button class="cancel" onclick="closeWithdrawModal()">Отмена</button>
-      <button class="activate" id="withdrawSubmit">Отправить</button> <!-- ← id -->
+      <button class="activate" id="withdrawSubmit">Отправить</button>
     </div>
   </div>
 </div>
