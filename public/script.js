@@ -1,61 +1,38 @@
 // === Telegram WebApp ===
-const tg = window.Telegram?.WebApp;
+const tg = window.Telegram?.WebApp; 
 tg?.expand();
 
 const userPhoto = document.getElementById('userPhoto');
 const user = tg?.initDataUnsafe?.user;
 if (user?.photo_url) userPhoto.src = user.photo_url;
-userPhoto.addEventListener('click', () => {
-  if (user?.username) window.open('https://t.me/' + user.username, '_blank');
+userPhoto.addEventListener('click', () => { 
+  if (user?.username) window.open('https://t.me/' + user.username, '_blank'); 
 });
 
 // === TonConnect SDK ===
 const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 
-let userAddress = null;
-
 const connector = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
-// Получение реального баланса через наш backend
-async function updateBalanceByBackend(friendlyAddress) {
-  try {
-    const resp = await fetch(`/api/balance?userAddress=${encodeURIComponent(friendlyAddress)}`);
-    const data = await resp.json();
-    if (resp.ok) {
-      balanceDisplay.textContent = (Number(data.balanceTON) || 0).toFixed(4) + ' TON';
-    } else {
-      console.error('Ошибка при получении баланса:', data.error);
-      balanceDisplay.textContent = '0 TON';
-    }
-  } catch (e) {
-    console.error('Ошибка запроса баланса:', e);
-    balanceDisplay.textContent = '0 TON';
-  }
-}
-
 connector.onStatusChange((wallet) => {
   if (wallet) {
-    try {
-      userAddress = TonConnectSDK.toUserFriendlyAddress(wallet.account.address);
-    } catch {
-      userAddress = wallet.account.address;
-    }
-    setWalletUi(userAddress);
-    updateBalanceByBackend(userAddress);
+    let friendly;
+    try { friendly = TonConnectSDK.toUserFriendlyAddress(wallet.account.address); } 
+    catch { friendly = wallet.account.address; }
+    setWalletUi(friendly);
+    updateBalanceByPublicAPIs(friendly);
     closeWalletModal();
   } else {
     walletBtn.textContent = 'Подключить кошелёк';
     balanceDisplay.textContent = '0 TON';
-    userAddress = null;
   }
 });
 
 window.addEventListener('load', async () => {
-  try { await connector.restoreConnection(); } 
-  catch(e){ console.warn('restoreConnection error:', e); }
+  try { await connector.restoreConnection(); } catch(e){ console.warn('restoreConnection error:', e); }
 });
 
 walletBtn.onclick = async () => {
@@ -65,9 +42,7 @@ walletBtn.onclick = async () => {
 };
 
 function setWalletUi(friendlyAddress){
-  const short = friendlyAddress.length > 12 
-    ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) 
-    : friendlyAddress;
+  const short = friendlyAddress.length > 12 ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4) : friendlyAddress;
   walletBtn.textContent = short;
 }
 
@@ -82,11 +57,7 @@ async function renderWalletList(){
     const item = document.createElement('div');
     item.className = 'wallet-item';
     const icon = w.imageUrl ? `<img src="${w.imageUrl}" alt="${w.name}">` : '<div style="width:28px;height:28px;border-radius:6px;background:#334155"></div>';
-    item.innerHTML = `${icon}
-      <div style="display:flex;flex-direction:column;gap:2px">
-        <div style="font-weight:600">${w.name}</div>
-        ${w.tondns ? `<div style="opacity:.7;font-size:12px">${w.tondns}</div>` : ''}
-      </div>`;
+    item.innerHTML = `${icon}<div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:600">${w.name}</div>${w.tondns ? `<div style="opacity:.7;font-size:12px">${w.tondns}</div>` : ''}</div>`;
     item.onclick = () => connectByWalletInfo(w);
     listEl.appendChild(item);
   });
@@ -106,7 +77,33 @@ function connectByWalletInfo(w){
   } catch(e){ console.error(e); }
 }
 
-// === Навигация / модалки ===
+async function updateBalanceByPublicAPIs(friendlyAddress){
+  try {
+    const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(friendlyAddress)}`);
+    if (r.ok) {
+      const j = await r.json();
+      const nano = j?.balance ?? j?.account?.balance;
+      if (nano !== undefined) {
+        balanceDisplay.textContent = (Number(nano) / 1e9).toFixed(4) + ' TON';
+        return;
+      }
+    }
+  } catch (err) {}
+
+  try {
+    const r2 = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${encodeURIComponent(friendlyAddress)}`);
+    if (r2.ok) {
+      const j2 = await r2.json();
+      const nano2 = j2?.result ?? j2?.balance;
+      if (nano2 !== undefined) {
+        balanceDisplay.textContent = (Number(nano2) / 1e9).toFixed(4) + ' TON';
+        return;
+      }
+    }
+  } catch (err) {}
+}
+
+// === Navigation / modals ===
 function showPage(id, nav) {
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -114,20 +111,8 @@ function showPage(id, nav) {
   if (nav) nav.classList.add('active');
 }
 
-function openGame(name){ 
-  const pageId='game-'+name; 
-  const page=document.getElementById(pageId); 
-  if(page){ 
-    showPage(pageId,null); 
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); 
-  } 
-}
-function showRanking(list, btn){ 
-  document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); 
-  document.getElementById(list).style.display='block'; 
-  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); 
-  btn.classList.add('active'); 
-}
+function openGame(name){ const pageId='game-'+name; const page=document.getElementById(pageId); if(page){ showPage(pageId,null); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); } }
+function showRanking(list, btn){ document.querySelectorAll('.rank-list').forEach(l=>l.style.display='none'); document.getElementById(list).style.display='block'; btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
 
 function openPromoModal(){ document.getElementById('promoModal').style.display='flex'; }
 function closePromoModal(){ document.getElementById('promoModal').style.display='none'; }
@@ -136,81 +121,111 @@ function closeMenu(){ document.getElementById('menuModal').style.display='none';
 function openWalletModal(){ document.getElementById('walletModal').style.display='flex'; }
 function closeWalletModal(){ document.getElementById('walletModal').style.display='none'; }
 
-function openDepositModal(){ 
-  if (!userAddress) return alert('Сначала подключите кошелёк!');
-  document.getElementById('depositModal').style.display='flex'; 
-}
+function openDepositModal(){ document.getElementById('depositModal').style.display='flex'; }
 function closeDepositModal(){ document.getElementById('depositModal').style.display='none'; }
 function openWithdrawModal(){ document.getElementById('withdrawModal').style.display='flex'; }
 function closeWithdrawModal(){ document.getElementById('withdrawModal').style.display='none'; }
 
-// === Реальный депозит через TonConnect ===
+// === API calls for deposit/withdraw ===
 async function confirmDeposit(){
-  const val = document.getElementById('depositAmount').value;
-  if(!val || isNaN(val) || Number(val) <= 0){
-    alert('Введите корректную сумму');
-    return;
-  }
-  if (!userAddress || !connector.connected) {
-    alert('Сначала подключите кошелёк!');
-    return;
-  }
-
-  try {
-    // 1) адрес кассы
-    const cashierResp = await fetch('/api/get-cashier-address');
-    const cashierData = await cashierResp.json();
-    if (!cashierResp.ok || !cashierData?.address) {
-      alert(cashierData.error || 'Не удалось получить адрес кассы');
-      return;
+    const val = document.getElementById('depositAmount').value;
+    if(!val || isNaN(val) || Number(val) <= 0){
+        alert('Введите корректную сумму');
+        return;
     }
-    const cashierAddress = cashierData.address;
 
-    // 2) отправка транзакции
-    const nanoAmount = Math.floor(Number(val) * 1e9);
-    await connector.sendTransaction({
-      validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
-    });
+    try {
+        const cashierResp = await fetch('/api/get-cashier-address');
+        const cashierData = await cashierResp.json();
+        if (!cashierResp.ok) {
+            alert(cashierData.error || 'Не удалось получить адрес кассы');
+            return;
+        }
 
-    alert('Транзакция отправлена! Проверяем депозит...');
+        const cashierAddress = cashierData.address;
+        const nanoAmount = Math.floor(Number(val) * 1e9);
 
-    // 3) через несколько секунд обновим баланс
-    setTimeout(() => updateBalanceByBackend(userAddress), 7000);
-  } catch(err){
-    console.error('Ошибка при отправке транзакции', err);
-    alert('Ошибка при отправке транзакции');
-  }
+        // ✅ Отправляем транзакцию через TonConnect
+        const txRequest = {
+            validUntil: Math.floor(Date.now() / 1000) + 300,
+            messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
+        };
 
-  closeDepositModal();
+        const result = await connector.sendTransaction(txRequest);
+
+        // Если вернулась ссылка — открываем кошелёк
+        if (typeof result === 'string') {
+            if (tg?.openLink) {
+                tg.openLink(result);
+            } else {
+                window.open(result, '_blank', 'noopener');
+            }
+        }
+
+        alert('Транзакция отправлена! Подтвердите её в кошельке.');
+
+        // Ждём и проверяем депозит
+        setTimeout(async () => {
+            const friendlyAddress = connector.wallet?.account?.address;
+            if (!friendlyAddress) return;
+            try {
+                const verifyResp = await fetch(`/api/verify-deposit?userAddress=${friendlyAddress}`);
+                const verifyData = await verifyResp.json();
+                if (verifyResp.ok) {
+                    balanceDisplay.textContent = `${verifyData.totalDepositedTON.toFixed(4)} TON`;
+                    alert(`Зачислено: ${verifyData.totalDepositedTON.toFixed(4)} TON`);
+                } else {
+                    alert(verifyData.error || 'Не удалось проверить депозит');
+                }
+            } catch (err) {
+                console.error('Ошибка проверки депозита:', err);
+                alert('Ошибка проверки депозита');
+            }
+        }, 7000);
+
+    } catch(err){
+        console.error(err);
+        alert('Ошибка при отправке транзакции');
+    }
+
+    closeDepositModal();
 }
 
-// === Вывод (реализация на сервере) ===
 async function confirmWithdraw(){
-  const val = document.getElementById('withdrawAmount').value;
-  if(!val || isNaN(val) || Number(val) <= 0){
-    alert('Введите корректную сумму');
-    return;
-  }
-  alert('Вывод выполняется сервером. Реализуйте /api/withdraw с подписью транзакции.');
-  closeWithdrawModal();
+    const val = document.getElementById('withdrawAmount').value;
+    if(!val || isNaN(val) || Number(val) <= 0){
+        alert('Введите корректную сумму');
+        return;
+    }
+
+    try {
+        const userAddress = connector.wallet?.account?.address;
+        if (!userAddress) {
+            alert('Сначала подключите кошелёк');
+            return;
+        }
+
+        const response = await fetch('/api/balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userAddress, amount: Number(val), action: 'withdraw' })
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            alert('Вывод инициирован, ожидайте подтверждения транзакции.');
+        } else {
+            alert(data.error || 'Ошибка вывода');
+        }
+    } catch(err){
+        console.error(err);
+        alert('Ошибка сервера');
+    }
+
+    closeWithdrawModal();
 }
 
-// === Глобализируем функции для inline-обработчиков (на всякий случай) ===
-window.openDepositModal   = openDepositModal;
-window.closeDepositModal  = closeDepositModal;
-window.openWithdrawModal  = openWithdrawModal;
-window.closeWithdrawModal = closeWithdrawModal;
-window.confirmDeposit     = confirmDeposit;
-window.confirmWithdraw    = confirmWithdraw;
-
-// === Навешиваем обработчики на кнопки по id (железобетонно) ===
+// === Инициализация ===
 document.addEventListener('DOMContentLoaded', () => {
-  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-
-  const depBtn = document.getElementById('depositSubmit');
-  if (depBtn) depBtn.addEventListener('click', (e) => { e.preventDefault(); confirmDeposit(); });
-
-  const wdrBtn = document.getElementById('withdrawSubmit');
-  if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
+    showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
 });
