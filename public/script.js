@@ -13,6 +13,7 @@ userPhoto.addEventListener('click', () => {
 const walletBtn = document.getElementById('walletBtn');
 const balanceDisplay = document.getElementById('balanceDisplay');
 let userAddress = null;
+let userId = tg?.initDataUnsafe?.user?.id || null;
 
 const connector = new TonConnectSDK.TonConnect({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
@@ -26,6 +27,7 @@ async function updateBalanceByBackend(friendlyAddress) {
     if (resp.ok) {
       balanceDisplay.textContent = (Number(data.balanceTON) || 0).toFixed(4) + ' TON';
     } else {
+      console.error('Ошибка при получении баланса:', data.error);
       balanceDisplay.textContent = '0 TON';
     }
   } catch (e) {
@@ -33,13 +35,35 @@ async function updateBalanceByBackend(friendlyAddress) {
     balanceDisplay.textContent = '0 TON';
   }
 }
-connector.onStatusChange((wallet) => {
+
+connector.onStatusChange(async (wallet) => {
   if (wallet) {
     try {
       userAddress = TonConnectSDK.toUserFriendlyAddress(wallet.account.address);
     } catch {
       userAddress = wallet.account.address;
     }
+
+    // === Привязка кошелька к Telegram ID ===
+    if (userId) {
+      try {
+        const resp = await fetch('/api/link-wallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, wallet: userAddress })
+        });
+
+        const data = await resp.json();
+        if (!resp.ok || data.error) {
+          alert(data.error || 'Кошелёк уже привязан к другому аккаунту!');
+          await connector.disconnect(); // Сбрасываем подключение
+          return;
+        }
+      } catch (err) {
+        console.error('Ошибка связывания кошелька с Telegram ID', err);
+      }
+    }
+
     setWalletUi(userAddress);
     updateBalanceByBackend(userAddress);
     closeWalletModal();
@@ -156,11 +180,9 @@ async function confirmDeposit(){
       messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
     };
 
-    // отправляем транзакцию и ждём результат
     const result = await connector.sendTransaction(tx);
     console.log('TonConnect TX result:', result);
 
-    // если есть universalLink — форсируем переход в кошелёк
     if (result?.universalLink) {
       if (tg?.openLink) tg.openLink(result.universalLink);
       else window.open(result.universalLink, '_blank', 'noopener');
