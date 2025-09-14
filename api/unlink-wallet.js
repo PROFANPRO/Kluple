@@ -13,13 +13,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    if (global.USER_WALLETS[userId] && global.USER_WALLETS[userId].toLowerCase() === wallet.toLowerCase()) {
+    // Удаляем привязку, если она есть
+    if (global.USER_WALLETS[userId] === wallet) {
       delete global.USER_WALLETS[userId];
       console.log(`🔓 Кошелёк ${wallet} отвязан от userId ${userId}`);
-      return res.status(200).json({ success: true, message: "Кошелёк отвязан" });
-    } else {
-      return res.status(404).json({ error: "Привязка не найдена или кошелёк не совпадает" });
     }
+
+    return res.status(200).json({ success: true, message: "Кошелёк отвязан" });
   } catch (err) {
     console.error("unlink-wallet error:", err);
     return res.status(500).json({ error: "Ошибка при отвязке кошелька" });
