@@ -1,5 +1,10 @@
 // /pages/api/unlink-wallet.js
-if (!global.USER_WALLETS) global.USER_WALLETS = {};
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY // ⚠️ лучше service_role ключ, а не anon
+);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,12 +18,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Удаляем привязку, если она есть
-    if (global.USER_WALLETS[userId] === wallet) {
-      delete global.USER_WALLETS[userId];
-      console.log(`🔓 Кошелёк ${wallet} отвязан от userId ${userId}`);
+    // Удаляем запись из таблицы wallet_links
+    const { error } = await supabase
+      .from("wallet_links")
+      .delete()
+      .match({ userId, wallet });
+
+    if (error) {
+      console.error("Supabase unlink error:", error);
+      return res.status(500).json({ error: "Ошибка при отвязке кошелька" });
     }
 
+    console.log(`🔓 Кошелёк ${wallet} отвязан от userId ${userId}`);
     return res.status(200).json({ success: true, message: "Кошелёк отвязан" });
   } catch (err) {
     console.error("unlink-wallet error:", err);
