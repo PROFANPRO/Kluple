@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY // ✅ используем сервисный ключ
 );
 
 export default async function handler(req, res) {
@@ -12,13 +12,12 @@ export default async function handler(req, res) {
   }
 
   const { userId, wallet } = req.body;
-
   if (!userId || !wallet) {
     return res.status(400).json({ error: "Не указан userId или wallet" });
   }
 
   try {
-    // 1. Проверяем, не привязан ли этот кошелёк к другому пользователю
+    // 1. Проверяем, не привязан ли кошелёк к другому пользователю
     const { data: existingWallets, error: checkError } = await supabase
       .from("wallet_links")
       .select("*")
@@ -26,29 +25,28 @@ export default async function handler(req, res) {
 
     if (checkError) throw checkError;
 
-    // Если кошелек уже есть, но принадлежит другому userId → ошибка
     if (existingWallets.length > 0 && existingWallets[0].user_id !== userId) {
       return res
         .status(400)
         .json({ error: "Этот кошелёк уже привязан к другому аккаунту" });
     }
 
-    // 2. Если эта пара уже есть → возвращаем успех (не создаём дубликаты)
+    // 2. Если этот же userId уже привязан — просто возвращаем успех
     if (existingWallets.length > 0 && existingWallets[0].user_id === userId) {
       console.log(`[link-wallet] user ${userId} уже привязан к ${wallet}`);
       return res.status(200).json({ success: true, wallet });
     }
 
-    // 3. Создаём новую привязку
-    const { data, error } = await supabase
+    // 3. Создаём или обновляем запись
+    const { error } = await supabase
       .from("wallet_links")
-      .insert([{ user_id: userId, wallet }]);
+      .upsert({ user_id: userId, wallet }, { onConflict: "user_id" });
 
     if (error) throw error;
 
     console.log(`[link-wallet] user ${userId} привязал ${wallet}`);
-
     return res.status(200).json({ success: true, wallet });
+
   } catch (err) {
     console.error("link-wallet error:", err);
     return res.status(500).json({ error: "Ошибка при привязке кошелька" });
