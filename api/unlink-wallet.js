@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // ⚠️ лучше service_role ключ, а не anon
+  process.env.SUPABASE_SERVICE_ROLE_KEY // ✅ лучше service_role ключ
 );
 
 export default async function handler(req, res) {
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const { error } = await supabase
       .from("wallet_links")
       .delete()
-      .match({ userId, wallet });
+      .match({ user_id: userId, wallet }); // ✅ используем user_id
 
     if (error) {
       console.error("Supabase unlink error:", error);
