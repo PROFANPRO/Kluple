@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // лучше service_role, чтобы мог читать без RLS
+  process.env.SUPABASE_SERVICE_ROLE_KEY // используем сервисный ключ, чтобы читать без ограничений
 );
 
 export default async function handler(req, res) {
@@ -14,20 +14,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Ищем кошелёк в базе
+    // Ищем по user_id
     const { data, error } = await supabase
       .from("wallet_links")
       .select("wallet")
-      .eq("userId", userId)
+      .eq("user_id", userId)
       .single();
 
-    if (error && error.code !== "PGRST116") { // PGRST116 = no rows found
+    // Если ошибка не "нет строк" → значит реально проблема
+    if (error && error.code !== "PGRST116") {
       console.error("Supabase error:", error);
       return res.status(500).json({ allowed: false, error: "Ошибка сервера" });
     }
 
-    // Если кошелёк найден — проверяем соответствие
-    if (data && data.wallet === wallet) {
+    if (data?.wallet === wallet) {
       return res.status(200).json({ allowed: true });
     }
 
