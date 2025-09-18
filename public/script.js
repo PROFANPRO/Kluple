@@ -48,7 +48,6 @@ connector.onStatusChange(async (wallet) => {
       userAddress = wallet.account.address;
     }
 
-    // Привязываем кошелек к Telegram ID (если сервер поддерживает)
     if (userId) {
       try {
         const resp = await fetch('/api/link-wallet', {
@@ -70,14 +69,13 @@ connector.onStatusChange(async (wallet) => {
 
     setWalletUi(userAddress);
     updateBalanceByBackend(userAddress);
-    walletIcon.style.display = "inline-block"; // показываем иконку
+    walletIcon.style.display = "inline-block";
     closeWalletModal();
   } else {
     resetWalletUI();
   }
 });
 
-// === Восстановление сессии ===
 window.addEventListener('load', async () => {
   try {
     const restored = await connector.restoreConnection();
@@ -103,7 +101,6 @@ walletIcon.onclick = () => {
   walletDropdown.classList.toggle('show');
 };
 
-// === Отключение кошелька ===
 disconnectBtn.onclick = async () => {
   try {
     if (userId && userAddress) {
@@ -174,7 +171,6 @@ function connectByWalletInfo(w) {
   } catch (e) { console.error(e); }
 }
 
-// === Модалки и страницы ===
 function showPage(id, nav) {
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -196,7 +192,6 @@ function closeDepositModal() { document.getElementById('depositModal').style.dis
 function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
 function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
 
-// === ДЕПОЗИТ ===
 async function confirmDeposit() {
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
@@ -243,7 +238,6 @@ async function confirmDeposit() {
   closeDepositModal();
 }
 
-// === ВЫВОД ===
 async function confirmWithdraw() {
   const val = document.getElementById('withdrawAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
@@ -254,7 +248,6 @@ async function confirmWithdraw() {
   closeWithdrawModal();
 }
 
-// === Навешиваем обработчики ===
 document.addEventListener('DOMContentLoaded', () => {
   showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
 
@@ -264,3 +257,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const wdrBtn = document.getElementById('withdrawSubmit');
   if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
 });
+
+/* === НОВАЯ ЛОГИКА ИГРЫ === */
+function openGame(gameName) {
+  document.body.innerHTML += `
+    <div class="game-container" id="gameContainer">
+      <h2>Игра: ${gameName}</h2>
+      <input type="number" id="betAmount" placeholder="Введите ставку">
+      <button id="playGameBtn">Играть</button>
+      <p id="gameResult"></p>
+      <button onclick="closeGame()">Вернуться назад</button>
+    </div>
+  `;
+
+  document.getElementById('playGameBtn').addEventListener('click', () => {
+    const bet = Number(document.getElementById('betAmount').value);
+    if (!bet || bet <= 0) {
+      alert("Введите корректную ставку");
+      return;
+    }
+
+    const win = Math.random() > 0.5; // 50/50 шанс
+    const resultEl = document.getElementById('gameResult');
+    resultEl.textContent = win ? `🎉 Вы выиграли ${bet * 2}!` : `❌ Вы проиграли ${bet}`;
+    resultEl.style.color = win ? "lime" : "red";
+  });
+}
+
+function closeGame() {
+  document.getElementById('gameContainer').remove();
+}
