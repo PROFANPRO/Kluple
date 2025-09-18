@@ -171,6 +171,7 @@ function connectByWalletInfo(w) {
   } catch (e) { console.error(e); }
 }
 
+// === Страницы ===
 function showPage(id, nav) {
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -192,6 +193,7 @@ function closeDepositModal() { document.getElementById('depositModal').style.dis
 function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
 function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
 
+// === Депозит и вывод ===
 async function confirmDeposit() {
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
@@ -248,23 +250,13 @@ async function confirmWithdraw() {
   closeWithdrawModal();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-
-  const depBtn = document.getElementById('depositSubmit');
-  if (depBtn) depBtn.addEventListener('click', (e) => { e.preventDefault(); confirmDeposit(); });
-
-  const wdrBtn = document.getElementById('withdrawSubmit');
-  if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
-});
-
-// === ЛОГИКА ИГР ===
+// === Игры ===
 let selectedChoice = null;
 
 function selectChoice(choice) {
   selectedChoice = choice;
   document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
-  document.getElementById(`choice-${choice}`).classList.add('active-choice');
+  document.querySelector(`.choice-btn[data-choice="${choice}"]`).classList.add('active-choice');
 }
 
 function openGame(game) {
@@ -284,7 +276,6 @@ function openGame(game) {
   document.getElementById('betAmount').value = '';
   document.getElementById('gameResult').textContent = '';
 
-  // Показываем/скрываем элементы выбора и кубики только для игры "Под 7 над"
   const choiceBlock = document.querySelector('.choice-buttons');
   const diceArea = document.getElementById('diceArea');
   if (game === 'seven') {
@@ -310,49 +301,55 @@ function startGame() {
     alert('Введите корректную ставку!');
     return;
   }
-
-  if (document.getElementById('gameTitle').textContent === "Под 7 над") {
-    if (!selectedChoice) {
-      alert('Выберите <7, >7 или =7');
-      return;
-    }
-
-    resultEl.textContent = 'Ожидайте... 5';
-    let counter = 5;
-    const countdown = setInterval(() => {
-      counter--;
-      resultEl.textContent = `Ожидайте... ${counter}`;
-      if (counter <= 0) {
-        clearInterval(countdown);
-        rollDice(bet, resultEl);
-      }
-    }, 1000);
-  } else {
-    const win = Math.random() < 0.5;
-    resultEl.style.color = win ? '#22c55e' : '#ef4444';
-    resultEl.textContent = win ? `Вы выиграли ${bet * 2}!` : 'Вы проиграли 😔';
+  if (!selectedChoice) {
+    alert('Сделайте выбор: <7, =7 или >7');
+    return;
   }
-}
 
-function rollDice(bet, resultEl) {
   const diceArea = document.getElementById('diceArea');
-  diceArea.innerHTML = '';
+  const countdown = document.getElementById('countdown');
 
-  const dice1 = Math.floor(Math.random() * 6) + 1;
-  const dice2 = Math.floor(Math.random() * 6) + 1;
-  const total = dice1 + dice2;
+  resultEl.textContent = '';
+  diceArea.style.display = 'none';
 
-  diceArea.innerHTML = `<div class="dice">🎲 ${dice1}</div><div class="dice">🎲 ${dice2}</div>`;
+  countdown.style.display = 'block';
+  let timer = 5;
+  countdown.textContent = `Осталось: ${timer} сек.`;
+  const interval = setInterval(() => {
+    timer--;
+    if (timer > 0) {
+      countdown.textContent = `Осталось: ${timer} сек.`;
+    } else {
+      clearInterval(interval);
+      countdown.style.display = 'none';
 
-  console.log("Выбор игрока:", selectedChoice, "Сумма:", total);
+      const dice1 = Math.floor(Math.random() * 6) + 1;
+      const dice2 = Math.floor(Math.random() * 6) + 1;
+      const sum = dice1 + dice2;
 
-  let win = false;
-  if (selectedChoice === 'lt') win = total < 7;
-  if (selectedChoice === 'gt') win = total > 7;
-  if (selectedChoice === 'eq') win = total === 7;
+      diceArea.innerHTML = `
+        <div class="dice">🎲<span>${dice1}</span></div>
+        <div class="dice">🎲<span>${dice2}</span></div>
+      `;
+      diceArea.style.display = 'flex';
 
-  console.log("Результат проверки:", win ? "ПОБЕДА" : "ПРОИГРЫШ");
+      let win = false;
+      if (selectedChoice === '<7' && sum < 7) win = true;
+      if (selectedChoice === '=7' && sum === 7) win = true;
+      if (selectedChoice === '>7' && sum > 7) win = true;
 
-  resultEl.style.color = win ? '#22c55e' : '#ef4444';
-  resultEl.textContent = win ? `Выпало ${total}. Вы выиграли ${bet * 2}!` : `Выпало ${total}. Вы проиграли 😔`;
+      resultEl.style.color = win ? '#22c55e' : '#ef4444';
+      resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
+    }
+  }, 1000);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
+
+  const depBtn = document.getElementById('depositSubmit');
+  if (depBtn) depBtn.addEventListener('click', (e) => { e.preventDefault(); confirmDeposit(); });
+
+  const wdrBtn = document.getElementById('withdrawSubmit');
+  if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
+});
