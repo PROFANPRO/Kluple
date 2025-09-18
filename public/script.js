@@ -260,14 +260,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // === ОТКРЫТИЕ ИГРЫ ===
 function openGame(game) {
-  // Скрываем все страницы
+  // Скрываем все контейнеры (страницы)
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+
   // Показываем контейнер игры
   document.getElementById('gameContainer').classList.add('active');
 
-  // Устанавливаем название игры
-  const gameTitle = document.querySelector('#gameContainer h2');
-  gameTitle.textContent = game === 'roulette' ? 'Рулетка' : 'Игра';
+  // Устанавливаем заголовок в шапке
+  const titles = {
+    roulette: "Рулетка",
+    ninja: "Ниндзя",
+    tower: "Башня",
+    seven: "Под 7 над",
+    cs: "CS",
+    luck: "Колесо удачи"
+  };
+  document.getElementById('gameTitle').textContent = titles[game] || "Игра";
+
+  // Если у тебя есть h2 внутри игры — можно обновлять или скрыть его
+  const gameNameEl = document.querySelector('#gameContainer h2');
+  if (gameNameEl) gameNameEl.style.display = 'none';
 
   // Очищаем поле ставки и результат
   document.getElementById('betAmount').value = '';
