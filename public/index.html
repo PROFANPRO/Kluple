@@ -82,7 +82,6 @@
     </div>
   </div>
 </div>
- <!-- Закрывающий тег блока games -->
 
 <!-- Game Container -->
 <div id="gameContainer" class="container">
@@ -92,11 +91,20 @@
   </div>
 
   <div class="game-container">
+    <!-- 🎲 Игровая зона для Под 7 над -->
+    <div class="dice-area" id="diceArea"></div>
+    <div class="countdown" id="countdown"></div>
+
     <input type="number" id="betAmount" placeholder="Введите ставку">
+    <div class="choice-buttons">
+      <button class="choice-btn" onclick="selectChoice('<')">&lt; 7</button>
+      <button class="choice-btn" onclick="selectChoice('=')">= 7</button>
+      <button class="choice-btn" onclick="selectChoice('>')">&gt; 7</button>
+    </div>
     <button onclick="startGame()">Сделать ставку</button>
     <p id="gameResult"></p>
   </div>
-</div>
+</div
 
 <!-- Rating -->
 <div id="rating" class="container">
