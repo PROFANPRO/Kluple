@@ -344,10 +344,14 @@ function rollDice(bet, resultEl) {
 
   diceArea.innerHTML = `<div class="dice">🎲 ${dice1}</div><div class="dice">🎲 ${dice2}</div>`;
 
+  console.log("Выбор игрока:", selectedChoice, "Сумма:", total);
+
   let win = false;
   if (selectedChoice === 'lt') win = total < 7;
   if (selectedChoice === 'gt') win = total > 7;
   if (selectedChoice === 'eq') win = total === 7;
+
+  console.log("Результат проверки:", win ? "ПОБЕДА" : "ПРОИГРЫШ");
 
   resultEl.style.color = win ? '#22c55e' : '#ef4444';
   resultEl.textContent = win ? `Выпало ${total}. Вы выиграли ${bet * 2}!` : `Выпало ${total}. Вы проиграли 😔`;
