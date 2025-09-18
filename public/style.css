@@ -83,3 +83,65 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .wallet-title{margin:0 0 10px 0;font-size:18px;font-weight:bold}
 /* === Deposit/Withdraw modals === */
 #depositModal, #withdrawModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:50}
+/* === Dice Game === */
+.dice-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  min-height: 100px;
+}
+
+.dice {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: black;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  animation: dice-roll 0.4s ease-in-out;
+}
+
+@keyframes dice-roll {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.choice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.choice-btn {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.choice-btn:hover {
+  background: #334155;
+}
+
+.choice-btn.active-choice {
+  background: #3b82f6;
+  box-shadow: 0 0 10px #3b82f6;
+}
+.choice-buttons,
+#diceArea,
+#countdown {
+  display: none; /* скрыты по умолчанию, показываем в openGame() */
+}
