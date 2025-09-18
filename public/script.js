@@ -178,95 +178,13 @@ function showPage(id, nav) {
   if (nav) nav.classList.add('active');
 }
 
-function openPromoModal() { document.getElementById('promoModal').style.display = 'flex'; }
-function closePromoModal() { document.getElementById('promoModal').style.display = 'none'; }
-function openMenu() { document.getElementById('menuModal').style.display = 'flex'; }
-function closeMenu() { document.getElementById('menuModal').style.display = 'none'; }
-function openWalletModal() { document.getElementById('walletModal').style.display = 'flex'; }
-function closeWalletModal() { document.getElementById('walletModal').style.display = 'none'; }
-function openDepositModal() {
-  if (!userAddress) return alert('Сначала подключите кошелёк!');
-  document.getElementById('depositModal').style.display = 'flex';
-}
-function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
-function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
-function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
+// === ИГРЫ ===
+let selectedChoice = null;
 
-async function confirmDeposit() {
-  const val = document.getElementById('depositAmount').value;
-  if (!val || isNaN(val) || Number(val) <= 0) {
-    alert('Введите корректную сумму');
-    return;
-  }
-  if (!userAddress || !connector.connected) {
-    alert('Сначала подключите кошелёк!');
-    return;
-  }
-
-  try {
-    const cashierResp = await fetch('/api/get-cashier-address');
-    const cashierData = await cashierResp.json();
-    if (!cashierResp.ok || !cashierData?.address) {
-      alert(cashierData.error || 'Не удалось получить адрес кассы');
-      return;
-    }
-
-    const cashierAddress = cashierData.address;
-    const nanoAmount = Math.floor(Number(val) * 1e9);
-
-    const tx = {
-      validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
-    };
-
-    const result = await connector.sendTransaction(tx);
-    console.log('TonConnect TX result:', result);
-
-    if (result?.universalLink) {
-      if (tg?.openLink) tg.openLink(result.universalLink);
-      else window.open(result.universalLink, '_blank', 'noopener');
-    }
-
-    alert('Транзакция отправлена! Проверяем депозит...');
-    setTimeout(() => updateBalanceByBackend(userAddress), 7000);
-
-  } catch (err) {
-    console.error('Ошибка при отправке транзакции', err);
-    alert('Ошибка при отправке транзакции');
-  }
-
-  closeDepositModal();
-}
-
-async function confirmWithdraw() {
-  const val = document.getElementById('withdrawAmount').value;
-  if (!val || isNaN(val) || Number(val) <= 0) {
-    alert('Введите корректную сумму');
-    return;
-  }
-  alert('Вывод реализуется на сервере. Добавь /api/withdraw с подписью транзакции.');
-  closeWithdrawModal();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-
-  const depBtn = document.getElementById('depositSubmit');
-  if (depBtn) depBtn.addEventListener('click', (e) => { e.preventDefault(); confirmDeposit(); });
-
-  const wdrBtn = document.getElementById('withdrawSubmit');
-  if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
-});
-
-// === ОТКРЫТИЕ ИГРЫ ===
 function openGame(game) {
-  // Скрываем все контейнеры (страницы)
   document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-
-  // Показываем контейнер игры
   document.getElementById('gameContainer').classList.add('active');
 
-  // Устанавливаем заголовок в шапке
   const titles = {
     roulette: "Рулетка",
     ninja: "Ниндзя",
@@ -277,34 +195,71 @@ function openGame(game) {
   };
   document.getElementById('gameTitle').textContent = titles[game] || "Игра";
 
-  // Если у тебя есть h2 внутри игры — можно обновлять или скрыть его
-  const gameNameEl = document.querySelector('#gameContainer h2');
-  if (gameNameEl) gameNameEl.style.display = 'none';
+  // Показ UI только для "Под 7 над"
+  document.querySelector('.choice-buttons').style.display = (game === "seven") ? "flex" : "none";
+  document.getElementById('diceArea').style.display = (game === "seven") ? "flex" : "none";
+  document.getElementById('countdown').style.display = (game === "seven") ? "block" : "none";
 
-  // Очищаем поле ставки и результат
   document.getElementById('betAmount').value = '';
   document.getElementById('gameResult').textContent = '';
+  selectedChoice = null;
+  document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
 }
 
-// === ЗАКРЫТИЕ ИГРЫ ===
 function closeGame() {
   document.getElementById('gameContainer').classList.remove('active');
   showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'));
 }
 
-// === СТАРТ ИГРЫ ===
+function selectChoice(choice) {
+  selectedChoice = choice;
+  document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
+  document.getElementById(`choice-${choice}`).classList.add('active-choice');
+}
+
 function startGame() {
   const betInput = document.getElementById('betAmount');
   const resultEl = document.getElementById('gameResult');
   const bet = Number(betInput.value);
 
-  if (!bet || bet <= 0) {
-    alert('Введите корректную ставку!');
-    return;
-  }
+  if (!bet || bet <= 0) return alert('Введите корректную ставку!');
+  if (!selectedChoice) return alert('Выберите <7, =7 или >7!');
 
-  // "Симуляция" игры: 50/50 выигрыш или проигрыш
-  const win = Math.random() < 0.5;
+  let countdown = 5;
+  const countdownEl = document.getElementById('countdown');
+  countdownEl.textContent = `Бросок через ${countdown}...`;
+  
+  const interval = setInterval(() => {
+    countdown--;
+    countdownEl.textContent = `Бросок через ${countdown}...`;
+    if (countdown === 0) {
+      clearInterval(interval);
+      rollDiceAndShowResult(bet, resultEl);
+    }
+  }, 1000);
+}
+
+function rollDiceAndShowResult(bet, resultEl) {
+  const die1 = Math.ceil(Math.random() * 6);
+  const die2 = Math.ceil(Math.random() * 6);
+  const sum = die1 + die2;
+
+  const diceArea = document.getElementById('diceArea');
+  diceArea.innerHTML = `
+    <div class="dice">🎲 ${die1}</div>
+    <div class="dice">🎲 ${die2}</div>
+    <div class="dice-sum">Сумма: ${sum}</div>
+  `;
+
+  let win = false;
+  if (selectedChoice === "lt7" && sum < 7) win = true;
+  if (selectedChoice === "eq7" && sum === 7) win = true;
+  if (selectedChoice === "gt7" && sum > 7) win = true;
+
   resultEl.style.color = win ? '#22c55e' : '#ef4444';
   resultEl.textContent = win ? `Вы выиграли ${bet * 2}!` : 'Вы проиграли 😔';
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
+});
