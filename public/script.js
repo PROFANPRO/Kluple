@@ -258,32 +258,41 @@ document.addEventListener('DOMContentLoaded', () => {
   if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
 });
 
-/* === НОВАЯ ЛОГИКА ИГРЫ === */
-function openGame(gameName) {
-  document.body.innerHTML += `
-    <div class="game-container" id="gameContainer">
-      <h2>Игра: ${gameName}</h2>
-      <input type="number" id="betAmount" placeholder="Введите ставку">
-      <button id="playGameBtn">Играть</button>
-      <p id="gameResult"></p>
-      <button onclick="closeGame()">Вернуться назад</button>
-    </div>
-  `;
+// === ОТКРЫТИЕ ИГРЫ ===
+function openGame(game) {
+  // Скрываем все страницы
+  document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+  // Показываем контейнер игры
+  document.getElementById('gameContainer').classList.add('active');
 
-  document.getElementById('playGameBtn').addEventListener('click', () => {
-    const bet = Number(document.getElementById('betAmount').value);
-    if (!bet || bet <= 0) {
-      alert("Введите корректную ставку");
-      return;
-    }
+  // Устанавливаем название игры
+  const gameTitle = document.querySelector('#gameContainer h2');
+  gameTitle.textContent = game === 'roulette' ? 'Рулетка' : 'Игра';
 
-    const win = Math.random() > 0.5; // 50/50 шанс
-    const resultEl = document.getElementById('gameResult');
-    resultEl.textContent = win ? `🎉 Вы выиграли ${bet * 2}!` : `❌ Вы проиграли ${bet}`;
-    resultEl.style.color = win ? "lime" : "red";
-  });
+  // Очищаем поле ставки и результат
+  document.getElementById('betAmount').value = '';
+  document.getElementById('gameResult').textContent = '';
 }
 
+// === ЗАКРЫТИЕ ИГРЫ ===
 function closeGame() {
-  document.getElementById('gameContainer').remove();
+  document.getElementById('gameContainer').classList.remove('active');
+  showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'));
+}
+
+// === СТАРТ ИГРЫ ===
+function startGame() {
+  const betInput = document.getElementById('betAmount');
+  const resultEl = document.getElementById('gameResult');
+  const bet = Number(betInput.value);
+
+  if (!bet || bet <= 0) {
+    alert('Введите корректную ставку!');
+    return;
+  }
+
+  // "Симуляция" игры: 50/50 выигрыш или проигрыш
+  const win = Math.random() < 0.5;
+  resultEl.style.color = win ? '#22c55e' : '#ef4444';
+  resultEl.textContent = win ? `Вы выиграли ${bet * 2}!` : 'Вы проиграли 😔';
 }
