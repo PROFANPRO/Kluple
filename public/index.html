@@ -82,6 +82,22 @@
     </div>
   </div>
 </div>
+ <!-- Закрывающий тег блока games -->
+
+<!-- Game Container -->
+<div id="gameContainer" class="container">
+  <div class="game-header">
+    <button class="back-btn" onclick="closeGame()">←</button>
+    <span id="gameTitle">Игра</span>
+  </div>
+
+  <div class="game-container">
+    <h2 id="gameName">Рулетка</h2>
+    <input type="number" id="betAmount" placeholder="Введите ставку">
+    <button onclick="startGame()">Сделать ставку</button>
+    <p id="gameResult"></p>
+  </div>
+</div>
 
 <!-- Rating -->
 <div id="rating" class="container">
