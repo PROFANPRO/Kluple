@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // ✅ используем сервисный ключ
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
@@ -17,32 +17,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Проверяем, не привязан ли кошелёк к другому пользователю
+    // 1. Проверяем, не привязан ли этот кошелёк к другому пользователю
     const { data: existingWallets, error: checkError } = await supabase
       .from("wallet_links")
-      .select("*")
+      .select("user_id")
       .eq("wallet", wallet);
 
     if (checkError) throw checkError;
 
     if (existingWallets.length > 0 && existingWallets[0].user_id !== userId) {
-      return res
-        .status(400)
-        .json({ error: "Этот кошелёк уже привязан к другому аккаунту" });
+      return res.status(400).json({
+        error: "Этот кошелёк уже привязан к другому аккаунту"
+      });
     }
 
-    // 2. Если этот же userId уже привязан — просто возвращаем успех
-    if (existingWallets.length > 0 && existingWallets[0].user_id === userId) {
-      console.log(`[link-wallet] user ${userId} уже привязан к ${wallet}`);
-      return res.status(200).json({ success: true, wallet });
-    }
+    // 2. Удаляем старую привязку для этого userId (чтобы не дублировалось)
+    await supabase.from("wallet_links").delete().eq("user_id", userId);
 
-    // 3. Создаём или обновляем запись
-    const { error } = await supabase
+    // 3. Создаём новую привязку
+    const { error: insertError } = await supabase
       .from("wallet_links")
-      .upsert({ user_id: userId, wallet }, { onConflict: "user_id" });
+      .insert([{ user_id: userId, wallet }]);
 
-    if (error) throw error;
+    if (insertError) throw insertError;
 
     console.log(`[link-wallet] user ${userId} привязал ${wallet}`);
     return res.status(200).json({ success: true, wallet });
