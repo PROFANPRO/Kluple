@@ -89,8 +89,8 @@ connector.onStatusChange(async (wallet) => {
       updateBalanceByBackend(userAddress);
       walletIcon.style.display = "inline-block";
       closeWalletModal();
-
-    } else {
+    } 
+    else {
       resetWalletUI();
     }
 });
