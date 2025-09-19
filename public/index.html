@@ -91,19 +91,21 @@
   </div>
 
   <div class="game-container">
-    <!-- 🎲 Игровая зона для Под 7 над -->
-    <div class="dice-area" id="diceArea"></div>
-    <div class="countdown" id="countdown"></div>
+    <!-- 🎲 Игровая зона -->
+    <div class="dice-wrapper">
+      <div class="dice-area" id="diceArea"></div>
+      <div class="countdown" id="countdown"></div>
+    </div>
 
+    <!-- Ставка и выбор -->
     <input type="number" id="betAmount" placeholder="Введите ставку">
     <div class="choice-buttons">
-      <button class="choice-btn" onclick="selectChoice('<')">&lt; 7</button>
-      <button class="choice-btn" onclick="selectChoice('=')">= 7</button>
-      <button class="choice-btn" onclick="selectChoice('>')">&gt; 7</button>
+      <button class="choice-btn" data-choice="<" onclick="selectChoice('<')">&lt; 7</button>
+      <button class="choice-btn" data-choice="=" onclick="selectChoice('=')">= 7</button>
+      <button class="choice-btn" data-choice=">" onclick="selectChoice('>')">&gt; 7</button>
     </div>
-      <div id="countdown"></div>
-<div id="diceArea"></div>
-    <button onclick="startGame()">Сделать ставку</button>
+
+    <button id="betBtn" onclick="startGame()">Сделать ставку</button>
     <p id="gameResult"></p>
   </div>
 </div>
@@ -186,9 +188,7 @@
       <h3 class="wallet-title">Выберите кошелёк</h3>
       <span class="close" onclick="closeWalletModal()" title="Закрыть">&times;</span>
     </div>
-    <div id="walletList" class="wallet-list">
-      <!-- Кошельки с иконками будут рендериться здесь -->
-    </div>
+    <div id="walletList" class="wallet-list"></div>
   </div>
 </div>
 
