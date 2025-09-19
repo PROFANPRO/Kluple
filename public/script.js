@@ -292,9 +292,18 @@ function closeGame() {
   showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'));
 }
 
+let selectedChoice = null;
+
+function selectChoice(choice) {
+  selectedChoice = choice;
+  document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
+  document.querySelector(`.choice-btn[data-choice="${choice}"]`).classList.add('active-choice');
+}
+
 function startGame() {
   const betInput = document.getElementById('betAmount');
   const resultEl = document.getElementById('gameResult');
+  const betBtn = document.getElementById('betBtn');
   const bet = Number(betInput.value);
 
   if (!bet || bet <= 0) {
@@ -306,19 +315,23 @@ function startGame() {
     return;
   }
 
+  betBtn.disabled = true;
+  betBtn.textContent = 'Ожидание...';
+
   const diceArea = document.getElementById('diceArea');
   const countdown = document.getElementById('countdown');
 
   resultEl.textContent = '';
+  diceArea.innerHTML = '';
   diceArea.style.display = 'none';
 
   countdown.style.display = 'block';
   let timer = 5;
-  countdown.textContent = `Осталось: ${timer} сек.`;
+  countdown.textContent = timer;
   const interval = setInterval(() => {
     timer--;
     if (timer > 0) {
-      countdown.textContent = `Осталось: ${timer} сек.`;
+      countdown.textContent = timer;
     } else {
       clearInterval(interval);
       countdown.style.display = 'none';
@@ -328,28 +341,23 @@ function startGame() {
       const sum = dice1 + dice2;
 
       diceArea.innerHTML = `
-        <div class="dice">🎲<span>${dice1}</span></div>
-        <div class="dice">🎲<span>${dice2}</span></div>
+        <div class="dice">${dice1}</div>
+        <div class="dice">${dice2}</div>
       `;
       diceArea.style.display = 'flex';
 
       let win = false;
-      if (selectedChoice === '<7' && sum < 7) win = true;
-      if (selectedChoice === '=7' && sum === 7) win = true;
-      if (selectedChoice === '>7' && sum > 7) win = true;
+      if (selectedChoice === '<' && sum < 7) win = true;
+      if (selectedChoice === '=' && sum === 7) win = true;
+      if (selectedChoice === '>' && sum > 7) win = true;
 
       resultEl.style.color = win ? '#22c55e' : '#ef4444';
       resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
+
+      setTimeout(() => {
+        betBtn.disabled = false;
+        betBtn.textContent = 'Сделать ставку';
+      }, 1500);
     }
   }, 1000);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  showPage('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-
-  const depBtn = document.getElementById('depositSubmit');
-  if (depBtn) depBtn.addEventListener('click', (e) => { e.preventDefault(); confirmDeposit(); });
-
-  const wdrBtn = document.getElementById('withdrawSubmit');
-  if (wdrBtn) wdrBtn.addEventListener('click', (e) => { e.preventDefault(); confirmWithdraw(); });
-});
