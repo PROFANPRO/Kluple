@@ -292,14 +292,6 @@ function closeGame() {
   showPage('games', document.querySelector('.bottom-nav .nav-item:nth-child(2)'));
 }
 
-let selectedChoice = null;
-
-function selectChoice(choice) {
-  selectedChoice = choice;
-  document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
-  document.querySelector(`.choice-btn[data-choice="${choice}"]`).classList.add('active-choice');
-}
-
 function startGame() {
   const betInput = document.getElementById('betAmount');
   const resultEl = document.getElementById('gameResult');
