@@ -60,7 +60,6 @@ connector.onStatusChange(async (wallet) => {
 
           const data = await resp.json();
 
-          // --- Новая логика ---
           if (!resp.ok) {
             console.error('[link-wallet] Ошибка HTTP:', data);
             alert(data.error || 'Ошибка при привязке кошелька');
@@ -89,10 +88,13 @@ connector.onStatusChange(async (wallet) => {
       updateBalanceByBackend(userAddress);
       walletIcon.style.display = "inline-block";
       closeWalletModal();
-    } 
-    else {
-      resetWalletUI();
+
+    } catch (err) {
+      console.error("onStatusChange error:", err);
     }
+  } else {
+    resetWalletUI();
+  }
 });
 
 window.addEventListener('load', async () => {
