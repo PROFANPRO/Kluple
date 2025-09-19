@@ -195,6 +195,7 @@ function closeWithdrawModal() { document.getElementById('withdrawModal').style.d
 
 // === Депозит и вывод ===
 async function confirmDeposit() {
+  console.log("confirmDeposit called");
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
     alert('Введите корректную сумму');
@@ -353,3 +354,19 @@ function startGame() {
     }
   }, 1000);
 }
+
+// === Обработчики нажатий для депозитов и вывода ===
+document.addEventListener('DOMContentLoaded', () => {
+  const depBtn = document.getElementById('depositSubmit');
+  if (depBtn) depBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log("depositSubmit clicked");
+    confirmDeposit();
+  });
+
+  const wdrBtn = document.getElementById('withdrawSubmit');
+  if (wdrBtn) wdrBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    confirmWithdraw();
+  });
+});
