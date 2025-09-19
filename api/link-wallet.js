@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Проверяем кошелёк в базе
+    // Проверяем, есть ли привязка этого кошелька
     const { data: existingWallets, error: checkError } = await supabase
       .from("wallet_links")
       .select("user_id")
@@ -28,23 +28,36 @@ export default async function handler(req, res) {
     if (existingWallets.length > 0) {
       const linkedUser = existingWallets[0].user_id;
 
-      // Если он привязан к другому нормальному пользователю — блокируем
-      if (linkedUser && linkedUser !== userId) {
+      // Если он привязан к текущему пользователю — просто успех (не удаляем и не создаём заново)
+      if (linkedUser === userId) {
+        return res.status(200).json({ success: true, wallet });
+      }
+
+      // Если он привязан к другому пользователю — блокируем
+      if (linkedUser) {
         return res.status(400).json({
           error: "Этот кошелёк уже привязан к другому аккаунту"
         });
       }
 
-      // Если user_id пустой или NULL — удаляем запись как "битую"
-      if (!linkedUser) {
-        await supabase.from("wallet_links").delete().eq("wallet", wallet);
-      }
+      // Если user_id пустой — удаляем битую запись и продолжаем
+      await supabase.from("wallet_links").delete().eq("wallet", wallet);
     }
 
-    // 2. Удаляем старую привязку этого пользователя (если есть)
-    await supabase.from("wallet_links").delete().eq("user_id", userId);
+    // Проверяем, нет ли других кошельков, привязанных к этому user_id
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from("wallet_links")
+      .select("wallet")
+      .eq("user_id", userId);
 
-    // 3. Создаём новую
+    if (userCheckError) throw userCheckError;
+
+    if (existingUser.length > 0) {
+      // Удаляем старую привязку, если была
+      await supabase.from("wallet_links").delete().eq("user_id", userId);
+    }
+
+    // Создаём новую привязку
     const { error: insertError } = await supabase
       .from("wallet_links")
       .insert([{ user_id: userId, wallet }]);
