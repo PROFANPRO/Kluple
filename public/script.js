@@ -43,36 +43,56 @@ async function updateBalanceByBackend(friendlyAddress) {
 connector.onStatusChange(async (wallet) => {
   if (wallet) {
     try {
-      userAddress = TonConnectSDK.toUserFriendlyAddress(wallet.account.address);
-    } catch {
-      userAddress = wallet.account.address;
-    }
-
-    if (userId) {
+      // Приводим адрес к user-friendly формату
       try {
-        const resp = await fetch('/api/link-wallet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, wallet: userAddress })
-        });
+        userAddress = TonConnectSDK.toUserFriendlyAddress(wallet.account.address);
+      } catch {
+        userAddress = wallet.account.address;
+      }
 
-        const data = await resp.json();
-        if (!resp.ok || data.error) {
-          alert(data.error || 'Кошелёк уже привязан к другому аккаунту!');
+      if (userId) {
+        try {
+          const resp = await fetch('/api/link-wallet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, wallet: userAddress })
+          });
+
+          const data = await resp.json();
+
+          // --- Новая логика ---
+          if (!resp.ok) {
+            console.error('[link-wallet] Ошибка HTTP:', data);
+            alert(data.error || 'Ошибка при привязке кошелька');
+            await connector.disconnect();
+            return;
+          }
+
+          if (data.error) {
+            console.warn('[link-wallet] Сервер вернул ошибку:', data.error);
+            alert(data.error);
+            await connector.disconnect();
+            return;
+          }
+
+          console.log('[link-wallet] Кошелёк успешно привязан или уже был привязан:', data.wallet);
+        } catch (err) {
+          console.error('Ошибка связывания кошелька:', err);
+          alert('Не удалось привязать кошелёк');
           await connector.disconnect();
           return;
         }
-      } catch (err) {
-        console.error('Ошибка связывания кошелька:', err);
       }
-    }
 
-    setWalletUi(userAddress);
-    updateBalanceByBackend(userAddress);
-    walletIcon.style.display = "inline-block";
-    closeWalletModal();
-  } else {
-    resetWalletUI();
+      // Если дошли сюда — всё ок, показываем UI
+      setWalletUi(userAddress);
+      updateBalanceByBackend(userAddress);
+      walletIcon.style.display = "inline-block";
+      closeWalletModal();
+
+    } else {
+      resetWalletUI();
+    }
   }
 });
 
