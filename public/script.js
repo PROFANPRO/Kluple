@@ -93,7 +93,6 @@ connector.onStatusChange(async (wallet) => {
     } else {
       resetWalletUI();
     }
-  }
 });
 
 window.addEventListener('load', async () => {
