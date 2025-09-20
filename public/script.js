@@ -267,6 +267,12 @@ async function confirmDeposit() {
   }
 }
 
+  } catch (err) {
+    console.error('Ошибка при отправке транзакции', err);
+    alert('Ошибка при отправке транзакции');
+  }
+}
+
 async function confirmWithdraw() {
   const val = document.getElementById('withdrawAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
