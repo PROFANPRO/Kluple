@@ -19,7 +19,7 @@ const balanceDisplay = document.getElementById('balanceDisplay');
 let userAddress = null;
 let userId = tg?.initDataUnsafe?.user?.id || null;
 
-const connector = new TonConnectSDK.TonConnect({
+const tonConnectUI = new TonConnectUI({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
 });
 
