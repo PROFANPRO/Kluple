@@ -1,3 +1,4 @@
+<script>
 // === Telegram WebApp ===
 const tg = window.Telegram?.WebApp;
 tg?.expand();
@@ -98,10 +99,7 @@ window.addEventListener('load', async () => {
 
 // === Кнопки кошелька ===
 walletBtn.onclick = async () => {
-  if (!tonConnectUI) {
-    alert('TonConnect UI не инициализирован!');
-    return;
-  }
+  if (!tonConnectUI) return alert('TonConnect UI не инициализирован!');
   await tonConnectUI.openModal();
 };
 
@@ -140,7 +138,6 @@ function setWalletUi(friendlyAddress) {
 
 // === Депозит ===
 async function confirmDeposit() {
-  console.log("confirmDeposit called");
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) return alert('Введите корректную сумму');
   if (!userAddress || !tonConnectUI.connected) return alert('Сначала подключите кошелёк!');
@@ -159,7 +156,7 @@ async function confirmDeposit() {
     };
 
     console.log("[TonConnectUI] Отправляем транзакцию:", tx);
-    await tonConnectUI.sendTransaction(tx); // ✅ UI сам откроет кошелёк
+    await tonConnectUI.sendTransaction(tx);
 
     closeDepositModal();
     alert('Транзакция отправлена! Проверяем депозит...');
@@ -175,22 +172,9 @@ async function confirmDeposit() {
 async function confirmWithdraw() {
   const val = document.getElementById('withdrawAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) return alert('Введите корректную сумму');
-  alert('Вывод реализуется на сервере. Добавь /api/withdraw с подписью транзакции.');
+  alert('Вывод реализуется на сервере.');
   closeWithdrawModal();
 }
-
-// === Обработчики кнопок ===
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('depositSubmit')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    confirmDeposit();
-  });
-
-  document.getElementById('withdrawSubmit')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    confirmWithdraw();
-  });
-});
 
 // === Игры ===
 let selectedChoice = null;
@@ -241,14 +225,8 @@ function startGame() {
   const betBtn = document.getElementById('betBtn');
   const bet = Number(betInput.value);
 
-  if (!bet || bet <= 0) {
-    alert('Введите корректную ставку!');
-    return;
-  }
-  if (!selectedChoice) {
-    alert('Сделайте выбор: <7, =7 или >7');
-    return;
-  }
+  if (!bet || bet <= 0) return alert('Введите корректную ставку!');
+  if (!selectedChoice) return alert('Сделайте выбор: <7, =7 или >7');
 
   betBtn.disabled = true;
   betBtn.textContent = 'Ожидание...';
@@ -275,10 +253,7 @@ function startGame() {
       const dice2 = Math.floor(Math.random() * 6) + 1;
       const sum = dice1 + dice2;
 
-      diceArea.innerHTML = `
-        <div class="dice">${dice1}</div>
-        <div class="dice">${dice2}</div>
-      `;
+      diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
       diceArea.style.display = 'flex';
 
       let win = false;
@@ -299,15 +274,14 @@ function startGame() {
 
 // === Обработчики нажатий ===
 document.addEventListener('DOMContentLoaded', () => {
-  const depBtn = document.getElementById('depositSubmit');
-  if (depBtn) depBtn.addEventListener('click', (e) => {
+  document.getElementById('depositSubmit')?.addEventListener('click', (e) => {
     e.preventDefault();
     confirmDeposit();
   });
 
-  const wdrBtn = document.getElementById('withdrawSubmit');
-  if (wdrBtn) wdrBtn.addEventListener('click', (e) => {
+  document.getElementById('withdrawSubmit')?.addEventListener('click', (e) => {
     e.preventDefault();
     confirmWithdraw();
   });
 });
+</script>
