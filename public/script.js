@@ -1,4 +1,3 @@
-<script>
 // === Telegram WebApp ===
 const tg = window.Telegram?.WebApp;
 tg?.expand();
@@ -20,7 +19,7 @@ const balanceDisplay = document.getElementById('balanceDisplay');
 let userAddress = null;
 let userId = tg?.initDataUnsafe?.user?.id || null;
 
-// Инициализация TonConnect UI
+// Универсально создаём TonConnectUI
 const TCUICtor = (window.TonConnectUI && (window.TonConnectUI.TonConnectUI || window.TonConnectUI)) || null;
 if (!TCUICtor) {
   console.error('TonConnect UI не загружен! Проверь <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"> в HTML.');
@@ -46,39 +45,43 @@ async function updateBalanceByBackend(friendlyAddress) {
   }
 }
 
-// === Слушаем статус подключения ===
+// === Отслеживание статуса кошелька ===
 if (tonConnectUI) {
   tonConnectUI.onStatusChange(async (wallet) => {
     if (wallet?.account?.address) {
-      userAddress = wallet.account.address;
-      console.log('[TonConnectUI] Кошелёк подключен:', userAddress);
+      try {
+        userAddress = wallet.account.address;
 
-      if (userId) {
-        try {
-          const resp = await fetch('/api/link-wallet', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, wallet: userAddress })
-          });
+        if (userId) {
+          try {
+            const resp = await fetch('/api/link-wallet', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, wallet: userAddress })
+            });
 
-          const data = await resp.json();
-          if (!resp.ok || data.error) {
-            alert(data.error || 'Ошибка при привязке кошелька');
+            const data = await resp.json();
+            if (!resp.ok || data.error) {
+              alert(data.error || 'Ошибка при привязке кошелька');
+              await tonConnectUI.disconnect();
+              return;
+            }
+
+            console.log('[link-wallet] Кошелёк успешно привязан:', data.wallet || userAddress);
+          } catch (err) {
+            console.error('Ошибка связывания кошелька:', err);
             await tonConnectUI.disconnect();
             return;
           }
-          console.log('[link-wallet] Привязка прошла успешно:', data.wallet);
-        } catch (err) {
-          console.error('Ошибка при link-wallet:', err);
-          await tonConnectUI.disconnect();
-          return;
         }
-      }
 
-      setWalletUi(userAddress);
-      updateBalanceByBackend(userAddress);
-      walletIcon.style.display = "inline-block";
-      closeWalletModal();
+        setWalletUi(userAddress);
+        updateBalanceByBackend(userAddress);
+        walletIcon.style.display = "inline-block";
+        closeWalletModal();
+      } catch (err) {
+        console.error("onStatusChange error:", err);
+      }
     } else {
       resetWalletUI();
     }
@@ -87,19 +90,26 @@ if (tonConnectUI) {
 
 // === Восстановление сессии ===
 window.addEventListener('load', async () => {
-  if (!tonConnectUI) return;
-  await tonConnectUI.restoreConnection();
-  if (tonConnectUI.account?.address) {
-    userAddress = tonConnectUI.account.address;
-    setWalletUi(userAddress);
-    updateBalanceByBackend(userAddress);
-    walletIcon.style.display = "inline-block";
+  try {
+    if (!tonConnectUI) return;
+    await tonConnectUI.restoreConnection();
+    if (tonConnectUI.account?.address) {
+      userAddress = tonConnectUI.account.address;
+      setWalletUi(userAddress);
+      updateBalanceByBackend(userAddress);
+      walletIcon.style.display = "inline-block";
+    }
+  } catch (e) {
+    console.warn('restoreConnection error:', e);
   }
 });
 
 // === Кнопки кошелька ===
 walletBtn.onclick = async () => {
-  if (!tonConnectUI) return alert('TonConnect UI не инициализирован!');
+  if (!tonConnectUI) {
+    alert('TonConnect UI не инициализирован!');
+    return;
+  }
   await tonConnectUI.openModal();
 };
 
@@ -130,17 +140,18 @@ function resetWalletUI() {
 }
 
 function setWalletUi(friendlyAddress) {
-  const short = friendlyAddress.length > 12
+  const short = friendlyAddress && friendlyAddress.length > 12
     ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4)
-    : friendlyAddress;
+    : (friendlyAddress || 'Подключить кошелёк');
   walletBtn.textContent = short;
 }
 
 // === Депозит ===
 async function confirmDeposit() {
+  console.log("confirmDeposit called");
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) return alert('Введите корректную сумму');
-  if (!userAddress || !tonConnectUI.connected) return alert('Сначала подключите кошелёк!');
+  if (!userAddress || !tonConnectUI?.connected) return alert('Сначала подключите кошелёк!');
 
   try {
     const cashierResp = await fetch('/api/get-cashier-address');
@@ -156,7 +167,7 @@ async function confirmDeposit() {
     };
 
     console.log("[TonConnectUI] Отправляем транзакцию:", tx);
-    await tonConnectUI.sendTransaction(tx);
+    await tonConnectUI.sendTransaction(tx); // UI сам откроет кошелёк
 
     closeDepositModal();
     alert('Транзакция отправлена! Проверяем депозит...');
@@ -172,7 +183,7 @@ async function confirmDeposit() {
 async function confirmWithdraw() {
   const val = document.getElementById('withdrawAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) return alert('Введите корректную сумму');
-  alert('Вывод реализуется на сервере.');
+  alert('Вывод реализуется на сервере. Добавь /api/withdraw с подписью транзакции.');
   closeWithdrawModal();
 }
 
@@ -225,8 +236,14 @@ function startGame() {
   const betBtn = document.getElementById('betBtn');
   const bet = Number(betInput.value);
 
-  if (!bet || bet <= 0) return alert('Введите корректную ставку!');
-  if (!selectedChoice) return alert('Сделайте выбор: <7, =7 или >7');
+  if (!bet || bet <= 0) {
+    alert('Введите корректную ставку!');
+    return;
+  }
+  if (!selectedChoice) {
+    alert('Сделайте выбор: <7, =7 или >7');
+    return;
+  }
 
   betBtn.disabled = true;
   betBtn.textContent = 'Ожидание...';
@@ -253,7 +270,10 @@ function startGame() {
       const dice2 = Math.floor(Math.random() * 6) + 1;
       const sum = dice1 + dice2;
 
-      diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
+      diceArea.innerHTML = `
+        <div class="dice">${dice1}</div>
+        <div class="dice">${dice2}</div>
+      `;
       diceArea.style.display = 'flex';
 
       let win = false;
@@ -272,16 +292,17 @@ function startGame() {
   }, 1000);
 }
 
-// === Обработчики нажатий ===
+// === Обработчики нажатий для депозитов и вывода ===
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('depositSubmit')?.addEventListener('click', (e) => {
+  const depBtn = document.getElementById('depositSubmit');
+  if (depBtn) depBtn.addEventListener('click', (e) => {
     e.preventDefault();
     confirmDeposit();
   });
 
-  document.getElementById('withdrawSubmit')?.addEventListener('click', (e) => {
+  const wdrBtn = document.getElementById('withdrawSubmit');
+  if (wdrBtn) wdrBtn.addEventListener('click', (e) => {
     e.preventDefault();
     confirmWithdraw();
   });
 });
-</script>
