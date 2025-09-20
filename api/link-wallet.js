@@ -1,4 +1,3 @@
-// /pages/api/link-wallet.js
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -17,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Проверяем, есть ли привязка этого кошелька
+    // 1. Проверяем кошелёк
     const { data: existingWallets, error: checkError } = await supabase
       .from("wallet_links")
       .select("user_id")
@@ -28,36 +27,19 @@ export default async function handler(req, res) {
     if (existingWallets.length > 0) {
       const linkedUser = existingWallets[0].user_id;
 
-      // Если он привязан к текущему пользователю — просто успех (не удаляем и не создаём заново)
       if (linkedUser === userId) {
+        // ✅ Кошелёк уже привязан к этому пользователю — просто успех
         return res.status(200).json({ success: true, wallet });
       }
 
-      // Если он привязан к другому пользователю — блокируем
-      if (linkedUser) {
-        return res.status(400).json({
-          error: "Этот кошелёк уже привязан к другому аккаунту"
-        });
-      }
-
-      // Если user_id пустой — удаляем битую запись и продолжаем
-      await supabase.from("wallet_links").delete().eq("wallet", wallet);
+      // ❌ Кошелёк привязан к другому пользователю
+      return res.status(400).json({ error: "Этот кошелёк уже привязан к другому аккаунту" });
     }
 
-    // Проверяем, нет ли других кошельков, привязанных к этому user_id
-    const { data: existingUser, error: userCheckError } = await supabase
-      .from("wallet_links")
-      .select("wallet")
-      .eq("user_id", userId);
+    // 2. Удаляем старую привязку (если этот userId уже имел другой кошелёк)
+    await supabase.from("wallet_links").delete().eq("user_id", userId);
 
-    if (userCheckError) throw userCheckError;
-
-    if (existingUser.length > 0) {
-      // Удаляем старую привязку, если была
-      await supabase.from("wallet_links").delete().eq("user_id", userId);
-    }
-
-    // Создаём новую привязку
+    // 3. Создаём новую запись
     const { error: insertError } = await supabase
       .from("wallet_links")
       .insert([{ user_id: userId, wallet }]);
