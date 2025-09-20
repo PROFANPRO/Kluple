@@ -1,3 +1,4 @@
+// /pages/api/link-wallet.js
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -16,30 +17,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Проверяем кошелёк
-    const { data: existingWallets, error: checkError } = await supabase
-      .from("wallet_links")
-      .select("user_id")
-      .eq("wallet", wallet);
-
-    if (checkError) throw checkError;
-
-    if (existingWallets.length > 0) {
-      const linkedUser = existingWallets[0].user_id;
-
-      if (linkedUser === userId) {
-        // ✅ Кошелёк уже привязан к этому пользователю — просто успех
-        return res.status(200).json({ success: true, wallet });
-      }
-
-      // ❌ Кошелёк привязан к другому пользователю
-      return res.status(400).json({ error: "Этот кошелёк уже привязан к другому аккаунту" });
-    }
-
-    // 2. Удаляем старую привязку (если этот userId уже имел другой кошелёк)
+    // ✅ Удаляем любую старую привязку по user_id
     await supabase.from("wallet_links").delete().eq("user_id", userId);
 
-    // 3. Создаём новую запись
+    // ✅ Вставляем новую запись
     const { error: insertError } = await supabase
       .from("wallet_links")
       .insert([{ user_id: userId, wallet }]);
