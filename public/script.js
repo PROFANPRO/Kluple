@@ -247,27 +247,25 @@ async function confirmDeposit() {
     const result = await connector.sendTransaction(tx);
     console.log('TonConnect TX result:', result);
 
-    if (result?.universalLink) {
-      try {
-        // Пытаемся открыть через Telegram WebApp
-        if (tg?.openLink) {
-          tg.openLink(result.universalLink, { try_instant_view: false });
-          console.log("Ссылка открыта через tg.openLink");
-        } else {
-          // Если не Telegram — откроем в новом окне
-          window.open(result.universalLink, '_blank', 'noopener');
-        }
-      } catch (err) {
-        console.warn("tg.openLink не сработал, пробуем обычный переход...");
-        window.location.href = result.universalLink;
-      }
-    } else {
-      // Если universalLink не вернулся — даём пользователю ссылку вручную
-      alert(`Откройте кошелёк вручную и подтвердите перевод:\n${cashierAddress}`);
+    // --- 1. Сначала пытаемся открыть Telegram Wallet ---
+    const telegramWalletLink = `https://t.me/wallet?startapp=transfer-${cashierAddress}-${nanoAmount}`;
+    if (tg?.openLink) {
+      console.log("Открываю Telegram Wallet ссылку:", telegramWalletLink);
+      tg.openLink(telegramWalletLink, { try_instant_view: false });
+    } 
+    // --- 2. Если TonConnect вернул universalLink — открываем его ---
+    else if (result?.universalLink) {
+      console.log("Открываю universalLink:", result.universalLink);
+      window.open(result.universalLink, "_blank");
+    }
+    // --- 3. Если ничего нет — fallback в tonkeeper:// ---
+    else {
+      const fallbackLink = `tonkeeper://send?address=${cashierAddress}&amount=${nanoAmount}`;
+      console.log("Fallback tonkeeper://:", fallbackLink);
+      window.location.href = fallbackLink;
     }
 
     closeDepositModal();
-
     alert('Транзакция отправлена! Проверяем депозит...');
     setTimeout(() => updateBalanceByBackend(userAddress), 7000);
 
