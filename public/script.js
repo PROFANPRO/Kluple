@@ -19,10 +19,14 @@ const balanceDisplay = document.getElementById('balanceDisplay');
 let userAddress = null;
 let userId = tg?.initDataUnsafe?.user?.id || null;
 
-// создаём TonConnectUI
-const tonConnectUI = new TonConnectUI({
+// Универсально создаём инстанс TonConnectUI (на всякий случай поддерживаем разные UMD экспорты)
+const TCUICtor = (window.TonConnectUI && (window.TonConnectUI.TonConnectUI || window.TonConnectUI)) || null;
+if (!TCUICtor) {
+  console.error('TonConnect UI не загружен. Проверь <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"> в HTML.');
+}
+const tonConnectUI = TCUICtor ? new TCUICtor({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json'
-});
+}) : null;
 
 // === Баланс через backend ===
 async function updateBalanceByBackend(friendlyAddress) {
@@ -42,72 +46,69 @@ async function updateBalanceByBackend(friendlyAddress) {
 }
 
 // === Отслеживание статуса кошелька ===
-tonConnectUI.onStatusChange(async (wallet) => {
-  if (wallet?.account?.address) {
-    try {
-      // Приводим адрес к user-friendly формату
+if (tonConnectUI) {
+  tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet?.account?.address) {
       try {
-        userAddress = TonConnectSDK.toUserFriendlyAddress(wallet.account.address);
-      } catch {
+        // Берём адрес напрямую из TonConnect UI
         userAddress = wallet.account.address;
-      }
 
-      if (userId) {
-        try {
-          const resp = await fetch('/api/link-wallet', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, wallet: userAddress })
-          });
+        // Линкуем кошелёк к пользователю на бэке (безопасная логика у тебя в /api/link-wallet)
+        if (userId) {
+          try {
+            const resp = await fetch('/api/link-wallet', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, wallet: userAddress })
+            });
 
-          const data = await resp.json();
+            const data = await resp.json();
 
-          if (!resp.ok) {
-            console.error('[link-wallet] Ошибка HTTP:', data);
-            alert(data.error || 'Ошибка при привязке кошелька');
+            if (!resp.ok) {
+              console.error('[link-wallet] Ошибка HTTP:', data);
+              alert(data.error || 'Ошибка при привязке кошелька');
+              await tonConnectUI.disconnect();
+              return;
+            }
+
+            if (data.error) {
+              console.warn('[link-wallet] Сервер вернул ошибку:', data.error);
+              alert(data.error);
+              await tonConnectUI.disconnect();
+              return;
+            }
+
+            console.log('[link-wallet] Кошелёк успешно привязан или уже был привязан:', data.wallet || userAddress);
+          } catch (err) {
+            console.error('Ошибка связывания кошелька:', err);
+            alert('Не удалось привязать кошелёк');
             await tonConnectUI.disconnect();
             return;
           }
-
-          if (data.error) {
-            console.warn('[link-wallet] Сервер вернул ошибку:', data.error);
-            alert(data.error);
-            await tonConnectUI.disconnect();
-            return;
-          }
-
-          console.log('[link-wallet] Кошелёк успешно привязан или уже был привязан:', data.wallet);
-        } catch (err) {
-          console.error('Ошибка связывания кошелька:', err);
-          alert('Не удалось привязать кошелёк');
-          await tonConnectUI.disconnect();
-          return;
         }
+
+        // UI после успешной привязки
+        setWalletUi(userAddress);
+        updateBalanceByBackend(userAddress);
+        walletIcon.style.display = "inline-block";
+        closeWalletModal();
+
+      } catch (err) {
+        console.error("onStatusChange error:", err);
       }
-
-      setWalletUi(userAddress);
-      updateBalanceByBackend(userAddress);
-      walletIcon.style.display = "inline-block";
-      closeWalletModal();
-
-    } catch (err) {
-      console.error("onStatusChange error:", err);
+    } else {
+      resetWalletUI();
     }
-  } else {
-    resetWalletUI();
-  }
-});
+  });
+}
 
 // === Восстановление сессии ===
 window.addEventListener('load', async () => {
   try {
+    if (!tonConnectUI) return;
     await tonConnectUI.restoreConnection();
     if (tonConnectUI.account?.address) {
-      try {
-        userAddress = TonConnectSDK.toUserFriendlyAddress(tonConnectUI.account.address);
-      } catch {
-        userAddress = tonConnectUI.account.address;
-      }
+      userAddress = tonConnectUI.account.address;
       setWalletUi(userAddress);
       updateBalanceByBackend(userAddress);
       walletIcon.style.display = "inline-block";
@@ -119,6 +120,10 @@ window.addEventListener('load', async () => {
 
 // === Кнопки кошелька ===
 walletBtn.onclick = async () => {
+  if (!tonConnectUI) {
+    alert('TonConnect UI не инициализирован');
+    return;
+  }
   await tonConnectUI.openModal();
 };
 
@@ -139,7 +144,11 @@ disconnectBtn.onclick = async () => {
     console.error('Ошибка при отвязке кошелька:', err);
   }
 
-  await tonConnectUI.disconnect();
+  try {
+    await tonConnectUI?.disconnect();
+  } catch (e) {
+    console.warn('Ошибка disconnect TonConnectUI:', e);
+  }
   resetWalletUI();
   walletDropdown.classList.remove('show');
 };
@@ -152,9 +161,9 @@ function resetWalletUI() {
 }
 
 function setWalletUi(friendlyAddress) {
-  const short = friendlyAddress.length > 12
+  const short = friendlyAddress && friendlyAddress.length > 12
     ? friendlyAddress.slice(0, 6) + '…' + friendlyAddress.slice(-4)
-    : friendlyAddress;
+    : (friendlyAddress || 'Подключить кошелёк');
   walletBtn.textContent = short;
 }
 
@@ -188,7 +197,7 @@ async function confirmDeposit() {
     alert('Введите корректную сумму');
     return;
   }
-  if (!userAddress || !tonConnectUI.connected) {
+  if (!userAddress || !tonConnectUI?.connected) {
     alert('Сначала подключите кошелёк!');
     return;
   }
@@ -209,8 +218,9 @@ async function confirmDeposit() {
       messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
     };
 
-    console.log("Отправляем транзакцию:", tx);
-    await tonConnectUI.sendTransaction(tx); // кошелёк сам откроется
+    console.log("Отправляем транзакцию через TonConnect UI:", tx);
+    // TonConnect UI сам откроет модалку/приложение кошелька
+    await tonConnectUI.sendTransaction(tx);
 
     closeDepositModal();
     alert('Транзакция отправлена! Проверяем депозит...');
@@ -239,7 +249,8 @@ let selectedChoice = null;
 function selectChoice(choice) {
   selectedChoice = choice;
   document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active-choice'));
-  document.querySelector(`.choice-btn[data-choice="${choice}"]`).classList.add('active-choice');
+  const btn = document.querySelector(`.choice-btn[data-choice="${choice}"]`);
+  if (btn) btn.classList.add('active-choice');
 }
 
 function openGame(game) {
