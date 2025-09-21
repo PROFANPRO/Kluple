@@ -145,17 +145,20 @@ function closeWithdrawModal() { document.getElementById('withdrawModal').style.d
 // === Депозит и вывод ===
 async function confirmDeposit() {
   console.log("confirmDeposit called");
+
   const val = document.getElementById('depositAmount').value;
   if (!val || isNaN(val) || Number(val) <= 0) {
     alert('Введите корректную сумму');
     return;
   }
-  if (!userAddress || !connector.connected) {
+
+  if (!userAddress || !tonConnectUI?.account) {
     alert('Сначала подключите кошелёк!');
     return;
   }
 
   try {
+    // 1. Получаем адрес кассы
     const cashierResp = await fetch('/api/get-cashier-address');
     const cashierData = await cashierResp.json();
     if (!cashierResp.ok || !cashierData?.address) {
@@ -166,28 +169,37 @@ async function confirmDeposit() {
     const cashierAddress = cashierData.address;
     const nanoAmount = Math.floor(Number(val) * 1e9);
 
+    // 2. Формируем транзакцию
     const tx = {
       validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
+      messages: [
+        {
+          address: cashierAddress,
+          amount: String(nanoAmount)
+        }
+      ]
     };
 
-    console.log("Отправляем транзакцию:", tx);
-    const result = await connector.sendTransaction(tx);
-    console.log('TonConnect TX result:', result);
+    console.log("TonConnect UI: формирую транзакцию", tx);
 
-    if (result?.universalLink) {
-      try {
-        if (tg?.openLink) tg.openLink(result.universalLink, { try_instant_view: false });
-        else window.open(result.universalLink, '_blank', 'noopener');
-      } catch (err) {
-        console.warn("tg.openLink не сработал, пробуем обычный переход...");
-        window.location.href = result.universalLink;
-      }
-    }
+    // 3. Отправляем в TonConnect UI
+    await tonConnectUI.sendTransaction(tx);
 
     closeDepositModal();
+    alert("Транзакция отправлена в кошелёк! Подтвердите её там.");
 
-    alert('Транзакция отправлена! Проверяем депозит...');
+    // 4. Через 7 сек проверяем депозит
+    setTimeout(() => {
+      console.log("Проверка депозита...");
+      updateBalanceByBackend(userAddress);
+    }, 7000);
+
+  } catch (err) {
+    console.error("Ошибка TonConnect UI при отправке:", err);
+    alert("Ошибка при отправке транзакции: " + err.message);
+  }
+}
+      
 
     // ✅ Ждём подтверждение и обновляем баланс из базы
     setTimeout(async () => {
