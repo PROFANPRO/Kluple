@@ -60,6 +60,7 @@ body: JSON.stringify({ userId, wallet: userAddress })
 
 const data = await resp.json();
 
+// --- Новая логика ---
 if (!resp.ok) {
 console.error('[link-wallet] Ошибка HTTP:', data);
 alert(data.error || 'Ошибка при привязке кошелька');
@@ -89,12 +90,10 @@ updateBalanceByBackend(userAddress);
 walletIcon.style.display = "inline-block";
 closeWalletModal();
 
-} catch (err) {
-console.error("onStatusChange error:", err);
-}
 } else {
 resetWalletUI();
 }
+  }
 });
 
 window.addEventListener('load', async () => {
@@ -243,20 +242,13 @@ validUntil: Math.floor(Date.now() / 1000) + 300,
 messages: [{ address: cashierAddress, amount: String(nanoAmount) }]
 };
 
-console.log("Отправляем транзакцию:", tx);
 const result = await connector.sendTransaction(tx);
 console.log('TonConnect TX result:', result);
 
-// === Пытаемся сразу открыть кошелёк ===
 if (result?.universalLink) {
-console.log("Открываю ссылку на кошелёк:", result.universalLink);
-if (tg?.openLink) tg.openLink(result.universalLink, { try_instant_view: false });
+if (tg?.openLink) tg.openLink(result.universalLink);
 else window.open(result.universalLink, '_blank', 'noopener');
-} else {
-alert("Транзакция создана. Откройте свой кошелёк вручную и подтвердите перевод.");
 }
-
-closeDepositModal();
 
 alert('Транзакция отправлена! Проверяем депозит...');
 setTimeout(() => updateBalanceByBackend(userAddress), 7000);
@@ -265,12 +257,8 @@ setTimeout(() => updateBalanceByBackend(userAddress), 7000);
 console.error('Ошибка при отправке транзакции', err);
 alert('Ошибка при отправке транзакции');
 }
-}
 
-  } catch (err) {
-    console.error('Ошибка при отправке транзакции', err);
-    alert('Ошибка при отправке транзакции');
-  }
+closeDepositModal();
 }
 
 async function confirmWithdraw() {
