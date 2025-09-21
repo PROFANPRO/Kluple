@@ -228,21 +228,10 @@ body {
 .red { background: #ef4444 }
 .orange { background: #f97316 }
 .light-blue { background: #3b82f6 }
-.icon-circle {
-  background: white;
-  color: black;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 10px auto;
-  font-size: 28px;
-  /* === Карточки "Топ" и "Промокод" === */
+/* === Карточки дополнительного цвета === */
 .card.orange,
 .card.light-blue {
-  border-radius: 15px;
+  border-radius: 15px; /* 🔙 возвращаем скругление */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -255,10 +244,21 @@ body {
 .card.orange p,
 .card.light-blue p {
   text-align: center;
-  font-weight: 700;
+  font-weight: 700; /* 🔙 делаем жирным */
   margin: 0;
   margin-top: 8px;
 }
+.icon-circle {
+  background: white;
+  color: black;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto;
+  font-size: 28px;
 }
 
 /* === Bottom Nav === */
