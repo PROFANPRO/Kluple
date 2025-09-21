@@ -9,10 +9,7 @@ userPhoto.addEventListener('click', () => {
   if (user?.username) window.open('https://t.me/' + user.username, '_blank');
 });
 
-// === TonConnect UI ===
-const walletIcon = document.getElementById('walletIcon');
-const walletDropdown = document.getElementById('walletDropdown');
-const disconnectBtn = document.getElementById('disconnectBtn');
+// === TonConnect UI ===//
 const balanceDisplay = document.getElementById('balanceDisplay');
 
 let userAddress = null;
@@ -22,7 +19,7 @@ let userId = tg?.initDataUnsafe?.user?.id || null;
 // Используем глобальный TON_CONNECT_UI (CDN-версия)
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: 'https://raw.githubusercontent.com/PROFANPRO/Kluple/main/public/tonconnect-manifest.json',
-  buttonRootId: 'walletBtn' // кнопка будет создана автоматически в этом элементе
+  buttonRootId: 'ton-connect-btn' // кнопка будет создана автоматически в этом элементе
 });
 
 // Глобальные настройки (авто-редирект, возврат в TMA)
