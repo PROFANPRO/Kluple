@@ -247,28 +247,13 @@ console.log("Отправляем транзакцию:", tx);
 const result = await connector.sendTransaction(tx);
 console.log('TonConnect TX result:', result);
 
-    // === Пытаемся сразу открыть кошелёк ===
+// === Пытаемся сразу открыть кошелёк ===
 if (result?.universalLink) {
-      console.log("Открываю ссылку на кошелёк:", result.universalLink);
-      if (tg?.openLink) tg.openLink(result.universalLink, { try_instant_view: false });
-      else window.open(result.universalLink, '_blank', 'noopener');
-      try {
-        // Пытаемся открыть через Telegram WebApp
-        if (tg?.openLink) {
-          tg.openLink(result.universalLink, { try_instant_view: false });
-          console.log("Ссылка открыта через tg.openLink");
-        } else {
-          // Если не Telegram — откроем в новом окне
-          window.open(result.universalLink, '_blank', 'noopener');
-        }
-      } catch (err) {
-        console.warn("tg.openLink не сработал, пробуем обычный переход...");
-        window.location.href = result.universalLink;
-      }
+console.log("Открываю ссылку на кошелёк:", result.universalLink);
+if (tg?.openLink) tg.openLink(result.universalLink, { try_instant_view: false });
+else window.open(result.universalLink, '_blank', 'noopener');
 } else {
-      alert("Транзакция создана. Откройте свой кошелёк вручную и подтвердите перевод.");
-      // Если universalLink не вернулся — даём пользователю ссылку вручную
-      alert(`Откройте кошелёк вручную и подтвердите перевод:\n${cashierAddress}`);
+alert("Транзакция создана. Откройте свой кошелёк вручную и подтвердите перевод.");
 }
 
 closeDepositModal();
@@ -280,6 +265,12 @@ setTimeout(() => updateBalanceByBackend(userAddress), 7000);
 console.error('Ошибка при отправке транзакции', err);
 alert('Ошибка при отправке транзакции');
 }
+}
+
+  } catch (err) {
+    console.error('Ошибка при отправке транзакции', err);
+    alert('Ошибка при отправке транзакции');
+  }
 }
 
 async function confirmWithdraw() {
