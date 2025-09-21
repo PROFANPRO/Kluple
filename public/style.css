@@ -12,11 +12,11 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 .balance-card{display:flex;flex-direction:column;background:#4b5563;border-radius:15px;padding:15px;margin-bottom:15px;width:90%;max-width:400px;position:relative}
 .user-info{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:12px}
 .user-left{display:flex;align-items:center;gap:10px;min-width:0;position:relative;overflow:hidden}
-#ton-connect-button {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0;
-}
+.user-left img{width:40px;height:40px;border-radius:50%;cursor:pointer;position:relative;z-index:1}
+.menu-btn{font-size:22px;cursor:pointer;user-select:none}
+.wallet-center{display:flex;align-items:center;justify-content:center;position:relative}
+.wallet-btn{background:#3b82f6;color:white;font-weight:bold;font-size:13px;padding:5px 12px;border-radius:12px;cursor:pointer;white-space:nowrap}
+.wallet-icon{display:none;margin-left:8px;cursor:pointer;font-size:16px;user-select:none}
 .wallet-dropdown{display:none;position:absolute;top:35px;right:0;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:6px;z-index:50;min-width:130px;box-shadow:0 4px 10px rgba(0,0,0,0.4)}
 .wallet-dropdown.show{display:block;animation:fadeIn .2s ease}
 .disconnect-btn{background:none;border:none;color:#ef4444;font-weight:bold;cursor:pointer;padding:5px 10px;width:100%;text-align:left}
@@ -105,32 +105,33 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 }
 
 .dice-area {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  min-height: 100px;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 15px;
+  margin: 20px 0;
+min-height: 100px;
 }
 
 .dice {
-  width: 60px;
-  height: 60px;
-  background: white;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 32px;
-  font-weight: bold;
-  color: black;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-  animation: dice-roll 0.4s ease-in-out;
+width: 60px;
+height: 60px;
+background: white;
+border-radius: 10px;
+display: flex;
+justify-content: center;
+align-items: center;
+font-size: 32px;
+font-weight: bold;
+color: black;
+box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+animation: dice-roll 0.4s ease-in-out;
 }
 
 @keyframes dice-roll {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.1); }
-  100% { transform: rotate(360deg) scale(1); }
+0% { transform: rotate(0deg) scale(1); }
+50% { transform: rotate(180deg) scale(1.1); }
+100% { transform: rotate(360deg) scale(1); }
 }
 
 #betAmount {
@@ -147,32 +148,46 @@ body{margin:0;font-family:sans-serif;background:#0f172a;color:white;overflow-x:h
 }
 
 .choice-buttons {
-  display: flex;
+display: flex;
+  justify-content: center;
+  gap: 10px;
   justify-content: space-around;
   width: 100%;
   max-width: 320px;
-  margin-top: 10px;
+margin-top: 10px;
 }
 
 .choice-btn {
   flex: 1;
   text-align: center;
-  background: #1e293b;
+background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
   margin: 0 5px;
   padding: 10px 0;
   border-radius: 10px;
-  font-weight: bold;
+font-weight: bold;
+  transition: background 0.2s, box-shadow 0.2s;
   cursor: pointer;
   border: 2px solid #334155;
   transition: 0.2s;
 }
 
 .choice-btn:hover {
-  background: #334155;
+background: #334155;
 }
 
 .choice-btn.active-choice {
-  background: #3b82f6;
+background: #3b82f6;
+  box-shadow: 0 0 10px #3b82f6;
+}
+.choice-buttons,
+#diceArea,
+#countdown {
+  display: none; /* скрыты по умолчанию, показываем в openGame() */
   border-color: #3b82f6;
   box-shadow: 0 0 8px #3b82f6;
 }
