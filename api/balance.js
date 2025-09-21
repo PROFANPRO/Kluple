@@ -1,4 +1,4 @@
-// /pages/api/balance.js.
+// /pages/api/balance.js
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Метод не поддерживается" });
@@ -17,15 +17,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Собираем URL запроса последних транзакций кассы
     const url = `https://tonapi.io/v2/blockchain/accounts/${CASHIER}/transactions?limit=50`;
 
     const headers = {};
-    if (TONAPI_KEY) {
-      headers["Authorization"] = `Bearer ${TONAPI_KEY}`;
-    }
+    if (TONAPI_KEY) headers["Authorization"] = `Bearer ${TONAPI_KEY}`;
 
-    // 2. Запрашиваем транзакции
     const resp = await fetch(url, { headers });
     if (!resp.ok) {
       const errData = await resp.json();
@@ -37,21 +33,17 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, balanceTON: 0 });
     }
 
-    // 3. Фильтруем только входящие транзакции от userAddress
+    // Фильтруем только депозиты от этого пользователя
     const deposits = data.transactions.filter(
-      (tx) =>
-        tx.in_msg?.source?.address?.toLowerCase() === userAddress.toLowerCase()
+      (tx) => tx.in_msg?.source?.address?.toLowerCase() === userAddress.toLowerCase()
     );
 
-    // 4. Суммируем полученные TON
-    const totalNano = deposits.reduce((sum, tx) => {
-      return sum + Number(tx.in_msg?.value || 0);
-    }, 0);
+    const totalNano = deposits.reduce((sum, tx) => sum + Number(tx.in_msg?.value || 0), 0);
 
     return res.status(200).json({
       success: true,
       address: userAddress,
-      depositedTON: totalNano / 1e9,
+      balanceTON: totalNano / 1e9, // <-- ключевое поле, которое ждёт фронтенд
       txCount: deposits.length,
     });
 
