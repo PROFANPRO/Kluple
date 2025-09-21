@@ -29,8 +29,10 @@ async function updateBalanceByBackend(friendlyAddress) {
   try {
     const resp = await fetch(`/api/balance?userAddress=${encodeURIComponent(friendlyAddress)}`);
     const data = await resp.json();
+
     if (resp.ok) {
-      balanceDisplay.textContent = (Number(data.balanceTON) || 0).toFixed(4) + ' TON';
+      // ✅ Теперь используем баланс из базы, а не пересчёт TonAPI
+      balanceDisplay.textContent = (Number(data.balance) || 0).toFixed(4) + ' TON';
     } else {
       console.error('Ошибка при получении баланса:', data.error);
       balanceDisplay.textContent = '0 TON';
@@ -148,7 +150,7 @@ async function confirmDeposit() {
     alert('Введите корректную сумму');
     return;
   }
-  if (!userAddress || !tonConnectUI.connected) {
+  if (!userAddress || !connector.connected) {
     alert('Сначала подключите кошелёк!');
     return;
   }
@@ -170,13 +172,28 @@ async function confirmDeposit() {
     };
 
     console.log("Отправляем транзакцию:", tx);
-    const result = await tonConnectUI.sendTransaction(tx);
-    console.log('TonConnect UI TX result:', result);
+    const result = await connector.sendTransaction(tx);
+    console.log('TonConnect TX result:', result);
+
+    if (result?.universalLink) {
+      try {
+        if (tg?.openLink) tg.openLink(result.universalLink, { try_instant_view: false });
+        else window.open(result.universalLink, '_blank', 'noopener');
+      } catch (err) {
+        console.warn("tg.openLink не сработал, пробуем обычный переход...");
+        window.location.href = result.universalLink;
+      }
+    }
 
     closeDepositModal();
 
     alert('Транзакция отправлена! Проверяем депозит...');
-    setTimeout(() => updateBalanceByBackend(userAddress), 7000);
+
+    // ✅ Ждём подтверждение и обновляем баланс из базы
+    setTimeout(async () => {
+      await fetch(`/api/verify-deposit?userAddress=${encodeURIComponent(userAddress)}`);
+      updateBalanceByBackend(userAddress);
+    }, 7000);
 
   } catch (err) {
     console.error('Ошибка при отправке транзакции', err);
