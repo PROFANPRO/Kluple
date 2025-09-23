@@ -20,6 +20,7 @@ tg?.onEvent?.('themeChanged', () => {
 const balanceDisplay = document.getElementById('balanceDisplay');
 
 let userAddress = null;
+let lastLinkedAddress = null; // <-- добавлено: запоминаем для unlink
 const initData = tg?.initData || ''; // Подписанная строка Telegram
 
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -33,11 +34,7 @@ async function updateBalanceByBackend(friendlyAddress) {
     const url = `/api/balance?userAddress=${encodeURIComponent(friendlyAddress)}&t=${Date.now()}`;
     const resp = await fetch(url, {
       cache: 'no-store',
-      headers: {
-        'Accept': 'application/json',
-        'Pragma': 'no-cache',
-        'Cache-Control': 'no-cache'
-      }
+      headers: { 'Accept': 'application/json', 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
     });
     const data = await resp.json();
     if (resp.ok && Number.isFinite(Number(data.balanceTON))) {
@@ -55,6 +52,7 @@ async function updateBalanceByBackend(friendlyAddress) {
 // Слушаем изменения статуса TonConnect
 tonConnectUI.onStatusChange(async (wallet) => {
   if (wallet) {
+    // ---- CONNECT ----
     try {
       userAddress = wallet.account.address;
       // Привязка кошелька на бэке (через initData)
@@ -69,9 +67,13 @@ tonConnectUI.onStatusChange(async (wallet) => {
         alert(data.error || 'Ошибка при привязке кошелька');
         await tonConnectUI.disconnect();
         userAddress = null;
+        lastLinkedAddress = null;
         balanceDisplay.textContent = '0 TON';
         return;
       }
+      // Запоминаем адрес для корректной будущей отвязки
+      lastLinkedAddress = userAddress;
+
       // Обновляем баланс сразу и контрольным пингом через 1.2с
       updateBalanceByBackend(userAddress);
       setTimeout(() => updateBalanceByBackend(userAddress), 1200);
@@ -79,9 +81,22 @@ tonConnectUI.onStatusChange(async (wallet) => {
       console.error('onStatusChange error:', err);
     }
   } else {
-    // Дисконнект: TonConnect UI сам покажет кнопку «Connect wallet»
-    userAddress = null;
-    balanceDisplay.textContent = '0 TON';
+    // ---- DISCONNECT ----
+    try {
+      if (initData && lastLinkedAddress) {
+        await fetch('/api/unlink-wallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ initData, wallet: lastLinkedAddress }),
+        });
+      }
+    } catch (e) {
+      console.warn('unlink-wallet warn:', e);
+    } finally {
+      userAddress = null;
+      lastLinkedAddress = null;
+      balanceDisplay.textContent = '0 TON';
+    }
   }
 });
 
@@ -91,6 +106,7 @@ window.addEventListener('load', async () => {
     await tonConnectUI.connectionRestored;
     if (tonConnectUI.account) {
       userAddress = tonConnectUI.account.address;
+      lastLinkedAddress = userAddress; // <-- добавлено
       updateBalanceByBackend(userAddress);
       setTimeout(() => updateBalanceByBackend(userAddress), 1200);
     }
@@ -164,7 +180,6 @@ async function confirmDeposit() {
     closeDepositModal();
 
     alert('Транзакция отправлена! Проверяем депозит...');
-    // Обновление баланса через 7с и контрольное через 12с
     setTimeout(() => updateBalanceByBackend(userAddress), 7000);
     setTimeout(() => updateBalanceByBackend(userAddress), 12000);
   } catch (err) {
