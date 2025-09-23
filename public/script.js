@@ -20,7 +20,6 @@ tg?.onEvent?.('themeChanged', () => {
 const balanceDisplay = document.getElementById('balanceDisplay');
 
 let userAddress = null;
-let lastLinkedAddress = null; // <-- добавлено: запоминаем для unlink
 const initData = tg?.initData || ''; // Подписанная строка Telegram
 
 const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -29,18 +28,25 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 });
 
 // === Баланс через backend (no-cache) ===
-async function updateBalanceByBackend(friendlyAddress) {
+async function updateBalanceByBackend() {
   try {
-    const url = `/api/balance?userAddress=${encodeURIComponent(friendlyAddress)}&t=${Date.now()}`;
-    const resp = await fetch(url, {
+    const resp = await fetch('/api/balance', {
+      method: 'POST',
       cache: 'no-store',
-      headers: { 'Accept': 'application/json', 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Pragma': 'no-cache',
+        'Cache-Control': 'no-store'
+      },
+      body: JSON.stringify({ initData })
     });
+
     const data = await resp.json();
     if (resp.ok && Number.isFinite(Number(data.balanceTON))) {
       balanceDisplay.textContent = `${Number(data.balanceTON).toFixed(4)} TON`;
     } else {
-      console.error('Ошибка при получении баланса:', data.error);
+      console.error('Ошибка при получении баланса:', data?.error || data);
       balanceDisplay.textContent = '0 TON';
     }
   } catch (e) {
@@ -52,7 +58,6 @@ async function updateBalanceByBackend(friendlyAddress) {
 // Слушаем изменения статуса TonConnect
 tonConnectUI.onStatusChange(async (wallet) => {
   if (wallet) {
-    // ---- CONNECT ----
     try {
       userAddress = wallet.account.address;
       // Привязка кошелька на бэке (через initData)
@@ -67,36 +72,19 @@ tonConnectUI.onStatusChange(async (wallet) => {
         alert(data.error || 'Ошибка при привязке кошелька');
         await tonConnectUI.disconnect();
         userAddress = null;
-        lastLinkedAddress = null;
         balanceDisplay.textContent = '0 TON';
         return;
       }
-      // Запоминаем адрес для корректной будущей отвязки
-      lastLinkedAddress = userAddress;
-
-      // Обновляем баланс сразу и контрольным пингом через 1.2с
-      updateBalanceByBackend(userAddress);
-      setTimeout(() => updateBalanceByBackend(userAddress), 1200);
+      // Обновляем баланс (теперь сервер самостоятельно найдёт userId по initData)
+      updateBalanceByBackend();
+      setTimeout(() => updateBalanceByBackend(), 1200);
     } catch (err) {
       console.error('onStatusChange error:', err);
     }
   } else {
-    // ---- DISCONNECT ----
-    try {
-      if (initData && lastLinkedAddress) {
-        await fetch('/api/unlink-wallet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ initData, wallet: lastLinkedAddress }),
-        });
-      }
-    } catch (e) {
-      console.warn('unlink-wallet warn:', e);
-    } finally {
-      userAddress = null;
-      lastLinkedAddress = null;
-      balanceDisplay.textContent = '0 TON';
-    }
+    // Дисконнект: TonConnect UI сам покажет кнопку «Connect wallet»
+    userAddress = null;
+    balanceDisplay.textContent = '0 TON';
   }
 });
 
@@ -106,9 +94,8 @@ window.addEventListener('load', async () => {
     await tonConnectUI.connectionRestored;
     if (tonConnectUI.account) {
       userAddress = tonConnectUI.account.address;
-      lastLinkedAddress = userAddress; // <-- добавлено
-      updateBalanceByBackend(userAddress);
-      setTimeout(() => updateBalanceByBackend(userAddress), 1200);
+      updateBalanceByBackend();
+      setTimeout(() => updateBalanceByBackend(), 1200);
     }
   } catch (e) {
     console.error('Restore connection error:', e);
@@ -180,8 +167,9 @@ async function confirmDeposit() {
     closeDepositModal();
 
     alert('Транзакция отправлена! Проверяем депозит...');
-    setTimeout(() => updateBalanceByBackend(userAddress), 7000);
-    setTimeout(() => updateBalanceByBackend(userAddress), 12000);
+    // Обновление баланса через 7s и контрольное через 12s
+    setTimeout(() => updateBalanceByBackend(), 7000);
+    setTimeout(() => updateBalanceByBackend(), 12000);
   } catch (err) {
     console.error('Ошибка при отправке транзакции', err);
     alert('Ошибка при отправке транзакции');
@@ -205,7 +193,7 @@ async function confirmWithdraw() {
     if (!resp.ok) throw new Error(data.error || 'Ошибка вывода');
     alert('Заявка на вывод принята');
     closeWithdrawModal();
-    setTimeout(() => updateBalanceByBackend(userAddress), 3000);
+    setTimeout(() => updateBalanceByBackend(), 3000);
   } catch (e) {
     console.error('withdraw error', e);
     alert(e.message || 'Ошибка вывода');
