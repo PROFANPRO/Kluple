@@ -1,57 +1,66 @@
 // /pages/api/link-wallet.js
 import crypto from "crypto";
+import { Address } from "@ton/core";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // ВАЖНО: только на сервере
+  process.env.SUPABASE_SERVICE_ROLE_KEY // хранить только на сервере
 );
 
-// Проверка подписи initData (Telegram WebApp)
+// --- verify Telegram initData (WebApp) ---
 function verifyTelegramInitData(initData, botToken) {
+  if (typeof initData !== "string" || !initData) return { ok: false, reason: "empty_init" };
+  if (!botToken) return { ok: false, reason: "no_token" };
+
+  const token = botToken.trim();
+
+  let params;
   try {
-    const params = new URLSearchParams(initData);
-    const hash = params.get("hash");
-    if (!hash) return null;
+    params = new URLSearchParams(initData);
+  } catch {
+    return { ok: false, reason: "bad_searchparams" };
+  }
 
-    // Формируем data_check_string
-    const entries = [];
-    for (const [k, v] of params.entries()) {
-      if (k !== "hash") entries.push(`${k}=${v}`);
-    }
-    entries.sort(); // по ключу
-    const dataCheckString = entries.join("\n");
+  const hash = params.get("hash");
+  if (!hash) return { ok: false, reason: "no_hash" };
 
-    // Секрет: HMAC_SHA256("WebAppData", botToken)
-    const secret = crypto
-      .createHmac("sha256", "WebAppData")
-      .update(botToken)
-      .digest();
+  const entries = [];
+  for (const [k, v] of params.entries()) {
+    if (k !== "hash") entries.push(`${k}=${v}`);
+  }
+  entries.sort();
+  const dataCheckString = entries.join("\n");
 
-    // Подписываем data_check_string
-    const calcHash = crypto
-      .createHmac("sha256", secret)
-      .update(dataCheckString)
-      .digest("hex");
+  const secret = crypto.createHmac("sha256", "WebAppData").update(token).digest();
+  const calcHash = crypto.createHmac("sha256", secret).update(dataCheckString).digest("hex");
 
-    // Сравниваем безопасно
-    const ok = crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(calcHash, "hex"));
-    if (!ok) return null;
+  const a = Buffer.from(hash, "hex");
+  const b = Buffer.from(calcHash, "hex");
+  if (a.length !== b.length) return { ok: false, reason: "len_mismatch" };
 
-    // Парсим user из initData
+  const ok = crypto.timingSafeEqual(a, b);
+  if (!ok) return { ok: false, reason: "hash_mismatch" };
+
+  try {
     const userJson = params.get("user");
-    if (!userJson) return null;
+    if (!userJson) return { ok: false, reason: "no_user" };
     const user = JSON.parse(userJson);
-    return user?.id || null;
-  } catch (e) {
-    console.error("verifyTelegramInitData error:", e);
-    return null;
+    const id = user?.id;
+    if (!id) return { ok: false, reason: "no_user_id" };
+    return { ok: true, userId: id };
+  } catch {
+    return { ok: false, reason: "bad_user_json" };
   }
 }
 
-// Простейшая проверка TON-адреса (bounceable, base64url, начинается с EQ/ UQ)
-function isLikelyTonAddress(addr = "") {
-  return typeof addr === "string" && /^(E|U)Q[0-9A-Za-z_-]{46}$/.test(addr);
+function isTonAddress(addr = "") {
+  try {
+    Address.parse(addr); // понимает EQ/UQ/kQ/lQ и raw "0:..."
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -61,38 +70,37 @@ export default async function handler(req, res) {
 
   const { initData, userId: rawUserId, wallet } = req.body || {};
 
+  // 1) Валидируем адрес TON
+  if (!wallet || !isTonAddress(wallet)) {
+    return res.status(400).json({ error: "Неверный формат TON-адреса" });
+  }
+
+  // 2) Достаём userId: приоритет initData (подписано Телеграмом),
+  //    иначе — legacy userId (временно, пока настраиваете BOT_TOKEN)
+  let userId = null;
+  const hasToken = !!process.env.BOT_TOKEN;
+
+  if (initData && hasToken) {
+    const v = verifyTelegramInitData(initData, process.env.BOT_TOKEN);
+    if (!v.ok) {
+      return res.status(401).json({ error: "Невалидная подпись Telegram", reason: v.reason });
+    }
+    userId = v.userId;
+  } else if (rawUserId) {
+    console.warn("[link-wallet] WARNING: fallback на legacy userId. Настройте BOT_TOKEN и initData.");
+    userId = rawUserId;
+  } else {
+    return res.status(400).json({ error: "Не указан initData или userId" });
+  }
+
   try {
-    // 1) Определяем userId: сначала пробуем initData, иначе — legacy userId
-    let userId = null;
-    if (initData) {
-      const verifiedUserId = verifyTelegramInitData(initData, process.env.BOT_TOKEN);
-      if (!verifiedUserId) {
-        return res.status(401).json({ error: "Невалидная подпись Telegram (initData)" });
-      }
-      userId = verifiedUserId;
-    } else if (rawUserId) {
-      userId = rawUserId;
-    }
-
-    if (!userId || !wallet) {
-      return res.status(400).json({ error: "Не указан userId/initData или wallet" });
-    }
-
-    if (!isLikelyTonAddress(wallet)) {
-      return res.status(400).json({ error: "Неверный формат TON-адреса" });
-    }
-
-    // 2) Снимаем любые старые привязки:
-    // - по этому user_id
-    // - по этому wallet (чтобы кошелёк не был привязан к другому пользователю)
+    // 3) Чистим старые привязки: по user_id и по wallet (кошелёк не должен быть у другого юзера)
     const delUser = supabase.from("wallet_links").delete().eq("user_id", userId);
     const delWallet = supabase.from("wallet_links").delete().eq("wallet", wallet);
     const [{ error: e1 }, { error: e2 }] = await Promise.all([delUser, delWallet]);
-    if (e1 || e2) {
-      console.warn("link-wallet: warning on delete", e1 || e2);
-    }
+    if (e1 || e2) console.warn("[link-wallet] warning on delete", e1 || e2);
 
-    // 3) Вставляем новую запись
+    // 4) Создаём новую привязку
     const { error: insertError } = await supabase
       .from("wallet_links")
       .insert([{ user_id: userId, wallet }]);
@@ -103,7 +111,7 @@ export default async function handler(req, res) {
     }
 
     console.log(`[link-wallet] user ${userId} привязал ${wallet}`);
-    return res.status(200).json({ success: true, wallet, userId });
+    return res.status(200).json({ success: true, userId, wallet });
   } catch (err) {
     console.error("link-wallet fatal error:", err);
     return res.status(500).json({ error: "Внутренняя ошибка сервера" });
