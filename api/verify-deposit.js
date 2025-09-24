@@ -1,7 +1,7 @@
 // /pages/api/verify-deposit.js
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { supabase } from "../../lib/supabaseClient"; // оставляю как у тебя
+import { supabase } from "../../lib/supabaseClient.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
@@ -10,24 +10,24 @@ export default async function handler(req, res) {
   const { initData } = req.body || {};
   if (!initData) return res.status(400).json({ error: "initData не передан" });
 
-  // 1) Верифицируем initData → userId от Telegram
+  // 1) Верифицируем initData → userId
   const v = verifyTelegramInitData(initData, process.env.BOT_TOKEN);
   if (!v.ok) return res.status(401).json({ error: "Невалидная подпись Telegram", reason: v.reason });
   const userId = v.userId;
 
-  // 2) Готовим адрес кассы (разрешим любые форматы при сравнении)
+  // 2) Адрес кассы
   const cashierEnv = process.env.TON_CASHIER_ADDRESS;
   if (!cashierEnv) return res.status(500).json({ error: "TON_CASHIER_ADDRESS не настроен" });
 
   let cashierForms;
   try {
-    cashierForms = makeAddressForms(cashierEnv); // { raw, uq, eq, set }
+    cashierForms = makeAddressForms(cashierEnv);
   } catch {
     return res.status(500).json({ error: "TON_CASHIER_ADDRESS некорректен" });
   }
 
   try {
-    // 3) Находим привязанный кошелёк пользователя
+    // 3) Привязанный кошелёк пользователя
     const { data: linkRows, error: linkErr } = await supabase
       .from("wallet_links")
       .select("wallet")
@@ -45,9 +45,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Привязанный адрес пользователя некорректен" });
     }
 
-    // 4) Тянем транзакции кассы из TonAPI
-    // Документация v2: /v2/blockchain/accounts/{account}/transactions
-    const limit = 50; // можно увеличить или добавить пагинацию
+    // 4) Транзакции кассы из TonAPI
+    const limit = 50;
     const url = `https://tonapi.io/v2/blockchain/accounts/${encodeURIComponent(
       cashierForms.uq
     )}/transactions?limit=${limit}`;
@@ -62,15 +61,9 @@ export default async function handler(req, res) {
     }
 
     const json = await resp.json();
-
-    // Ожидаем json.transactions = []
     const txs = Array.isArray(json.transactions) ? json.transactions : [];
 
-    // 5) Фильтруем только нужные входы:
-    // - адрес назначения = касса (на всякий случай сверим, хотя дергаем по аккаунту кассы)
-    // - источник = привязанный кошелёк
-    // - не bounced
-    // - value > 0 (нанотоны)
+    // 5) Фильтруем внесения от пользователя на кассу
     const good = txs.filter((tx) => {
       const inMsg = tx?.in_msg || tx?.inMsg || {};
       const toAddr = safeAddr(inMsg?.destination?.address || inMsg?.dest || tx?.account?.address);
@@ -78,25 +71,21 @@ export default async function handler(req, res) {
       const bounced = boolish(inMsg?.bounced ?? inMsg?.is_bounced ?? tx?.bounced);
       const valueNano = toBigInt(inMsg?.value);
 
-      // адрес назначения точно касса
       if (!toAddr || !addressInSet(toAddr, cashierForms.set)) return false;
-      // адрес отправителя = привязанный кошелёк пользователя
       if (!fromAddr || !addressInSet(fromAddr, userForms.set)) return false;
-      // не bounced, есть сумма
       if (bounced) return false;
       if (valueNano <= 0n) return false;
 
       return true;
     });
 
-    // 6) Идемпотентное зачисление по tx_hash; сумма — BIGINT (нанотоны)
+    // 6) Идемпотентное зачисление по tx_hash
     let creditedNano = 0n;
 
     for (const tx of good) {
       const hash = tx?.hash || tx?.transaction_id?.hash;
       if (!hash) continue;
 
-      // уже зачисляли?
       const { data: existing, error: exErr } = await supabase
         .from("deposits")
         .select("id")
@@ -112,30 +101,24 @@ export default async function handler(req, res) {
       const valueNano = toBigInt(tx?.in_msg?.value ?? tx?.inMsg?.value);
       if (valueNano <= 0n) continue;
 
-      // вставляем депозит (нанотоны как строка) + увеличиваем баланс через RPC
       const insertPayload = {
         user_id: userId,
         tx_hash: hash,
         amount_nano: valueNano.toString(),
-        // опц: created_at = new Date((tx.utime || tx.now || Date.now()/1000) * 1000).toISOString()
       };
 
       const { error: insErr } = await supabase.from("deposits").insert(insertPayload);
       if (insErr) {
-        // конкуренция? — если в таблице стоит UNIQUE(tx_hash), мы защитимся
         console.warn("deposit insert error:", insErr);
         continue;
       }
 
-      // Увеличиваем баланс (нанотоны)
-      // Создай в БД функцию increment_balance_nano(uid text, inc text) returns void
       const { error: rpcErr } = await supabase.rpc("increment_balance_nano", {
         uid: userId,
-        inc: valueNano.toString(),
+        amount_text: valueNano.toString(),
       });
       if (rpcErr) {
         console.error("increment_balance_nano error:", rpcErr);
-        // можно пометить депозит как "pending_recount"
         continue;
       }
 
@@ -144,7 +127,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      creditedTON: Number(creditedNano) / 1e9, // только для ответа (ок округление)
+      creditedTON: Number(creditedNano) / 1e9,
       creditedNano: creditedNano.toString(),
       counted: good.length,
     });
@@ -213,7 +196,7 @@ function safeAddr(s) {
   try {
     if (!s) return null;
     const a = Address.parse(s);
-    return a.toRawString(); // сравниваем по raw
+    return a.toRawString();
   } catch {
     return null;
   }
@@ -239,4 +222,4 @@ function toBigInt(nano) {
 
 function boolish(v) {
   return v === true || v === 1 || v === "true";
-}
+          }
