@@ -1,12 +1,7 @@
 // /pages/api/link-wallet.js
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // хранить только на сервере
-);
+import { supabase } from "../../lib/supabaseClient.js";
 
 // --- verify Telegram initData (WebApp) ---
 function verifyTelegramInitData(initData, botToken) {
@@ -56,7 +51,7 @@ function verifyTelegramInitData(initData, botToken) {
 
 function isTonAddress(addr = "") {
   try {
-    Address.parse(addr); // понимает EQ/UQ/kQ/lQ и raw "0:..."
+    Address.parse(addr);
     return true;
   } catch {
     return false;
@@ -75,8 +70,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Неверный формат TON-адреса" });
   }
 
-  // 2) Достаём userId: приоритет initData (подписано Телеграмом),
-  //    иначе — legacy userId (временно, пока настраиваете BOT_TOKEN)
+  // 2) Достаём userId
   let userId = null;
   const hasToken = !!process.env.BOT_TOKEN;
 
@@ -94,7 +88,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 3) Чистим старые привязки: по user_id и по wallet (кошелёк не должен быть у другого юзера)
+    // 3) Чистим старые привязки
     const delUser = supabase.from("wallet_links").delete().eq("user_id", userId);
     const delWallet = supabase.from("wallet_links").delete().eq("wallet", wallet);
     const [{ error: e1 }, { error: e2 }] = await Promise.all([delUser, delWallet]);
