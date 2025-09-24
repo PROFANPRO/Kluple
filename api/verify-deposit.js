@@ -1,7 +1,7 @@
-// /pages/api/verify-deposit.js
+// /api/verify-deposit.js
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { supabase } from "../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js"; // ← из /pages/api к /lib
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
@@ -14,6 +14,14 @@ export default async function handler(req, res) {
   const v = verifyTelegramInitData(initData, process.env.BOT_TOKEN);
   if (!v.ok) return res.status(401).json({ error: "Невалидная подпись Telegram", reason: v.reason });
   const userId = v.userId;
+
+  // 1.1) Гарантируем, что пользователь существует (idempotent)
+  {
+    const { error: upsertUserErr } = await supabase
+      .from("users")
+      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
+    if (upsertUserErr) console.warn("[verify-deposit] users upsert warning:", upsertUserErr);
+  }
 
   // 2) Адрес кассы
   const cashierEnv = process.env.TON_CASHIER_ADDRESS;
@@ -222,4 +230,4 @@ function toBigInt(nano) {
 
 function boolish(v) {
   return v === true || v === 1 || v === "true";
-          }
+}
