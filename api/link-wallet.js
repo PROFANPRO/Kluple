@@ -103,7 +103,7 @@ export default async function handler(req, res) {
     // 5) Гарантируем наличие пользователя в users (чтобы balance не падал)
     const { error: upsertErr } = await supabase
       .from("users")
-      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
+      .upsert({ id: userId }, { onConflict: "id" });
 
     if (upsertErr) {
       console.warn("[link-wallet] users upsert warning:", upsertErr);
