@@ -1,7 +1,7 @@
 // /pages/api/link-wallet.js
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { supabase } from "../../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js";
 
 // --- verify Telegram initData (WebApp) ---
 function verifyTelegramInitData(initData, botToken) {
