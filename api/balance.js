@@ -1,4 +1,4 @@
-// /pages/api/balance.js
+// /api/balance.js
 import crypto from "crypto";
 import { supabase } from "../lib/supabaseClient.js";
 
@@ -17,18 +17,29 @@ export default async function handler(req, res) {
   const userId = v.userId;
 
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("users")
       .select("balance_nano")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("balance db error:", error);
       return res.status(500).json({ error: "Ошибка БД" });
     }
 
-    const nano = toBigInt(data?.balance_nano ?? 0);
+    if (!data) {
+      const { error: insErr } = await supabase
+        .from("users")
+        .upsert({ id: userId }, { onConflict: "id" });
+      if (insErr) {
+        console.error("balance upsert error:", insErr);
+        return res.status(500).json({ error: "Ошибка создания пользователя" });
+      }
+      return res.status(200).json({ success: true, userId, balanceTON: 0, balanceNano: "0" });
+    }
+
+    const nano = toBigInt(data.balance_nano ?? 0);
     return res.status(200).json({
       success: true,
       userId,
