@@ -147,6 +147,7 @@ async function confirmDeposit() {
   if (!userAddress || !tonConnectUI.connected) return alert('Сначала подключите кошелёк!');
 
   try {
+    // 1) Получаем адрес кассы
     const cashierResp = await fetch('/api/get-cashier-address', { cache: 'no-store' });
     const cashierData = await cashierResp.json();
     if (!cashierResp.ok || !cashierData?.address) {
@@ -154,6 +155,8 @@ async function confirmDeposit() {
       return;
     }
     const cashierAddress = cashierData.address;
+
+    // 2) Готовим транзакцию TonConnect
     const nanoAmount = toNano(val);
     if (!nanoAmount) return alert('Неверная сумма');
 
@@ -162,12 +165,26 @@ async function confirmDeposit() {
       messages: [{ address: cashierAddress, amount: nanoAmount }],
     };
 
+    // 3) Отправляем транзакцию
     const result = await tonConnectUI.sendTransaction(tx);
     console.log('TonConnect TX result:', result);
     closeDepositModal();
 
+    // 4) Явно просим бэкенд проверить депозиты и зачислить (TonAPI → Supabase)
+    try {
+      await fetch('/api/verify-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initData })
+      });
+    } catch (e) {
+      console.warn('verify-deposit call failed', e);
+    }
+
+    // 5) Обновляем баланс несколько раз
     alert('Транзакция отправлена! Проверяем депозит...');
-    // Обновление баланса через 7s и контрольное через 12s
+    updateBalanceByBackend();
+    setTimeout(() => updateBalanceByBackend(), 2000);
     setTimeout(() => updateBalanceByBackend(), 7000);
     setTimeout(() => updateBalanceByBackend(), 12000);
   } catch (err) {
