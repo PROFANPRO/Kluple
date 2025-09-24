@@ -1,6 +1,6 @@
 // /pages/api/balance.js
 import crypto from "crypto";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../lib/supabaseClient.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
@@ -32,8 +32,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       userId,
-      balanceTON: Number(nano) / 1e9,   // для фронта
-      balanceNano: nano.toString(),     // точно
+      balanceTON: Number(nano) / 1e9,
+      balanceNano: nano.toString(),
     });
   } catch (err) {
     console.error("balance fatal error:", err);
