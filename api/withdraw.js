@@ -1,6 +1,6 @@
 // /pages/api/withdraw.js
 import crypto from "crypto";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../lib/supabaseClient.js";
 
 function verifyTelegramInitData(initData, botToken) {
   try {
