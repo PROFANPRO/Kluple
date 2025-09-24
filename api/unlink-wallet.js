@@ -1,6 +1,6 @@
 // /pages/api/unlink-wallet.js
 import crypto from "crypto";
-import { supabase } from "../../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js";
 
 function verifyTelegramInitData(initData, botToken) {
   try {
