@@ -1,4 +1,4 @@
-// /pages/api/withdraw.js
+// /api/withdraw.js
 import crypto from "crypto";
 import { supabase } from "../lib/supabaseClient.js";
 
@@ -47,7 +47,18 @@ export default async function handler(req, res) {
   const nano = toNano(amountTON);
   if (!nano) return res.status(400).json({ error: "Некорректная сумма" });
 
-  // куда выводим — берём привязанный кошелёк
+  // 0) гарантируем, что запись пользователя существует (идемпотентно)
+  {
+    const { error: upsertUserErr } = await supabase
+      .from("users")
+      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
+    if (upsertUserErr) {
+      console.warn("[withdraw] users upsert warning:", upsertUserErr);
+      // не критично — продолжаем
+    }
+  }
+
+  // 1) куда выводим — берём привязанный кошелёк
   const { data: linkRows, error: linkErr } = await supabase
     .from("wallet_links")
     .select("wallet")
@@ -58,7 +69,7 @@ export default async function handler(req, res) {
   const wallet = linkRows?.[0]?.wallet;
   if (!wallet) return res.status(400).json({ error: "Кошелёк не привязан" });
 
-  // атомарно списываем и создаём заявку
+  // 2) атомарно списываем и создаём заявку на вывод
   try {
     const { data, error } = await supabase.rpc("request_withdraw", {
       uid: userId,
@@ -67,7 +78,7 @@ export default async function handler(req, res) {
     });
 
     if (error) {
-      if (String(error.message || '').includes('INSUFFICIENT_FUNDS')) {
+      if (String(error.message || "").includes("INSUFFICIENT_FUNDS")) {
         return res.status(400).json({ error: "Недостаточно средств" });
       }
       console.error("request_withdraw RPC error:", error);
