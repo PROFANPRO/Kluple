@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   {
     const { error: upsertUserErr } = await supabase
       .from("users")
-      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
+       .upsert({ id: userId }, { onConflict: "id" });
     if (upsertUserErr) {
       console.warn("[withdraw] users upsert warning:", upsertUserErr);
       // не критично — продолжаем
