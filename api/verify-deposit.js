@@ -1,7 +1,7 @@
 // /pages/api/verify-deposit.js
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { supabase } from "../../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
