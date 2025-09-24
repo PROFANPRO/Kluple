@@ -19,10 +19,9 @@ export default async function handler(req, res) {
   {
     const { error: upsertUserErr } = await supabase
       .from("users")
-      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
-    if (upsertUserErr) console.warn("[verify-deposit] users upsert warning:", upsertUserErr);
+       .upsert({ id: userId }, { onConflict: "id" });
   }
-
+  
   // 2) Адрес кассы
   const cashierEnv = process.env.TON_CASHIER_ADDRESS;
   if (!cashierEnv) return res.status(500).json({ error: "TON_CASHIER_ADDRESS не настроен" });
