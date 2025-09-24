@@ -1,9 +1,9 @@
-// /pages/api/link-wallet.js
+// /api/link-wallet.js  (или /pages/api/link-wallet.js — если у тебя pages/)
 import crypto from "crypto";
 import { Address } from "@ton/core";
-import { supabase } from "../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient.js"; // путь из /api/* к /lib/*
 
-// --- verify Telegram initData (WebApp) ---
+/** Проверка подписи Telegram initData */
 function verifyTelegramInitData(initData, botToken) {
   if (typeof initData !== "string" || !initData) return { ok: false, reason: "empty_init" };
   if (!botToken) return { ok: false, reason: "no_token" };
@@ -21,9 +21,7 @@ function verifyTelegramInitData(initData, botToken) {
   if (!hash) return { ok: false, reason: "no_hash" };
 
   const entries = [];
-  for (const [k, v] of params.entries()) {
-    if (k !== "hash") entries.push(`${k}=${v}`);
-  }
+  for (const [k, v] of params.entries()) if (k !== "hash") entries.push(`${k}=${v}`);
   entries.sort();
   const dataCheckString = entries.join("\n");
 
@@ -33,9 +31,7 @@ function verifyTelegramInitData(initData, botToken) {
   const a = Buffer.from(hash, "hex");
   const b = Buffer.from(calcHash, "hex");
   if (a.length !== b.length) return { ok: false, reason: "len_mismatch" };
-
-  const ok = crypto.timingSafeEqual(a, b);
-  if (!ok) return { ok: false, reason: "hash_mismatch" };
+  if (!crypto.timingSafeEqual(a, b)) return { ok: false, reason: "hash_mismatch" };
 
   try {
     const userJson = params.get("user");
@@ -51,7 +47,7 @@ function verifyTelegramInitData(initData, botToken) {
 
 function isTonAddress(addr = "") {
   try {
-    Address.parse(addr);
+    Address.parse(addr); // понимает EQ/UQ/kQ/lQ и raw "0:..."
     return true;
   } catch {
     return false;
@@ -70,7 +66,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Неверный формат TON-адреса" });
   }
 
-  // 2) Достаём userId
+  // 2) Определяем userId
   let userId = null;
   const hasToken = !!process.env.BOT_TOKEN;
 
@@ -88,10 +84,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 3) Чистим старые привязки
-    const delUser = supabase.from("wallet_links").delete().eq("user_id", userId);
-    const delWallet = supabase.from("wallet_links").delete().eq("wallet", wallet);
-    const [{ error: e1 }, { error: e2 }] = await Promise.all([delUser, delWallet]);
+    // 3) Чистим старые привязки (по user_id и по самому кошельку)
+    const delByUser = supabase.from("wallet_links").delete().eq("user_id", userId);
+    const delByWallet = supabase.from("wallet_links").delete().eq("wallet", wallet);
+    const [{ error: e1 }, { error: e2 }] = await Promise.all([delByUser, delByWallet]);
     if (e1 || e2) console.warn("[link-wallet] warning on delete", e1 || e2);
 
     // 4) Создаём новую привязку
@@ -102,6 +98,16 @@ export default async function handler(req, res) {
     if (insertError) {
       console.error("link-wallet insert error:", insertError);
       return res.status(500).json({ error: "Ошибка при привязке кошелька" });
+    }
+
+    // 5) Гарантируем наличие пользователя в users (чтобы balance не падал)
+    const { error: upsertErr } = await supabase
+      .from("users")
+      .upsert({ id: userId, balance_nano: 0 }, { onConflict: "id" });
+
+    if (upsertErr) {
+      console.warn("[link-wallet] users upsert warning:", upsertErr);
+      // не критично для ответа — просто залогируем
     }
 
     console.log(`[link-wallet] user ${userId} привязал ${wallet}`);
