@@ -218,6 +218,36 @@ async function confirmWithdraw() {
 }
 window.confirmWithdraw = confirmWithdraw;
 
+// === История пополнений и выводов ===
+async function openHistory() {
+  try {
+    const resp = await fetch('/api/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      alert(data.error || 'Ошибка загрузки истории');
+      return;
+    }
+
+    // Для простоты — пока покажем алертом
+    const lines = data.history.map((h) => {
+      if (h.type === 'deposit') {
+        return `+${h.amountTON} TON (${new Date(h.date).toLocaleString()})`;
+      } else {
+        return `-${h.amountTON} TON (${h.status}) (${new Date(h.date).toLocaleString()})`;
+      }
+    });
+    alert(lines.join('\n') || 'История пуста');
+  } catch (e) {
+    console.error('history error', e);
+    alert('Ошибка при получении истории');
+  }
+}
+window.openHistory = openHistory;
+
 // === Игры (демо) ===
 let selectedChoice = null;
 
