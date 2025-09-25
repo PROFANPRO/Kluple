@@ -98,6 +98,17 @@ body {
   cursor: pointer;
   user-select: none;
 }
+/* === Кнопка истории === */
+.history-btn {
+  font-size: 20px;
+  cursor: pointer;
+  user-select: none;
+  margin-left: 6px;
+  transition: transform 0.15s ease;
+}
+.history-btn:hover {
+  transform: scale(1.15);
+}
 
 .wallet-center {
   display: flex;
