@@ -445,6 +445,38 @@ body {
 .history-item.withdraw { color: #ef4444; } /* - красный */
 .history-item .amount { font-size: 16px; }
 
+/* === История ставок === */
+.history-container {
+  width: 100%;
+  max-width: 320px;
+  margin: 10px 0;
+  padding: 10px 0;
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  font-size: 18px; /* Увеличиваем размер текста */
+  color: #ffffff;
+  background-color: #000000; /* Черный фон */
+  border-radius: 12px; /* Закругленные углы */
+  padding-left: 10px; /* Добавим немного отступа слева */
+}
+
+.history-text {
+  display: inline-block;
+  animation: scrollHistory 10s linear infinite; /* Прокрутка истории */
+  font-weight: bold; /* Жирный текст */
+  font-size: 22px; /* Крупный размер текста */
+}
+
+@keyframes scrollHistory {
+  from {
+    transform: translateX(100%); /* Начинаем с правой стороны */
+  }
+  to {
+    transform: translateX(-100%); /* Прокручиваем до левой стороны */
+  }
+}
+
 /* === Dice Game === */
 .dice-wrapper {
   background: #1e293b;
@@ -531,4 +563,4 @@ body {
   display: none;
   border-color: #3b82f6;
   box-shadow: 0 0 8px #3b82f6;
-  }
+}
