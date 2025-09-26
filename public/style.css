@@ -423,10 +423,9 @@ body {
 
 /* === История ставок === */
 .history-container {
-  width: 130%;
-  max-width: 130%; /* Ширина на 100% */
-  margin: 10px 0;
-  padding: 10px 0;
+  width: 100%;
+  max-width: 100%; /* Ширина на 100% */
+  margin: 10px 10px;
   overflow: hidden;
   position: relative;
   text-align: left;
@@ -434,7 +433,7 @@ body {
   color: #ffffff;
   background-color: #000000; /* Черный фон */
   border-radius: 12px; /* Закругленные углы */
-  padding-left: 3px; /* Добавим немного отступа слева */
+  padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
 }
