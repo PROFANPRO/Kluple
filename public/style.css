@@ -427,7 +427,7 @@ body {
   max-width: 100%; /* Ширина на 100% */
   margin: 10px 0;
   padding: 10px 0;
-  overflow-x: auto; /* Горизонтальная прокрутка */
+  overflow: hidden;
   position: relative;
   text-align: left;
   font-size: 18px; /* Увеличиваем размер текста */
@@ -437,16 +437,16 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
-  white-space: nowrap; /* Останавливает перенос строки */
 }
 
 .history-text {
   display: inline-block;
   font-weight: bold; /* Жирный текст */
   font-size: 22px; /* Крупный размер текста */
+  white-space: nowrap; /* Это заставляет все элементы быть в одной строке */
   color: white; /* Белый цвет текста */
   padding: 10px;
-  white-space: nowrap; /* Это заставляет все элементы быть в одной строке */
+  overflow: hidden;
 }
 
 /* === Dice Game === */
@@ -460,9 +460,13 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  min-width: 320px; /* Минимальная ширина */
 }
-
+#countdown {
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  position: absolute;
+}
 .dice-area {
   display: flex;
   justify-content: center;
@@ -470,9 +474,7 @@ body {
   gap: 15px;
   margin: 20px 0;
   min-height: 100px;
-  width: 100%;
 }
-
 .dice {
   width: 60px;
   height: 60px;
@@ -487,13 +489,11 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   animation: dice-roll 0.4s ease-in-out;
 }
-
 @keyframes dice-roll {
   0% { transform: rotate(0deg) scale(1) }
   50% { transform: rotate(180deg) scale(1.1) }
   100% { transform: rotate(360deg) scale(1) }
 }
-
 #betAmount {
   width: 100%;
   max-width: 320px;
@@ -506,7 +506,6 @@ body {
   margin-bottom: 10px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
-
 .choice-buttons {
   display: flex;
   justify-content: space-around;
@@ -514,7 +513,6 @@ body {
   max-width: 320px;
   margin-top: 10px;
 }
-
 .choice-btn {
   flex: 1;
   text-align: center;
@@ -527,14 +525,11 @@ body {
   transition: 0.2s;
   cursor: pointer;
 }
-
 .choice-btn:hover { background: #334155; }
-
 .choice-btn.active-choice {
   background: #3b82f6;
   box-shadow: 0 0 10px #3b82f6;
 }
-
 .choice-buttons, #diceArea, #countdown {
   display: none;
   border-color: #3b82f6;
