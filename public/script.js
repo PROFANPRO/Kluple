@@ -218,31 +218,27 @@ async function confirmWithdraw() {
 }
 window.confirmWithdraw = confirmWithdraw;
 
-// === История ставок ===
-let betHistory = []; // Массив для хранения истории ставок
+// === История результатов игры ===
+let gameHistory = []; // Массив для хранения истории результатов игры
 
-// Функция для добавления ставки в историю
-function addToHistory(choice, betAmount) {
-  const now = new Date();
-  const timeString = now.toLocaleTimeString(); // Форматируем время
-  const historyEntry = `${timeString}: Ставка ${choice} ${betAmount} TON`;
+// Функция для добавления результата игры в историю
+function addToGameHistory(result) {
+  // Добавляем новый результат в начало массива
+  gameHistory.unshift(result);
 
-  // Добавляем новую запись в начало массива
-  betHistory.unshift(historyEntry);
-
-  // Ограничиваем количество записей в истории (например, 5)
-  if (betHistory.length > 5) {
-    betHistory.pop();
+  // Ограничиваем количество записей в истории (12 последних)
+  if (gameHistory.length > 12) {
+    gameHistory.pop(); // Удаляем самый старый результат
   }
 
   // Обновляем отображение истории
-  updateHistoryDisplay();
+  updateGameHistoryDisplay();
 }
 
 // Функция для обновления текста истории в интерфейсе
-function updateHistoryDisplay() {
+function updateGameHistoryDisplay() {
   const historyTextElement = document.getElementById('historyText');
-  historyTextElement.textContent = betHistory.join(' | '); // Собираем историю в одну строку
+  historyTextElement.textContent = gameHistory.join(' | '); // Собираем историю в одну строку
 }
 
 // === Игры (демо) ===
@@ -303,9 +299,6 @@ async function startGame() {
   betBtn.disabled = true;
   betBtn.textContent = 'Ожидание...';
 
-  // Добавляем текущую ставку в историю
-  addToHistory(selectedChoice, bet);
-
   const diceArea = document.getElementById('diceArea');
   const countdown = document.getElementById('countdown');
 
@@ -339,6 +332,9 @@ async function startGame() {
 
       resultEl.style.color = win ? '#22c55e' : '#ef4444';
       resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
+
+      // Добавляем результат игры в историю
+      addToGameHistory(sum);
 
       // Обновление баланса
       updateBalanceByBackend();
