@@ -437,6 +437,7 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
+  overflow-y: auto; /* Добавляем вертикальную прокрутку */
 }
 
 .history-text {
@@ -453,7 +454,6 @@ body {
   background: #1e293b;
   border-radius: 12px;
   width: 100%;
-  max-width: 320px;
   height: 200px;
   margin: 10px 0;
   display: flex;
@@ -461,12 +461,7 @@ body {
   justify-content: center;
   position: relative;
 }
-#countdown {
-  font-size: 48px;
-  font-weight: bold;
-  color: white;
-  position: absolute;
-}
+
 .dice-area {
   display: flex;
   justify-content: center;
@@ -474,7 +469,9 @@ body {
   gap: 15px;
   margin: 20px 0;
   min-height: 100px;
+  width: 100%;
 }
+
 .dice {
   width: 60px;
   height: 60px;
@@ -489,11 +486,13 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   animation: dice-roll 0.4s ease-in-out;
 }
+
 @keyframes dice-roll {
   0% { transform: rotate(0deg) scale(1) }
   50% { transform: rotate(180deg) scale(1.1) }
   100% { transform: rotate(360deg) scale(1) }
 }
+
 #betAmount {
   width: 100%;
   max-width: 320px;
@@ -506,6 +505,7 @@ body {
   margin-bottom: 10px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
 }
+
 .choice-buttons {
   display: flex;
   justify-content: space-around;
@@ -513,6 +513,7 @@ body {
   max-width: 320px;
   margin-top: 10px;
 }
+
 .choice-btn {
   flex: 1;
   text-align: center;
@@ -525,11 +526,14 @@ body {
   transition: 0.2s;
   cursor: pointer;
 }
+
 .choice-btn:hover { background: #334155; }
+
 .choice-btn.active-choice {
   background: #3b82f6;
   box-shadow: 0 0 10px #3b82f6;
 }
+
 .choice-buttons, #diceArea, #countdown {
   display: none;
   border-color: #3b82f6;
