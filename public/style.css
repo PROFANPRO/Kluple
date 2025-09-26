@@ -425,10 +425,10 @@ body {
 .history-container {
   width: 100%;
   max-width: 100%; /* Ширина на 100% */
-  min-width: 100%;
   margin: 10px 0;
   padding: 10px 0;
-  overflow: hidden;
+  overflow-x: hidden; /* Убираем горизонтальную прокрутку */
+  overflow-y: auto; /* Вертикальная прокрутка */
   position: relative;
   text-align: left;
   font-size: 18px; /* Увеличиваем размер текста */
@@ -438,7 +438,7 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
-  overflow-y: auto; /* Добавляем вертикальную прокрутку */
+  min-width: 320px; /* Минимальная ширина */
 }
 
 .history-text {
@@ -461,6 +461,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  min-width: 320px; /* Минимальная ширина */
 }
 
 .dice-area {
