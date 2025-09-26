@@ -427,8 +427,8 @@ body {
   max-width: 100%; /* Ширина на 100% */
   margin: 10px 0;
   padding: 10px 0;
-  overflow-x: hidden; /* Убираем горизонтальную прокрутку */
-  overflow-y: auto; /* Вертикальная прокрутка */
+  overflow-x: auto; /* Горизонтальная прокрутка */
+  overflow-y: hidden; /* Убираем вертикальную прокрутку */
   position: relative;
   text-align: left;
   font-size: 18px; /* Увеличиваем размер текста */
@@ -438,7 +438,6 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
-  min-width: 320px; /* Минимальная ширина */
 }
 
 .history-text {
