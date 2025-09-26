@@ -324,9 +324,27 @@ async function startGame() {
       clearInterval(interval);
       countdown.style.display = 'none';
 
-      // Используем игровую логику с хешированием
-      const gameResult = playGame(selectedChoice, bet);
-      resultEl.textContent = gameResult;
+      // Генерация уникального seed для раунда
+      const roundSeed = `${Date.now()}-${Math.random()}`;  // Уникальные данные для раунда
+
+      // Генерация случайных чисел для кубиков через хеширование
+      const dice1 = generateRandomNumber(roundSeed);  // Кубик 1
+      const dice2 = generateRandomNumber(roundSeed + '1');  // Кубик 2 (для независимости)
+
+      const sum = dice1 + dice2;  // Сумма двух кубиков
+      console.log(`Результат броска: ${dice1} + ${dice2} = ${sum}`);
+
+      // Результат игры
+      let win = false;
+      if (selectedChoice === '<' && sum < 7) win = true;
+      if (selectedChoice === '=' && sum === 7) win = true;
+      if (selectedChoice === '>' && sum > 7) win = true;
+
+      resultEl.style.color = win ? '#22c55e' : '#ef4444';
+      resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
+
+      // Показываем хеш для проверки честности
+      console.log(`Для проверки результата используйте этот хеш: ${roundSeed}`);
 
       setTimeout(() => {
         betBtn.disabled = false;
