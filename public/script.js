@@ -310,7 +310,7 @@ async function startGame() {
   const countdown = document.getElementById('countdown');
 
   resultEl.textContent = '';
-  diceArea.innerHTML = '';  // Очищаем старые кубики
+  diceArea.innerHTML = '';
   diceArea.style.display = 'none';
 
   countdown.style.display = 'block';
@@ -324,21 +324,14 @@ async function startGame() {
       clearInterval(interval);
       countdown.style.display = 'none';
 
-      // Генерация уникального seed для раунда
-      const roundSeed = `${Date.now()}-${Math.random()}`;  // Уникальные данные для раунда
+      // ⚠️ ДЕМО-режим: клиентский RNG
+      const dice1 = Math.floor(Math.random() * 6) + 1;
+      const dice2 = Math.floor(Math.random() * 6) + 1;
+      const sum = dice1 + dice2;
 
-      // Генерация случайных чисел для кубиков через хеширование
-      const dice1 = generateRandomNumber(roundSeed);  // Кубик 1
-      const dice2 = generateRandomNumber(roundSeed + '1');  // Кубик 2 (для независимости)
-
-      const sum = dice1 + dice2;  // Сумма двух кубиков
-      console.log(`Результат броска: ${dice1} + ${dice2} = ${sum}`);
-
-      // Отображаем кубики на экране
       diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
       diceArea.style.display = 'flex';
 
-      // Результат игры
       let win = false;
       if (selectedChoice === '<' && sum < 7) win = true;
       if (selectedChoice === '=' && sum === 7) win = true;
@@ -347,9 +340,7 @@ async function startGame() {
       resultEl.style.color = win ? '#22c55e' : '#ef4444';
       resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
 
-      // Показываем хеш для проверки честности
-      console.log(`Для проверки результата используйте этот хеш: ${roundSeed}`);
-
+      // TODO: заменить на запрос к серверу (provably fair)
       setTimeout(() => {
         betBtn.disabled = false;
         betBtn.textContent = 'Сделать ставку';
