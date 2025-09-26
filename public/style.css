@@ -427,7 +427,7 @@ body {
   max-width: 100%; /* Ширина на 100% */
   margin: 10px 0;
   padding: 10px 0;
-  overflow: hidden; /* Скрываем выходящий текст */
+  overflow-x: auto; /* Горизонтальная прокрутка */
   position: relative;
   text-align: left;
   font-size: 18px; /* Увеличиваем размер текста */
@@ -437,6 +437,7 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
+  white-space: nowrap; /* Останавливает перенос строки */
 }
 
 .history-text {
@@ -445,17 +446,7 @@ body {
   font-size: 22px; /* Крупный размер текста */
   color: white; /* Белый цвет текста */
   padding: 10px;
-  white-space: nowrap; /* Не разрываем текст на несколько строк */
-  animation: moveText 10s linear infinite; /* Плавное исчезновение текста */
-}
-
-@keyframes moveText {
-  0% {
-    transform: translateX(-100%); /* Начинаем с левой стороны */
-  }
-  100% {
-    transform: translateX(100%); /* Текст уходит за пределы справа */
-  }
+  white-space: nowrap; /* Это заставляет все элементы быть в одной строке */
 }
 
 /* === Dice Game === */
