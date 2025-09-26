@@ -218,35 +218,32 @@ async function confirmWithdraw() {
 }
 window.confirmWithdraw = confirmWithdraw;
 
-// === История пополнений и выводов ===
-async function openHistory() {
-  try {
-    const resp = await fetch('/api/history', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ initData })
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.success) {
-      alert(data.error || 'Ошибка загрузки истории');
-      return;
-    }
+// === История ставок ===
+let betHistory = []; // Массив для хранения истории ставок
 
-    // Для простоты — пока покажем алертом
-    const lines = data.history.map((h) => {
-      if (h.type === 'deposit') {
-        return `+${h.amountTON} TON (${new Date(h.date).toLocaleString()})`;
-      } else {
-        return `-${h.amountTON} TON (${h.status}) (${new Date(h.date).toLocaleString()})`;
-      }
-    });
-    alert(lines.join('\n') || 'История пуста');
-  } catch (e) {
-    console.error('history error', e);
-    alert('Ошибка при получении истории');
+// Функция для добавления ставки в историю
+function addToHistory(choice, betAmount) {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString(); // Форматируем время
+  const historyEntry = `${timeString}: Ставка ${choice} ${betAmount} TON`;
+
+  // Добавляем новую запись в начало массива
+  betHistory.unshift(historyEntry);
+
+  // Ограничиваем количество записей в истории (например, 5)
+  if (betHistory.length > 5) {
+    betHistory.pop();
   }
+
+  // Обновляем отображение истории
+  updateHistoryDisplay();
 }
-window.openHistory = openHistory;
+
+// Функция для обновления текста истории в интерфейсе
+function updateHistoryDisplay() {
+  const historyTextElement = document.getElementById('historyText');
+  historyTextElement.textContent = betHistory.join(' | '); // Собираем историю в одну строку
+}
 
 // === Игры (демо) ===
 let selectedChoice = null;
@@ -305,6 +302,9 @@ async function startGame() {
 
   betBtn.disabled = true;
   betBtn.textContent = 'Ожидание...';
+
+  // Добавляем текущую ставку в историю
+  addToHistory(selectedChoice, bet);
 
   const diceArea = document.getElementById('diceArea');
   const countdown = document.getElementById('countdown');
