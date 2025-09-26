@@ -1,210 +1,215 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
-<title>WC Game</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <title>WC Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="stars"></div>
+  <div class="stars"></div>
 
-<!-- Home -->
-<div id="home" class="container active">
-<div class="balance-card">
-  <div class="user-info">
-    <div class="user-left">
-      <img id="userPhoto" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="user">
-    </div>
+  <!-- Home -->
+  <div id="home" class="container active">
+    <div class="balance-card">
+      <div class="user-info">
+        <div class="user-left">
+          <img id="userPhoto" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="user">
+        </div>
 
-    <div class="wallet-center">
-      <!-- TonConnect UI сам вставит кнопку сюда -->
-      <div id="walletBtn"></div>
-    </div>
+        <div class="wallet-center">
+          <!-- TonConnect UI сам вставит кнопку сюда -->
+          <div id="walletBtn"></div>
+        </div>
 
-    <!-- 📜 История между кошельком и меню -->
-    <div class="history-btn" onclick="openHistory()">📜</div>
+        <!-- 📜 История между кошельком и меню -->
+        <div class="history-btn" onclick="openHistory()">📜</div>
 
-    <div class="menu-btn" onclick="openMenu()">≡</div>
-  </div>
-
-  <p id="balanceDisplay" class="balance-value">0 TON</p>
-</div>
-
-  <div class="row">
-    <div class="card green" onclick="openDepositModal()">
-      <div class="icon-circle">⬇️</div>
-      <p>Депозит</p>
-    </div>
-    <div class="card red" onclick="openWithdrawModal()">
-      <div class="icon-circle">⬆️</div>
-      <p>Вывод</p>
-    </div>
-  </div>
-
-  <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
-    <div class="icon-circle">🏆</div>
-    <p>Топ</p>
-  </div>
-
-  <div class="card light-blue" onclick="openPromoModal()">
-    <div class="icon-circle">🎁</div>
-    <p>Промокод</p>
-  </div>
-</div>
-
-<!-- Games -->
-<div id="games" class="container">
-  <div class="page-header">Игры</div>
-  <div class="games-grid">
-    <div class="game-wrapper" onclick="openGame('roulette')">
-      <div class="game-card">
-        <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
+        <div class="menu-btn" onclick="openMenu()">≡</div>
       </div>
-      <div class="game-label">Рулетка</div>
+
+      <p id="balanceDisplay" class="balance-value">0 TON</p>
     </div>
-    <div class="game-wrapper" onclick="openGame('ninja')">
-      <div class="game-card">🥷</div>
-      <div class="game-label">Ниндзя</div>
+
+    <div class="row">
+      <div class="card green" onclick="openDepositModal()">
+        <div class="icon-circle">⬇️</div>
+        <p>Депозит</p>
+      </div>
+      <div class="card red" onclick="openWithdrawModal()">
+        <div class="icon-circle">⬆️</div>
+        <p>Вывод</p>
+      </div>
     </div>
-    <div class="game-wrapper" onclick="openGame('tower')">
-      <div class="game-card">🗼</div>
-      <div class="game-label">Башня</div>
+
+    <div class="card orange" onclick="showPage('rating', document.querySelector('.bottom-nav .nav-item:nth-child(3)'))">
+      <div class="icon-circle">🏆</div>
+      <p>Топ</p>
     </div>
-    <div class="game-wrapper" onclick="openGame('seven')">
-      <div class="game-card">7️⃣</div>
-      <div class="game-label">Под 7 над</div>
-    </div>
-    <div class="game-wrapper" onclick="openGame('cs')">
-      <div class="game-card">🔫</div>
-      <div class="game-label">CS</div>
-    </div>
-    <div class="game-wrapper" onclick="openGame('luck')">
-      <div class="game-card">🍀</div>
-      <div class="game-label">Колесо удачи</div>
+
+    <div class="card light-blue" onclick="openPromoModal()">
+      <div class="icon-circle">🎁</div>
+      <p>Промокод</p>
     </div>
   </div>
-</div>
 
-<!-- Game Container -->
-<div id="gameContainer" class="container">
-  <div class="game-header">
-    <button class="back-btn" onclick="closeGame()">←</button>
-    <span id="gameTitle">Игра</span>
-  </div>
-
-  <div class="game-container">
-    <!-- 🎲 Игровая зона -->
-    <div class="dice-wrapper">
-      <div class="dice-area" id="diceArea"></div>
-      <div class="countdown" id="countdown"></div>
-    </div>
-
-    <!-- Ставка и выбор -->
-    <input type="number" id="betAmount" class="bet-input" placeholder="Введите ставку">
-    <div class="choice-buttons">
-      <button class="choice-btn" data-choice="<" onclick="selectChoice('<')">&lt; 7</button>
-      <button class="choice-btn" data-choice="=" onclick="selectChoice('=')">= 7</button>
-      <button class="choice-btn" data-choice=">" onclick="selectChoice('>')">&gt; 7</button>
-    </div>
-
-    <button id="betBtn" onclick="startGame()">Сделать ставку</button>
-    <p id="gameResult"></p>
-  </div>
-</div>
-
-<!-- Rating -->
-<div id="rating" class="container">
-  <div class="page-header">Топ</div>
-  <div class="top-buttons">
-    <button onclick="showRanking('week', this)" class="active">Неделя</button>
-    <button onclick="showRanking('month', this)">Месяц</button>
-  </div>
-  <ul id="week" class="rank-list" style="display:block;">
-    <li><span>1. Игрок1</span><span>0</span></li>
-    <li><span>2. Игрок2</span><span>0</span></li>
-    <li><span>3. Игрок3</span><span>0</span></li>
-    <li><span>4. Игрок4</span><span>0</span></li>
-    <li><span>5. Игрок5</span><span>0</span></li>
-  </ul>
-  <ul id="month" class="rank-list">
-    <li><span>1. ИгрокA</span><span>0</span></li>
-    <li><span>2. ИгрокB</span><span>0</span></li>
-    <li><span>3. ИгрокC</span><span>0</span></li>
-    <li><span>4. ИгрокD</span><span>0</span></li>
-    <li><span>5. ИгрокE</span><span>0</span></li>
-  </ul>
-</div>
-
-<!-- Promo Modal -->
-<div id="promoModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closePromoModal()">&times;</span>
-    <h2>Введите промокод</h2>
-    <input type="text" placeholder="Промокод">
-    <div class="modal-buttons">
-      <button class="cancel" onclick="closePromoModal()">Отмена</button>
-      <button class="activate" onclick="alert('Промокод активирован!')">Активировать</button>
+  <!-- Games -->
+  <div id="games" class="container">
+    <div class="page-header">Игры</div>
+    <div class="games-grid">
+      <div class="game-wrapper" onclick="openGame('roulette')">
+        <div class="game-card">
+          <img src="https://raw.githubusercontent.com/PROFANPRO/Kluple/refs/heads/main/file_000000002548622fa7553f9952dac1e7.png" alt="roulette">
+        </div>
+        <div class="game-label">Рулетка</div>
+      </div>
+      <div class="game-wrapper" onclick="openGame('ninja')">
+        <div class="game-card">🥷</div>
+        <div class="game-label">Ниндзя</div>
+      </div>
+      <div class="game-wrapper" onclick="openGame('tower')">
+        <div class="game-card">🗼</div>
+        <div class="game-label">Башня</div>
+      </div>
+      <div class="game-wrapper" onclick="openGame('seven')">
+        <div class="game-card">7️⃣</div>
+        <div class="game-label">Под 7 над</div>
+      </div>
+      <div class="game-wrapper" onclick="openGame('cs')">
+        <div class="game-card">🔫</div>
+        <div class="game-label">CS</div>
+      </div>
+      <div class="game-wrapper" onclick="openGame('luck')">
+        <div class="game-card">🍀</div>
+        <div class="game-label">Колесо удачи</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Deposit Modal -->
-<div id="depositModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeDepositModal()">&times;</span>
-    <h2>Введите сумму депозита</h2>
-    <input type="number" id="depositAmount" placeholder="Сумма в TON">
-    <div class="modal-buttons">
-      <button class="cancel" onclick="closeDepositModal()">Отмена</button>
-      <button class="activate" id="depositSubmit">Перевести</button>
+  <!-- Game Container -->
+  <div id="gameContainer" class="container">
+    <div class="game-header">
+      <button class="back-btn" onclick="closeGame()">←</button>
+      <span id="gameTitle">Игра</span>
+    </div>
+
+    <div class="game-container">
+      <!-- История ставок -->
+      <div class="history-container" id="historyContainer">
+        <p id="historyText" class="history-text"></p>
+      </div>
+
+      <!-- 🎲 Игровая зона -->
+      <div class="dice-wrapper">
+        <div class="dice-area" id="diceArea"></div>
+        <div class="countdown" id="countdown"></div>
+      </div>
+
+      <!-- Ставка и выбор -->
+      <input type="number" id="betAmount" class="bet-input" placeholder="Введите ставку">
+      <div class="choice-buttons">
+        <button class="choice-btn" data-choice="<" onclick="selectChoice('<')">&lt; 7</button>
+        <button class="choice-btn" data-choice="=" onclick="selectChoice('=')">= 7</button>
+        <button class="choice-btn" data-choice=">" onclick="selectChoice('>')">&gt; 7</button>
+      </div>
+
+      <button id="betBtn" onclick="startGame()">Сделать ставку</button>
+      <p id="gameResult"></p>
     </div>
   </div>
-</div>
 
-<!-- Withdraw Modal -->
-<div id="withdrawModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeWithdrawModal()">&times;</span>
-    <h2>Введите сумму вывода</h2>
-    <input type="number" id="withdrawAmount" placeholder="Сумма в TON">
-    <div class="modal-buttons">
-      <button class="cancel" onclick="closeWithdrawModal()">Отмена</button>
-      <button class="activate" id="withdrawSubmit">Отправить</button>
+  <!-- Rating -->
+  <div id="rating" class="container">
+    <div class="page-header">Топ</div>
+    <div class="top-buttons">
+      <button onclick="showRanking('week', this)" class="active">Неделя</button>
+      <button onclick="showRanking('month', this)">Месяц</button>
+    </div>
+    <ul id="week" class="rank-list" style="display:block;">
+      <li><span>1. Игрок1</span><span>0</span></li>
+      <li><span>2. Игрок2</span><span>0</span></li>
+      <li><span>3. Игрок3</span><span>0</span></li>
+      <li><span>4. Игрок4</span><span>0</span></li>
+      <li><span>5. Игрок5</span><span>0</span></li>
+    </ul>
+    <ul id="month" class="rank-list">
+      <li><span>1. ИгрокA</span><span>0</span></li>
+      <li><span>2. ИгрокB</span><span>0</span></li>
+      <li><span>3. ИгрокC</span><span>0</span></li>
+      <li><span>4. ИгрокD</span><span>0</span></li>
+      <li><span>5. ИгрокE</span><span>0</span></li>
+    </ul>
+  </div>
+
+  <!-- Promo Modal -->
+  <div id="promoModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closePromoModal()">&times;</span>
+      <h2>Введите промокод</h2>
+      <input type="text" placeholder="Промокод">
+      <div class="modal-buttons">
+        <button class="cancel" onclick="closePromoModal()">Отмена</button>
+        <button class="activate" onclick="alert('Промокод активирован!')">Активировать</button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDepositModal()">&times;</span>
+      <h2>Введите сумму депозита</h2>
+      <input type="number" id="depositAmount" placeholder="Сумма в TON">
+      <div class="modal-buttons">
+        <button class="cancel" onclick="closeDepositModal()">Отмена</button>
+        <button class="activate" id="depositSubmit">Перевести</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div id="withdrawModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWithdrawModal()">&times;</span>
+      <h2>Введите сумму вывода</h2>
+      <input type="number" id="withdrawAmount" placeholder="Сумма в TON">
+      <div class="modal-buttons">
+        <button class="cancel" onclick="closeWithdrawModal()">Отмена</button>
+        <button class="activate" id="withdrawSubmit">Отправить</button>
+      </div>
+    </div>
+  </div>
 
   <!-- History Modal -->
-<div id="historyModal" class="modal">
-  <div class="modal-content history-content">
-    <span class="close" onclick="closeHistory()">&times;</span>
-    <h2>История</h2>
-    <div id="historyList" class="history-list">
-      <!-- сюда будет вставляться история -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content history-content">
+      <span class="close" onclick="closeHistory()">&times;</span>
+      <h2>История</h2>
+      <div id="historyList" class="history-list">
+        <!-- сюда будет вставляться история -->
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Menu -->
-<div class="menu-modal" id="menuModal">
-  <div class="menu-content">
-    <span class="menu-close" onclick="closeMenu()">&times;</span>
-    <h3>Меню</h3>
-    <p>Здесь будут настройки</p>
+  <!-- Menu -->
+  <div class="menu-modal" id="menuModal">
+    <div class="menu-content">
+      <span class="menu-close" onclick="closeMenu()">&times;</span>
+      <h3>Меню</h3>
+      <p>Здесь будут настройки</p>
+    </div>
   </div>
-</div>
 
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
-  <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
-  <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
-  <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
-</div>
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home', this)"><span>🏠</span>Главная</div>
+    <div class="nav-item" onclick="showPage('games', this)"><span>🎮</span>Игры</div>
+    <div class="nav-item" onclick="showPage('rating', this)"><span>🏆</span>Топ</div>
+  </div>
 
-<!-- Скрипты -->
-<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
-<script src="script.js" defer></script>
+  <!-- Скрипты -->
+  <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
