@@ -423,8 +423,8 @@ body {
 
 /* === История ставок === */
 .history-container {
-  width: 100%;
-  max-width: 100%; /* Ширина на 100% */
+  width: 130%;
+  max-width: 130%; /* Ширина на 100% */
   margin: 10px 0;
   padding: 10px 0;
   overflow: hidden;
