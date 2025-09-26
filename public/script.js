@@ -310,7 +310,7 @@ async function startGame() {
   const countdown = document.getElementById('countdown');
 
   resultEl.textContent = '';
-  diceArea.innerHTML = '';
+  diceArea.innerHTML = '';  // Очищаем старые кубики
   diceArea.style.display = 'none';
 
   countdown.style.display = 'block';
@@ -333,6 +333,10 @@ async function startGame() {
 
       const sum = dice1 + dice2;  // Сумма двух кубиков
       console.log(`Результат броска: ${dice1} + ${dice2} = ${sum}`);
+
+      // Отображаем кубики на экране
+      diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
+      diceArea.style.display = 'flex';
 
       // Результат игры
       let win = false;
