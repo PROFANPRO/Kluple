@@ -424,7 +424,7 @@ body {
 
 /* === История ставок === */
 .history-container {
-  width: 100%;
+  max-width: 380px;
   margin: 10px 0;
   padding: 10px 0;
   overflow: hidden;
