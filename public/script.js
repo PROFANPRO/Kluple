@@ -324,23 +324,10 @@ async function startGame() {
       clearInterval(interval);
       countdown.style.display = 'none';
 
-      // ⚠️ ДЕМО-режим: клиентский RNG
-      const dice1 = Math.floor(Math.random() * 6) + 1;
-      const dice2 = Math.floor(Math.random() * 6) + 1;
-      const sum = dice1 + dice2;
+      // Используем игровую логику с хешированием
+      const gameResult = playGame(selectedChoice, bet);
+      resultEl.textContent = gameResult;
 
-      diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
-      diceArea.style.display = 'flex';
-
-      let win = false;
-      if (selectedChoice === '<' && sum < 7) win = true;
-      if (selectedChoice === '=' && sum === 7) win = true;
-      if (selectedChoice === '>' && sum > 7) win = true;
-
-      resultEl.style.color = win ? '#22c55e' : '#ef4444';
-      resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
-
-      // TODO: заменить на запрос к серверу (provably fair)
       setTimeout(() => {
         betBtn.disabled = false;
         betBtn.textContent = 'Сделать ставку';
