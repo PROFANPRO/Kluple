@@ -340,7 +340,9 @@ async function startGame() {
       resultEl.style.color = win ? '#22c55e' : '#ef4444';
       resultEl.textContent = `Выпало ${sum}. ${win ? `Вы выиграли ${bet * 2}! 🎉` : 'Вы проиграли 😔'}`;
 
-      // TODO: заменить на запрос к серверу (provably fair)
+      // Обновление баланса
+      updateBalanceByBackend();
+      
       setTimeout(() => {
         betBtn.disabled = false;
         betBtn.textContent = 'Сделать ставку';
