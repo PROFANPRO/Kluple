@@ -535,3 +535,21 @@ body {
   border-color: #3b82f6;
   box-shadow: 0 0 8px #3b82f6;
 }
+
+/* === Результат игры (отображение хэша) === */
+.game-result {
+  font-size: 18px;
+  color: #fff;
+  margin-top: 20px;
+}
+
+.game-result span {
+  font-weight: bold;
+}
+
+.game-result .hash {
+  font-size: 16px;
+  color: #cbd5e1;
+  margin-top: 8px;
+  font-style: italic;
+}
