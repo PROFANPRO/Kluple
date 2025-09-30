@@ -317,12 +317,14 @@ async function startGame() {
       clearInterval(interval);
       countdown.style.display = 'none';
 
-      // ⚠️ ДЕМО-режим: клиентский RNG
-      const dice1 = Math.floor(Math.random() * 6) + 1;
-      const dice2 = Math.floor(Math.random() * 6) + 1;
-      const sum = dice1 + dice2;
+      // Получаем результат с сервера
+      const response = await fetch('/roll-dice');
+      const data = await response.json();
 
-      diceArea.innerHTML = `<div class="dice">${dice1}</div><div class="dice">${dice2}</div>`;
+      const { die1, die2, sum, hash } = data;
+
+      // Показываем результат на экране
+      diceArea.innerHTML = `<div class="dice">${die1}</div><div class="dice">${die2}</div>`;
       diceArea.style.display = 'flex';
 
       let win = false;
@@ -335,6 +337,9 @@ async function startGame() {
 
       // Добавляем результат игры в историю
       addToGameHistory(sum);
+
+      // Отображаем хэш для проверки честности
+      resultEl.textContent += ` Хэш результата: ${hash}`;
 
       // Обновление баланса
       updateBalanceByBackend();
