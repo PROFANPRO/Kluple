@@ -421,7 +421,7 @@ body {
 .modal-buttons .cancel { background: #ef4444; color: white }
 .modal-buttons .activate { background: #3b82f6; color: white }
 
-/* === История ставок === */
+/* === История результата выпадения кубиков === */
 .history-container {
   max-width: 500px;
   width: auto;
@@ -437,6 +437,7 @@ body {
   padding-left: 10px; /* Добавим немного отступа слева */
   height: 80px; /* Устанавливаем фиксированную высоту */
   margin-top: 20px; /* Поднимаем таблицу */
+  overflow-y: auto; /* Добавляем прокрутку по вертикали */
 }
 
 .history-text {
@@ -447,6 +448,7 @@ body {
   color: white; /* Белый цвет текста */
   padding: 10px;
   overflow: hidden;
+  text-overflow: ellipsis; /* Обрезаем длинный текст */
 }
 
 /* === Dice Game === */
